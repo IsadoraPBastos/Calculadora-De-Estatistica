@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <title>Calculadora de estatistica</title>
+  </head>
+  <body>
+    <h2>Calculadora de Estatistica</h2>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        height: 400px;
+        gap: 10px;
+      "
+    >
+      <div>
+        <h2>Dados desordenados</h2>
+        <form action="{{url_for('dados_desordenados')}}" method="POST">
+          <div><label for="dado">Digite os dados: </label></div>
+          <div><input type="number" name="dado" step="any" required /></div>
+          <div><button>Adicionar</button></div>
+        </form>
+
+        <div><h2>Dados inseridos</h2></div>
+        <div>{%for dado in dadosDesordenados%} {{dado}} {% endfor %}</div>
+      </div>
+
+      <div>
+        <h2>Dados em tabela</h2>
+        <form action="{{url_for('dados_em_tabela')}}" method="POST">
+          <div>
+            <label for="amostra"
+              >Digite a amostra:
+              <input type="number" name="amostra" step="any" required
+            /></label>
+          </div>
+          <div>
+            <label for="frequencia"
+              >Digite a frequência:
+              <input type="number" name="frequencia" step="any" required
+            /></label>
+          </div>
+          <div><button>Adicionar</button></div>
+        </form>
+        <div><h2>Dados inseridos</h2></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Amostra</th>
+              <th>Fequência Individual Absoluta (FI)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for amostra, FequenciaIndividualAbsoluta in
+            FequenciaIndividualAbsoluta.items() %}
+            <tr>
+              <td>{{ amostra }}</td>
+              <td>{{ FequenciaIndividualAbsoluta }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 30%;
+        margin: auto;
+      "
+    >
+      <form action="{{url_for('limpar_dados')}}" method="POST">
+        <button>Limpar</button>
+      </form>
+      <form action="{{url_for('calculo_dos_dados')}}" method="POST">
+        <button>Calcular</button>
+      </form>
+    </div>
+
+    <div>
+      <h1><u>Estatísticas desses Dados</u></h1>
+    </div>
+    <h2>Tabela das Frequências</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Amostra</th>
+          <th>Fequência Individual Absoluta (FI)</th>
+          <th>Frequência Acumulada Absoluta (FAC)</th>
+          <th>Posições</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for amostra, fi in FequenciaIndividualAbsoluta.items() %}
+        <tr>
+          <td>{{ amostra }}</td>
+          <td>{{ fi }}</td>
+          <td>{{ FrequenciaAcumulada[amostra] }}</td>
+          <td>{{ Posicoes[amostra] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>Tamanho da Amostra: {{ tamanhoDaAmostra }} dados</h2>
+  </body>
+</html>
