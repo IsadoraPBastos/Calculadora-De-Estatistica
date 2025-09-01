@@ -54,11 +54,11 @@
             </tr>
           </thead>
           <tbody>
-            {% for amostra, FequenciaIndividualAbsoluta in
-            FequenciaIndividualAbsoluta.items() %}
+            {% for amostra, FequenciaIndividualAbsolutaRecebida in
+            FequenciaIndividualAbsolutaRecebida.items() %}
             <tr>
               <td>{{ amostra }}</td>
-              <td>{{ FequenciaIndividualAbsoluta }}</td>
+              <td>{{ FequenciaIndividualAbsolutaRecebida }}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -107,5 +107,7 @@
     </table>
 
     <h2>Tamanho da Amostra: {{ tamanhoDaAmostra }} dados</h2>
+    <h3>Média</h3>
+    <p>{{ media }}</p>
   </body>
 </html>
