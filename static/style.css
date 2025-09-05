@@ -2,17 +2,201 @@
   text-align: center;
 }
 
+body {
+  height: 100vh;
+  width: 100%;
+  background-color: #edeef6;
+  /*overflow: hidden;*/
+}
+
 table {
-    border: solid 1px;
-    border-collapse: collapse;
-    margin: auto;
+  border: solid 1px;
+  border-collapse: collapse;
+  margin: auto;
 }
 
-td, th{
-    border: solid 1px;
-    padding: 10px;
-    text-align: center;
+td,
+th {
+  border: solid 1px;
+  padding: 10px;
+  text-align: center;
 }
 
+button {
+  margin: 3%;
+  padding: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 5px;
+  border: solid 1px green;
+  background-color: #5fbb5f;
+  color: white;
+}
 
+.btn_limpar {
+  border: solid 1px #6d0909;
+  background-color: #d91414;
+}
 
+.botoes-calcular-limpar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 30%;
+  margin: auto;
+}
+
+.botoes-calcular-limpar.descer {
+  margin-top: 15%;
+  transition: margin-top 0.3s ease;
+}
+
+/* Tipo de dados botão*/
+.container-opcoes-tipo-dado input[type="radio"] {
+  display: none;
+}
+
+.container-opcoes-tipo-dado.descer {
+  margin-top: 15%;
+  transition: margin-top 0.3s ease;
+}
+
+.opcao-tipo-dado {
+  background-color: white;
+  padding: 20px;
+  width: 8%;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.opcao-tipo-dado:hover {
+  background-color: #89d8ff;
+}
+
+input[type="radio"]:checked + .opcao-tipo-dado {
+  background-color: #63ccff;
+}
+
+/* Cards */
+.container-cards {
+  display: flex;
+  justify-content: center;
+  height: 400px;
+  gap: 5%;
+  margin: 2% auto 5% auto;
+  position: relative;
+}
+/* Card desordenados */
+.card-desordenados {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  transition: transform 1500ms;
+  transform-style: preserve-3d;
+}
+
+.container-card-desordenados {
+  height: 400px;
+  width: 250px;
+  perspective: 800px;
+}
+
+.container-card-desordenados:hover > .card-desordenados {
+  cursor: pointer;
+  transform: rotateY(180deg);
+}
+
+.front-desordenados,
+.back-desordenados {
+  height: 100%;
+  width: 100%;
+  border-radius: 2rem;
+  box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
+  position: absolute;
+  backface-visibility: hidden;
+}
+
+.front-desordenados {
+  border: #5fbb5f;
+}
+
+.back-desordenados {
+  transform: rotateY(180deg);
+}
+
+/* Card em tabela */
+.card-tabela {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  transition: transform 1500ms;
+  transform-style: preserve-3d;
+}
+
+.container-card-tabela {
+  height: 400px;
+  width: 250px;
+  perspective: 800px;
+}
+
+.container-card-tabela:hover > .card-tabela {
+  cursor: pointer;
+  transform: rotateY(180deg);
+}
+
+.front-tabela,
+.back-tabela {
+  height: 100%;
+  width: 100%;
+  border-radius: 2rem;
+  box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
+  position: absolute;
+  backface-visibility: hidden;
+}
+
+.front-tabela {
+  border: #5fbb5f;
+}
+
+.back-tabela {
+  transform: rotateY(180deg);
+}
+
+/* Modal */
+.container-modal {
+  display: none;
+  position: absolute;
+  top: 2%;
+  left: 5%;
+  height: 80%;
+  align-items: flex-start;
+  width: 90%;
+  opacity: 0;
+  background-color: white;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  justify-content: center;
+  align-items: flex-start;
+  border-radius: 50px;
+}
+
+.container-modal.show {
+  display: block;
+  pointer-events: auto;
+  opacity: 1;
+  overflow-y: auto;
+}
+
+.modal {
+  text-align: center;
+  margin-top: 0;
+  padding: 20px;
+  max-width: 90vw;
+}
+
+.container-modal-area {
+  width: 50%;
+  height: auto;
+  margin: auto;
+}

@@ -4,32 +4,51 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/static/style.css" />
+
     <title>Calculadora de estatistica</title>
   </head>
   <body>
     <h2>Calculadora de Estatistica</h2>
-    <div
-      style="
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        height: 400px;
-        gap: 10px;
-      "
-    >
-      <div>
-        <h2>Dados desordenados</h2>
+    <div class="container-cards">
+      <!-- Parte de inserção de dados -->
+      <div class="container-card-desordenados">
+        <div onclick="abrirModalDesordenado()" class="card-desordenados">
+          <div class="front-desordenados">Dados Desordenados</div>
+          <div class="back-desordenados">Back</div>
+        </div>
+      </div>
+      <div class="container-card-tabela">
+        <div onclick="abrirModalTabela()" class="card-tabela">
+          <div class="front-tabela">Dados em Tabela</div>
+          <div class="back-tabela">
+            <h2>Dados em tabela</h2>
+            Back
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <button id="open">Click</button>-->
+    <div class="container-modal" id="container_modal_desordenado">
+      <div class="modal">
+        <h1>Modal Desordenado</h1>
         <form action="{{url_for('dados_desordenados')}}" method="POST">
-          <div><label for="dado">Digite os dados: </label></div>
-          <div><input type="number" name="dado" step="any" required /></div>
+          <div>
+            <label for="dado"
+              >Digite os dados:
+              <input type="number" name="dado" step="any" required
+            /></label>
+          </div>
           <div><button>Adicionar</button></div>
         </form>
-
         <div><h2>Dados inseridos</h2></div>
         <div>{%for dado in dadosDesordenados%} {{dado}} {% endfor %}</div>
+        <button onclick="fecharModalDesordenado()">Fechar</button>
       </div>
+    </div>
 
-      <div>
-        <h2>Dados em tabela</h2>
+    <div class="container-modal" id="container_modal_tabela">
+      <div class="modal">
+        <h1>Modal em Tabela</h1>
         <form action="{{url_for('dados_em_tabela')}}" method="POST">
           <div>
             <label for="amostra"
@@ -63,24 +82,37 @@
             {% endfor %}
           </tbody>
         </table>
+        <button onclick="fecharModalTabela()">Fechar</button>
       </div>
     </div>
-    <div
-      style="
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        width: 30%;
-        margin: auto;
-      "
-    >
-      <form action="{{url_for('limpar_dados')}}" method="POST">
-        <button>Limpar</button>
-      </form>
-      <form action="{{url_for('calculo_dos_dados')}}" method="POST">
-        <button>Calcular</button>
-      </form>
-    </div>
 
+    <!-- Calcular os dados recebidos -->
+
+    <form action="{{url_for('calculo_dos_dados')}}" method="POST">
+      <!-- Tipo do dado -->
+      <div class="container-opcoes-tipo-dado">
+        <input type="radio" name="tipo" id="km" value="km" required />
+        <label for="km" class="opcao-tipo-dado">KM</label>
+
+        <input type="radio" name="tipo" id="°C" value="°C" />
+        <label for="°C" class="opcao-tipo-dado">°C</label>
+
+        <input type="radio" name="tipo" id="outro" value="outro" />
+        <label for="outro" class="opcao-tipo-dado"
+          >Digite: <input type="text" name="tipo_custom" placeholder="Outro"
+        /></label>
+      </div>
+      <!-- Botões de calcular e limpar -->
+      <div class="botoes-calcular-limpar">
+        <input type="hidden" name="modal_aberto" value="{{ mostrar_modal }}" />
+        <button>Calcular</button>
+      </div>
+    </form>
+    <form action="{{url_for('limpar_dados')}}" method="POST">
+      <button class="btn_limpar">Limpar</button>
+    </form>
+
+    <!-- Resultado dos cálculos -->
     <div>
       <h1><u>Estatísticas desses Dados</u></h1>
     </div>
@@ -108,6 +140,32 @@
 
     <h2>Tamanho da Amostra: {{ tamanhoDaAmostra }} dados</h2>
     <h3>Média</h3>
-    <p>{{ media }}</p>
+    <p>{{ media }} {{ tipo }}</p>
+    <h3>Moda</h3>
+    <p>{{ moda }} {{ tipo }} {{ tipo_moda }}</p>
+    <h3>Mediana</h3>
+    <p>{{ mediana }} {{ tipo }}</p>
   </body>
+  <script src="/static/script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const modalDesordenado = document.getElementById(
+        "container_modal_desordenado"
+      );
+      const modalTabela = document.getElementById("container_modal_tabela");
+      const tipoModal = "{{ mostrar_modal }}";
+      const botoes = document.querySelector(".botoes-calcular-limpar");
+      const tipo_dado = document.querySelector(".container-opcoes-tipo-dado");
+
+      if (tipoModal === "desordenado") {
+        modalDesordenado.classList.add("show");
+        botoes.classList.add("descer");
+        tipo_dado.classList.add("descer");
+      } else if (tipoModal === "tabela") {
+        modalTabela.classList.add("show");
+        botoes.classList.add("descer");
+        tipo_dado.classList.add("descer");
+      }
+    });
+  </script>
 </html>
