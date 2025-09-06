@@ -51,6 +51,11 @@ button {
   transition: margin-top 0.3s ease;
 }
 
+.botao-fechar-modal {
+  text-align: end;
+  cursor: pointer;
+}
+
 /* Tipo de dados botão*/
 .container-opcoes-tipo-dado input[type="radio"] {
   display: none;

@@ -12,7 +12,6 @@
     <title>Calculadora de estatistica</title>
   </head>
   <body>
-    <div>Testesteteste</div>
     <h2>Calculadora de Estatistica</h2>
     <div class="container-cards">
       <!-- Parte de inserção de dados -->
@@ -32,9 +31,11 @@
         </div>
       </div>
     </div>
-
     <div class="container-modal" id="container_modal_desordenado">
       <div class="modal">
+        <div class="botao-fechar-modal" onclick="fecharModalDesordenado()">
+          <i class="fa-solid fa-circle-xmark fa-2xl"></i>
+        </div>
         <h1>Modal Desordenado</h1>
         <form action="{{url_for('dados_desordenados')}}" method="POST">
           <div>
@@ -49,12 +50,14 @@
         <div>
           {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
         </div>
-        <button onclick="fecharModalDesordenado()">Fechar</button>
       </div>
     </div>
 
     <div class="container-modal" id="container_modal_tabela">
       <div class="modal">
+        <div class="botao-fechar-modal" onclick="fecharModalTabela()">
+          <i class="fa-solid fa-xmark fa-2xl"></i>
+        </div>
         <h1>Modal em Tabela</h1>
         <form action="{{url_for('dados_em_tabela')}}" method="POST">
           <div>
@@ -89,7 +92,6 @@
             {% endfor %}
           </tbody>
         </table>
-        <button onclick="fecharModalTabela()">Fechar</button>
       </div>
     </div>
 
