@@ -31,6 +31,7 @@ button {
   border: solid 1px green;
   background-color: #5fbb5f;
   color: white;
+  cursor: pointer;
 }
 
 .btn_limpar {
@@ -73,6 +74,32 @@ button {
 }
 
 input[type="radio"]:checked + .opcao-tipo-dado {
+  background-color: #63ccff;
+}
+
+/* Escolha dos calculos botão */
+.container-escolha-calculo input[type="checkbox"] {
+  display: none;
+  margin: 20px;
+}
+
+.container-escolha-calculo {
+  margin: 5%;
+}
+
+.escolha-calculo {
+  background-color: white;
+  padding: 20px;
+  width: 8%;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.escolha-calculo:hover {
+  background-color: #89d8ff;
+}
+
+input[type="checkbox"]:checked + .escolha-calculo {
   background-color: #63ccff;
 }
 
@@ -199,4 +226,24 @@ input[type="radio"]:checked + .opcao-tipo-dado {
   width: 50%;
   height: auto;
   margin: auto;
+}
+
+/* Mensagem de erro */
+#msg-erro,
+#msg-erro-calculos,
+#msg-erro-zero-division {
+  display: none;
+  margin-top: 4%;
+  width: 30%;
+  background-color: #c30d0d;
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#msg-erro-zero-division {
+  display: block;
+  margin-bottom: 5%;
 }

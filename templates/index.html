@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
     <title>Calculadora de estatistica</title>
   </head>
@@ -27,7 +31,6 @@
         </div>
       </div>
     </div>
-    <!-- <button id="open">Click</button>-->
     <div class="container-modal" id="container_modal_desordenado">
       <div class="modal">
         <h1>Modal Desordenado</h1>
@@ -41,7 +44,9 @@
           <div><button>Adicionar</button></div>
         </form>
         <div><h2>Dados inseridos</h2></div>
-        <div>{%for dado in dadosDesordenados%} {{dado}} {% endfor %}</div>
+        <div>
+          {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
+        </div>
         <button onclick="fecharModalDesordenado()">Fechar</button>
       </div>
     </div>
@@ -86,22 +91,104 @@
       </div>
     </div>
 
-    <!-- Calcular os dados recebidos -->
+    {% if erro %}
+    <div class="msg-erro" id="msg-erro-zero-division">
+      <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> {{ erro }}
+    </div>
+    {% endif %}
 
-    <form action="{{url_for('calculo_dos_dados')}}" method="POST">
+    <!-- Calcular os dados recebidos -->
+    <form
+      action="{{url_for('calculo_dos_dados')}}"
+      id="form-calculo-dos-dados"
+      method="POST"
+    >
       <!-- Tipo do dado -->
       <div class="container-opcoes-tipo-dado">
-        <input type="radio" name="tipo" id="km" value="km" required />
+        <input
+          type="radio"
+          name="tipo"
+          id="km"
+          value="km"
+          class="escolha-tipo-dado"
+        />
         <label for="km" class="opcao-tipo-dado">KM</label>
 
-        <input type="radio" name="tipo" id="°C" value="°C" />
+        <input
+          type="radio"
+          name="tipo"
+          id="°C"
+          value="°C"
+          class="escolha-tipo-dado"
+        />
         <label for="°C" class="opcao-tipo-dado">°C</label>
 
-        <input type="radio" name="tipo" id="outro" value="outro" />
-        <label for="outro" class="opcao-tipo-dado"
-          >Digite: <input type="text" name="tipo_custom" placeholder="Outro"
+        <input
+          type="radio"
+          name="tipo"
+          id="outro"
+          value="outro"
+          class="escolha-tipo-dado"
+        />
+        <label for="outro" class="opcao-tipo-dado">
+          Outro:
+          <input
+            type="text"
+            id="tipo_custom"
+            name="tipo_custom"
+            placeholder="Outro"
         /></label>
+
+        <div id="msg-erro">
+          <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Escolha
+          o tipo das variáveis inseridas!
+        </div>
       </div>
+
+      <!-- Botões opção dos cálculos -->
+      <div class="container-escolha-calculo">
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="todos"
+          value="todos"
+          class="escolha-checkbox"
+        />
+        <label for="todos" class="escolha-calculo">Todos</label>
+
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="media"
+          value="media"
+          class="escolha-checkbox"
+        />
+        <label for="media" class="escolha-calculo">Média</label>
+
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="moda"
+          value="moda"
+          class="escolha-checkbox"
+        />
+        <label for="moda" class="escolha-calculo">Moda</label>
+
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="mediana"
+          value="mediana"
+          class="escolha-checkbox"
+        />
+        <label for="mediana" class="escolha-calculo">Mediana</label>
+
+        <div id="msg-erro-calculos">
+          <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Escolha
+          ao menos um cálculo!
+        </div>
+      </div>
+
       <!-- Botões de calcular e limpar -->
       <div class="botoes-calcular-limpar">
         <input type="hidden" name="modal_aberto" value="{{ mostrar_modal }}" />
@@ -139,12 +226,16 @@
     </table>
 
     <h2>Tamanho da Amostra: {{ tamanhoDaAmostra }} dados</h2>
+    {% for escolha in escolhaCalculo %} {% if escolha == "media" %}
     <h3>Média</h3>
     <p>{{ media }} {{ tipo }}</p>
+    {% elif escolha == "moda" %}
     <h3>Moda</h3>
     <p>{{ moda }} {{ tipo }} {{ tipo_moda }}</p>
+    {% elif escolha == "mediana" %}
     <h3>Mediana</h3>
     <p>{{ mediana }} {{ tipo }}</p>
+    {% endif %} {% endfor %}
   </body>
   <script src="/static/script.js"></script>
   <script>
@@ -156,16 +247,86 @@
       const tipoModal = "{{ mostrar_modal }}";
       const botoes = document.querySelector(".botoes-calcular-limpar");
       const tipo_dado = document.querySelector(".container-opcoes-tipo-dado");
+      const tipoDadoMarcado = "{{ tipo }}";
+      const tiposRadio = document.querySelectorAll("input.escolha-tipo-dado");
+      const escolhaMarcada = "{{ escolhaCalculoJson }}";
+      const checkboxes = document.querySelectorAll(
+        "input.escolha-checkbox:not(#todos)"
+      );
 
       if (tipoModal === "desordenado") {
         modalDesordenado.classList.add("show");
         botoes.classList.add("descer");
         tipo_dado.classList.add("descer");
+        tiposRadio.forEach(
+          (radio) => (radio.checked = radio.value === tipoDadoMarcado)
+        );
+        checkboxes.forEach(
+          (checkbox) =>
+            (checkbox.checked = escolhaMarcada.includes(checkbox.value))
+        );
       } else if (tipoModal === "tabela") {
         modalTabela.classList.add("show");
         botoes.classList.add("descer");
         tipo_dado.classList.add("descer");
+        tiposRadio.forEach(
+          (radio) => (radio.checked = radio.value === tipoDadoMarcado)
+        );
+        checkboxes.forEach(
+          (checkbox) =>
+            (checkbox.checked = escolhaMarcada.includes(checkbox.value))
+        );
       }
+
+      const outroRadio = document.getElementById("outro");
+      const outroInput = document.getElementById("tipo_custom");
+
+      outroInput.addEventListener("focus", () => {
+        outroRadio.checked = true;
+      });
+
+      const todos = document.getElementById("todos");
+
+      todos.addEventListener("click", () => {
+        const todosMarcados = Array.from(checkboxes).every((cb) => cb.checked);
+        checkboxes.forEach((cb) => (cb.checked = !todosMarcados));
+      });
+
+      checkboxes.forEach((cb) => {
+        cb.addEventListener("click", () => {
+          todos.checked = Array.from(checkboxes).every((cb) => cb.checked);
+        });
+      });
+
+      const formCalculoDosDados = document.getElementById(
+        "form-calculo-dos-dados"
+      );
+      const msgErro = document.getElementById("msg-erro");
+      const msgErroCalculos = document.getElementById("msg-erro-calculos");
+
+      formCalculoDosDados.addEventListener("submit", function (event) {
+        const tipoSelecionado = document.querySelector(
+          'input[name="tipo"]:checked'
+        );
+
+        const tipoSelecionadoCalculo = document.querySelector(
+          'input[name="escolha-calculo"]:checked'
+        );
+
+        if (!tipoSelecionado) {
+          event.preventDefault();
+          msgErro.style.display = "block";
+        } else {
+          msgErro.style.display = "none";
+        }
+
+        if (!tipoSelecionadoCalculo) {
+          event.preventDefault();
+          msgErroCalculos.style.display = "block";
+        } else {
+          msgErroCalculos.style.display = "none";
+        }
+      });
     });
   </script>
 </html>
