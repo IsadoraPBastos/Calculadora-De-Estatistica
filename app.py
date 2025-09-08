@@ -167,7 +167,24 @@ def calculo_dos_dados():
     except ValueError:
         return render_template("index.html", erro="Você precisa inserir pelo menos um dado!", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, 
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[])
+
+
+def calcular_variancia(valores):
+    if len(valores) == 0:
+        return 0
+    media = calcular_media(valores)
+    return sum((x - media) ** 2 for x in valores) / len(valores)  # populacional
+
+def calcular_desvio_padrao(valores):
+    variancia = calcular_variancia(valores)
+    return math.sqrt(variancia)
+
+def calcular_coeficiente_variacao(valores):
+    media = calcular_media(valores)
+    desvio_padrao = calcular_desvio_padrao(valores)
+    return (desvio_padrao / media) * 100 if media != 0 else float("inf")
     
 
 if __name__ == '__main__':
+
     app.run(debug=True)
