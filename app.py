@@ -169,6 +169,11 @@ def calculo_dos_dados():
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[])
 
 
+def calcular_media(valores):
+    if len(valores) == 0:
+        return 0
+    return sum(valores) / len(valores)
+    
 def calcular_variancia(valores):
     if len(valores) == 0:
         return 0
@@ -188,3 +193,4 @@ def calcular_coeficiente_variacao(valores):
 if __name__ == '__main__':
 
     app.run(debug=True)
+
