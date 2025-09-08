@@ -12,21 +12,21 @@
     <title>Calculadora de estatistica</title>
   </head>
   <body>
-    <h2>Calculadora de Estatistica</h2>
+    <h1>Calculadora de Estatística</h1>
     <div class="container-cards">
       <!-- Parte de inserção de dados -->
       <div class="container-card-desordenados">
         <div onclick="abrirModalDesordenado()" class="card-desordenados">
-          <div class="front-desordenados">Dados Desordenados</div>
-          <div class="back-desordenados">Back</div>
+          <div class="front-desordenados"><b>Dados Desordenados 🔢</b></div>
+          <div class="back-desordenados"><h3>Dados Desordenados</h3><p>1 - 2 - 3 - 2 - 5 - 5 - 2 - 5 - 3 - 6 - 5 - 3 - 2 - 4 - 3</p></div>
         </div>
       </div>
       <div class="container-card-tabela">
         <div onclick="abrirModalTabela()" class="card-tabela">
-          <div class="front-tabela">Dados em Tabela</div>
+          <div class="front-tabela"><b>Dados em Tabela 📋</b></div>
           <div class="back-tabela">
-            <h2>Dados em tabela</h2>
-            Back
+            <h2><b>Dados em tabela</b></h2>
+            <p>Back</p>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@
     <div class="container-modal" id="container_modal_tabela">
       <div class="modal">
         <div class="botao-fechar-modal" onclick="fecharModalTabela()">
-          <i class="fa-solid fa-xmark fa-2xl"></i>
+          <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
         <h1>Modal em Tabela</h1>
         <form action="{{url_for('dados_em_tabela')}}" method="POST">
@@ -107,6 +107,8 @@
       id="form-calculo-dos-dados"
       method="POST"
     >
+
+    <h1>Qual a <u>medida</u> das amostras </h1>
       <!-- Tipo do dado -->
       <div class="container-opcoes-tipo-dado">
         <input
@@ -121,11 +123,38 @@
         <input
           type="radio"
           name="tipo"
+          id="m"
+          value="m"
+          class="escolha-tipo-dado"
+        />
+        <label for="m" class="opcao-tipo-dado">M</label>
+
+        <input
+          type="radio"
+          name="tipo"
           id="°C"
           value="°C"
           class="escolha-tipo-dado"
         />
         <label for="°C" class="opcao-tipo-dado">°C</label>
+
+        <input
+          type="radio"
+          name="tipo"
+          id="°F"
+          value="°F"
+          class="escolha-tipo-dado"
+        />
+        <label for="°F" class="opcao-tipo-dado">°F</label>
+
+        <input
+          type="radio"
+          name="tipo"
+          id="K"
+          value="K"
+          class="escolha-tipo-dado"
+        />
+        <label for="K" class="opcao-tipo-dado">K</label>
 
         <input
           type="radio"
@@ -149,6 +178,7 @@
         </div>
       </div>
 
+      <h1>Quais <u>cálculos</u> deseja realizar </h1>
       <!-- Botões opção dos cálculos -->
       <div class="container-escolha-calculo">
         <input
@@ -196,12 +226,13 @@
       <!-- Botões de calcular e limpar -->
       <div class="botoes-calcular-limpar">
         <input type="hidden" name="modal_aberto" value="{{ mostrar_modal }}" />
-        <button>Calcular</button>
-      </div>
+        <button class="btn_calcular"><b>Calcular</b></button>
+      
     </form>
+    <div>
     <form action="{{url_for('limpar_dados')}}" method="POST">
       <button class="btn_limpar">Limpar</button>
-    </form>
+    </form></div></div>
 
     <!-- Resultado dos cálculos -->
     <div>
@@ -230,20 +261,32 @@
     </table>
 
     <h2>Tamanho da Amostra: {{ tamanhoDaAmostra }} dados</h2>
+    <div class="container-calculos-resultados">
     {% for escolha in escolhaCalculo %} {% if escolha == "media" %}
-    <h3>Média</h3>
+    
+    <div class="calculos-resultados">
+      <h3>Média</h3>
     <p>{{ media }} {{ tipo }}</p>
+  </div>
+    
     {% elif escolha == "moda" %}
+    <div class="calculos-resultados">
     <h3>Moda</h3>
-    <p>{{ moda }} {{ tipo }} {{ tipo_moda }}</p>
+    <p>{{ moda }} {{ tipo }} </p>
+    <p>{{ tipo_moda }}</p>
+    </div>
+    
     {% elif escolha == "mediana" %}
+    <div class="calculos-resultados">
     <h3>Mediana</h3>
     <p>{{ mediana }} {{ tipo }}</p>
+    </div>
     {% endif %} {% endfor %}
+    </div>
   </body>
   <script src="/static/script.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
       const modalDesordenado = document.getElementById(
         "container_modal_desordenado"
       );
@@ -307,6 +350,7 @@
       );
       const msgErro = document.getElementById("msg-erro");
       const msgErroCalculos = document.getElementById("msg-erro-calculos");
+      const btnCalcular = document.querySelector(".btn_calcular");
 
       formCalculoDosDados.addEventListener("submit", function (event) {
         const tipoSelecionado = document.querySelector(
@@ -320,6 +364,7 @@
         if (!tipoSelecionado) {
           event.preventDefault();
           msgErro.style.display = "block";
+          btnCalcular.classList.add("chacoalhar");
         } else {
           msgErro.style.display = "none";
         }
@@ -327,6 +372,7 @@
         if (!tipoSelecionadoCalculo) {
           event.preventDefault();
           msgErroCalculos.style.display = "block";
+          btnCalcular.classList.add("chacoalhar");
         } else {
           msgErroCalculos.style.display = "none";
         }
