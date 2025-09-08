@@ -167,7 +167,11 @@ def calculo_dos_dados():
     except ValueError:
         return render_template("index.html", erro="Você precisa inserir pelo menos um dado!", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, 
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[])
+        
+#import math
 
+# Lista de dados recebida
+#FequenciaIndividualAbsolutaRecebida = [10, 20, 30, 40]
 
 def calcular_media(valores):
     if len(valores) == 0:
@@ -188,9 +192,23 @@ def calcular_coeficiente_variacao(valores):
     media = calcular_media(valores)
     desvio_padrao = calcular_desvio_padrao(valores)
     return (desvio_padrao / media) * 100 if media != 0 else float("inf")
+
+#def calcular_estatisticas(valores):
+   # return {
+     #   "Média": round(calcular_media(valores), 2),
+      #  "Variância": round(calcular_variancia(valores), 2),
+      #  "Desvio Padrão": round(calcular_desvio_padrao(valores), 2),
+      #  "Coeficiente de Variação (%)": round(calcular_coeficiente_variacao(valores), 2)
+   # }
+
+# Exemplo de uso
+#resultado = calcular_estatisticas(FequenciaIndividualAbsolutaRecebida)
+#for chave, valor in resultado.items():
+   # print(f"{chave}: {valor}")
     
 
 if __name__ == '__main__':
 
     app.run(debug=True)
+
 
