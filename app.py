@@ -19,6 +19,8 @@ def dados_desordenados():
     if request.method == "POST":
         if request.form.get("dado"):
             dadosDesordenados.append(float(request.form.get("dado")))
+            FequenciaIndividualAbsolutaRecebida.clear()
+            FequenciaIndividualAbsoluta.clear()
     return render_template("index.html", mostrar_modal="desordenado", dadosDesordenados=dadosDesordenados, 
     FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[],mostrarResultados=False)
@@ -35,6 +37,8 @@ def dados_em_tabela():
             frequencia = float(request.form.get('frequencia'))
 
             FequenciaIndividualAbsolutaRecebida[amostra] = frequencia
+
+            dadosDesordenados.clear()
             
     return render_template("index.html", mostrar_modal="tabela", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
@@ -49,9 +53,13 @@ def agrupamento_classes():
             frequencia = float(request.form.get('frequencia'))
 
             FequenciaIndividualAbsolutaRecebida[amostra] = frequencia
+
+            dadosDesordenados.clear()
+            FequenciaIndividualAbsolutaRecebida.clear()
+            FequenciaIndividualAbsoluta.clear()
             
-    return render_template("index.html", mostrar_modal="tabela", 
-    FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
+    return render_template("index.html", mostrar_modal="classes", 
+    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={},
     FrequenciaAcumulada={}, Posicoes={}, escolhaCalculo=[],mostrarResultados=False)
 
 
