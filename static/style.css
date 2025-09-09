@@ -18,7 +18,7 @@ table {
 td,
 th {
   border: solid 1px;
-  padding: 10px;
+  padding: 10px 20px;
   text-align: center;
 }
 
@@ -332,6 +332,11 @@ label[for="modaCzuber"].disabled{
   width: 50%;
   height: auto;
   margin: auto;
+}
+
+.divisao-modal{
+  display: flex;
+  justify-content: center;
 }
 
 /* Mensagem de erro */

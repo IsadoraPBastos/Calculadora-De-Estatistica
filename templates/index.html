@@ -59,7 +59,45 @@
       <div class="container-card-classes">
         <div onclick="abrirModalClasses()" class="card-classes">
           <div class="front-classes"><b>Agrupamento em Classes 🗂️</b></div>
-          <div class="back-classes"><h3 style="margin-top: 35px">Agrupamento em Classes</h3><p><u>Exemplo</u> </p><p style="margin: 0px 30px">nada</p></div>
+          <div class="back-classes"><h3 style="margin-top: 35px">Agrupamento em Classes</h3><p><u>Exemplo</u> </p>
+            <p style="margin: 0px 30px">
+              <table>
+              <thead>
+                <tr>
+                  <th>Li</th>
+                  <th>Ls</th>
+                  <th>FI</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>4</td>
+                  <td>7</td>
+                  <td>5</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>10</td>
+                  <td>12</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>13</td>
+                  <td>14</td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td>16</td>
+                  <td>13</td>
+                </tr>
+                <tr>
+                  <td>16</td>
+                  <td>19</td>
+                  <td>7</td>
+                </tr>
+              </tbody>
+            </table>
+          </p></div>
         </div>
       </div>
     </div>
@@ -70,22 +108,23 @@
         <div class="botao-fechar-modal" onclick="fecharModalDesordenado()">
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
-        <div>
+        
           <h1>Dados inseridos de forma Desordenada</h1>
+          <div class="divisao-modal"><div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
         <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
-          <div>
             <label for="dado"
               >Digite os dados:
               <input type="number" id="inputAdicionarDesordenados" name="dado" step="any" required autofocus
             /></label>
-          </div>
+          
           <div><button >Adicionar</button></div>
         </form>
       </div>
-        <div>
+        <div style="width: 50%;">
         <div><h2>Dados inseridos</h2></div>
-        <div>
+        <div style="width: 70%; margin: auto; border: 1px solid; padding: 20px;">
           {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
+        </div>
         </div>
       </div>
     </div>
