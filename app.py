@@ -1,5 +1,6 @@
 # pip install flask
 import json
+import math
 from flask import Flask, render_template, request
 from collections import Counter
 
@@ -10,7 +11,7 @@ dadosDesordenados = []
 @app.route('/')
 def index():
     return render_template('index.html', FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-                           FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[])
+                           FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[],mostrarResultados=False)
 
 #Recebe os dados quando a pessoa envia eles pela parte desordenada 
 @app.route("/dados_desordenados", methods=["POST", "GET"])
@@ -19,7 +20,8 @@ def dados_desordenados():
         if request.form.get("dado"):
             dadosDesordenados.append(float(request.form.get("dado")))
     return render_template("index.html", mostrar_modal="desordenado", dadosDesordenados=dadosDesordenados, 
-    FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[])
+    FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
+    FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[],mostrarResultados=False)
 
 
 FequenciaIndividualAbsolutaRecebida = {}
@@ -36,7 +38,22 @@ def dados_em_tabela():
             
     return render_template("index.html", mostrar_modal="tabela", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
-    FrequenciaAcumulada={}, Posicoes={}, escolhaCalculo=[])
+    FrequenciaAcumulada={}, Posicoes={}, escolhaCalculo=[],mostrarResultados=False)
+
+@app.route("/agrupamento_classes", methods=["POST", "GET"])
+def agrupamento_classes():
+    #Organiza os dados na tabela de FI
+    if request.method == "POST":
+        if request.form.get("li" and "ls" and "fi"):
+            amostra = float(request.form.get('amostra'))
+            frequencia = float(request.form.get('frequencia'))
+
+            FequenciaIndividualAbsolutaRecebida[amostra] = frequencia
+            
+    return render_template("index.html", mostrar_modal="tabela", 
+    FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
+    FrequenciaAcumulada={}, Posicoes={}, escolhaCalculo=[],mostrarResultados=False)
+
 
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
@@ -48,7 +65,7 @@ def limpar_dados():
     global FequenciaIndividualAbsolutaRecebida
     FequenciaIndividualAbsolutaRecebida = {}
     return render_template("index.html", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-    FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[])
+    FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[],mostrarResultados=False)
 
 FequenciaIndividualAbsoluta = {}
 
@@ -64,7 +81,7 @@ def calculo_dos_dados():
         tipo = request.form.get("tipo_custom")
             
     escolhaCalculo = request.form.getlist("escolha-calculo")
-    escolhaCalculoJson = json.dumps(escolhaCalculo)
+    escolhaCalculoJson = json.dumps(escolhaCalculo).replace("'", '"')
         
     modal_aberto = request.form.get("modal_aberto", "")
     try:
@@ -77,17 +94,13 @@ def calculo_dos_dados():
             FequenciaIndividualAbsoluta = dict(sorted(FequenciaIndividualAbsolutaRecebida.items()))
             
         #Cálculo do FI e organização da tabela se os dados inseridos forem os desordenados
-        else :
+        else:
             for dado in sorted(dadosDesordenados):
                 if dado in FequenciaIndividualAbsoluta:
                     FequenciaIndividualAbsoluta[dado] += 1
                 else:
                     FequenciaIndividualAbsoluta[dado] = 1
                     
-                    
-                    
-        
-                
         #Tamanho da amostra
         tamanhoDaAmostra = f"{sum(FequenciaIndividualAbsoluta.values()):g}"
         
@@ -155,15 +168,50 @@ def calculo_dos_dados():
                 mediana = (dados_mediana[n // 2-1] + dados_mediana[n // 2]) / 2
             
             return mediana, dados_mediana
-        
+
         mediana_calculada, dados_para_template = calculo_mediana(dadosDesordenados, FequenciaIndividualAbsoluta)
         #provavelmente vai ter que criar algum tipo de salvamento pras listas originais, funções como .sort e .extend modificam as listas originais
         #a váriavel de frequência individual absoluta está escrita como 'Fequencia'
+
+
+        if(len(dadosDesordenados) != 0):
+            def calcular_variancia(valores):
+                if len(valores) == 0:
+                    return 0
+                return sum((x - media) ** 2 for x in valores) / len(valores)  # populacional
+            variancia = calcular_variancia(dadosDesordenados)
+
+            def calcular_desvio_padrao(valores):
+                variancia = calcular_variancia(valores)
+                return math.sqrt(variancia)
+            desvioPadrao = round(calcular_desvio_padrao(dadosDesordenados), 2)
+
+            def calcular_coeficiente_variacao(valores):
+                desvio_padrao = calcular_desvio_padrao(valores)
+                return (desvio_padrao / media) * 100 if media != 0 else float("inf")
+            coeficienteVariacao = round(calcular_coeficiente_variacao(dadosDesordenados), 2)
+
+        elif(len(FequenciaIndividualAbsoluta) != 0):
+            def calcular_variancia(valores):
+                if len(valores) == 0:
+                    return 0
+                return sum((x - media) ** 2 for x in valores) / len(valores)  # populacional
+            variancia = round(calcular_variancia(FequenciaIndividualAbsoluta), 2)
+
+            def calcular_desvio_padrao(valores):
+                variancia = calcular_variancia(valores)
+                return math.sqrt(variancia)
+            desvioPadrao = round(calcular_desvio_padrao(FequenciaIndividualAbsoluta), 2)
+
+            def calcular_coeficiente_variacao(valores):
+                desvio_padrao = calcular_desvio_padrao(valores)
+                return (desvio_padrao / media) * 100 if media != 0 else float("inf")
+            coeficienteVariacao = round(calcular_coeficiente_variacao(FequenciaIndividualAbsoluta), 2)
             
-        return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, 
-        escolhaCalculo=escolhaCalculo, dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
-        tamanhoDaAmostra=tamanhoDaAmostra, FrequenciaAcumulada=FrequenciaAcumulada, Posicoes=Posicoes, 
-        FequenciaIndividualAbsolutaRecebida={}, mostrar_modal=modal_aberto, tipo=tipo, escolhaCalculoJson=escolhaCalculoJson)
+        return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, variancia=variancia, desvioPadrao=desvioPadrao, 
+        coeficienteVariacao=coeficienteVariacao,escolhaCalculo=escolhaCalculo, dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
+        tamanhoDaAmostra=tamanhoDaAmostra, FrequenciaAcumulada=FrequenciaAcumulada, Posicoes=Posicoes, FequenciaIndividualAbsolutaRecebida={}, 
+        mostrar_modal=modal_aberto, tipo=tipo, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True)
     except ValueError:
         return render_template("index.html", erro="Você precisa inserir pelo menos um dado!", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, 
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, escolhaCalculo=[])

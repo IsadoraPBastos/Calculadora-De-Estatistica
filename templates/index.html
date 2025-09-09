@@ -14,51 +14,90 @@
   <body>
     <h1>Calculadora de Estatística</h1>
     <div class="container-cards">
-      <!-- Parte de inserção de dados -->
+      <!-- Parte dos cards-->
       <div class="container-card-desordenados">
         <div onclick="abrirModalDesordenado()" class="card-desordenados">
           <div class="front-desordenados"><b>Dados Desordenados 🔢</b></div>
-          <div class="back-desordenados"><h3>Dados Desordenados</h3><p>1 - 2 - 3 - 2 - 5 - 5 - 2 - 5 - 3 - 6 - 5 - 3 - 2 - 4 - 3</p></div>
+          <div class="back-desordenados"><h3 style="margin-top: 35px">Dados Desordenados</h3><p><u>Exemplo</u> </p><p style="margin: 0px 30px">1 - 2 - 3 - 2 - 5 - 5 - 2 - 5 - 3 - 6 - 5 - 3 - 2 - 4 - 3</p></div>
         </div>
       </div>
       <div class="container-card-tabela">
         <div onclick="abrirModalTabela()" class="card-tabela">
           <div class="front-tabela"><b>Dados em Tabela 📋</b></div>
           <div class="back-tabela">
-            <h2><b>Dados em tabela</b></h2>
-            <p>Back</p>
+            <h3><b>Dados em tabela</b></h3>
+            <p><u>Exemplo</u></p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Amostra</th>
+                  <th>Freq. Ind.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>5</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>8</td>
+                </tr>
+                <tr>
+                  <td>1,8</td>
+                  <td>1</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+      <div class="container-card-classes">
+        <div onclick="abrirModalClasses()" class="card-classes">
+          <div class="front-classes"><b>Agrupamento em Classes 🗂️</b></div>
+          <div class="back-classes"><h3 style="margin-top: 35px">Agrupamento em Classes</h3><p><u>Exemplo</u> </p><p style="margin: 0px 30px">nada</p></div>
+        </div>
+      </div>
     </div>
+
+    <!-- Parte de inserção de dados - Desordenado -->
     <div class="container-modal" id="container_modal_desordenado">
       <div class="modal">
         <div class="botao-fechar-modal" onclick="fecharModalDesordenado()">
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
-        <h1>Modal Desordenado</h1>
-        <form action="{{url_for('dados_desordenados')}}" method="POST">
+        <div>
+          <h1>Dados inseridos de forma Desordenada</h1>
+        <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
           <div>
             <label for="dado"
               >Digite os dados:
-              <input type="number" name="dado" step="any" required
+              <input type="number" id="inputAdicionarDesordenados" name="dado" step="any" required autofocus
             /></label>
           </div>
-          <div><button>Adicionar</button></div>
+          <div><button >Adicionar</button></div>
         </form>
+      </div>
+        <div>
         <div><h2>Dados inseridos</h2></div>
         <div>
           {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
         </div>
       </div>
     </div>
+    </div>
 
+    <!-- Parte de inserção de dados - Tabela -->
     <div class="container-modal" id="container_modal_tabela">
       <div class="modal">
         <div class="botao-fechar-modal" onclick="fecharModalTabela()">
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
-        <h1>Modal em Tabela</h1>
+        <h1>Dados inseridos em Tabela</h1>
         <form action="{{url_for('dados_em_tabela')}}" method="POST">
           <div>
             <label for="amostra"
@@ -95,6 +134,45 @@
       </div>
     </div>
 
+    <!-- Parte de inserção de dados - Agrupamento por Classes -->
+    <div class="container-modal" id="container_modal_classes">
+      <div class="modal">
+        <div class="botao-fechar-modal" onclick="fecharModalClasses()">
+          <i class="fa-solid fa-circle-xmark fa-2xl"></i>
+        </div>
+        <div>
+          <h1>Agrupamento em Classes</h1>
+        <form action="{{url_for('agrupamento_classes')}}" method="POST" id="formDadosDesordenados">
+          <div>
+            <label for="li"
+              >Li:
+              <input type="number" name="li" step="any" required
+            /></label>
+          </div>
+          <div>
+            <label for="ls"
+              >Ls:
+              <input type="number" name="ls" step="any" required
+            /></label>
+          </div>
+          <div>
+            <label for="fi"
+              >FI:
+              <input type="number" name="fi" step="any" required
+            /></label>
+          </div>
+          <div><button>Adicionar</button></div>
+        </form>
+      </div>
+        <div>
+        <div><h2>Dados inseridos</h2></div>
+        <div>
+          {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
+        </div>
+      </div>
+    </div>
+    </div>
+
     {% if erro %}
     <div class="msg-erro" id="msg-erro-zero-division">
       <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> {{ erro }}
@@ -108,9 +186,10 @@
       method="POST"
     >
 
-    <h1>Qual a <u>medida</u> das amostras </h1>
+    
       <!-- Tipo do dado -->
       <div class="container-opcoes-tipo-dado">
+        <h1 class="titulo-medida-amostras">Qual a <u>medida</u> das amostras </h1>
         <input
           type="radio"
           name="tipo"
@@ -128,6 +207,15 @@
           class="escolha-tipo-dado"
         />
         <label for="m" class="opcao-tipo-dado">M</label>
+
+        <input
+          type="radio"
+          name="tipo"
+          id="R$"
+          value="R$"
+          class="escolha-tipo-dado"
+        />
+        <label for="R$" class="opcao-tipo-dado">R$</label>
 
         <input
           type="radio"
@@ -164,12 +252,12 @@
           class="escolha-tipo-dado"
         />
         <label for="outro" class="opcao-tipo-dado">
-          Outro:
           <input
             type="text"
             id="tipo_custom"
             name="tipo_custom"
-            placeholder="Outro"
+            placeholder="Digite"
+            style="width: -webkit-fill-available; padding: 5px;"
         /></label>
 
         <div id="msg-erro">
@@ -217,6 +305,42 @@
         />
         <label for="mediana" class="escolha-calculo">Mediana</label>
 
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="variancia"
+          value="variancia"
+          class="escolha-checkbox"
+        />
+        <label for="variancia" class="escolha-calculo">Variância</label>
+
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="desvioPadrao"
+          value="desvioPadrao"
+          class="escolha-checkbox"
+        />
+        <label for="desvioPadrao" class="escolha-calculo">Desvio Padrão</label>
+
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="coeficienteVariacao"
+          value="coeficienteVariacao"
+          class="escolha-checkbox"
+        />
+        <label for="coeficienteVariacao" class="escolha-calculo">Coeficiente de Variação</label>
+
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="modaCzuber"
+          value="modaCzuber"
+          class="escolha-checkbox"
+        />
+        <label for="modaCzuber" class="escolha-calculo" id="modaCzuber" disabled>Moda de Czuber</label>
+
         <div id="msg-erro-calculos">
           <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Escolha
           ao menos um cálculo!
@@ -235,6 +359,7 @@
     </form></div></div>
 
     <!-- Resultado dos cálculos -->
+     <div class="container-estatisticas-dos-dados">
     <div>
       <h1><u>Estatísticas desses Dados</u></h1>
     </div>
@@ -262,7 +387,49 @@
 
     <h2>Tamanho da Amostra: {{ tamanhoDaAmostra }} dados</h2>
     <div class="container-calculos-resultados">
-    {% for escolha in escolhaCalculo %} {% if escolha == "media" %}
+    {% for escolha in escolhaCalculo %} 
+    {% if tipo == "R$"
+    %}
+    {% if escolha == "media" %}
+      <div class="calculos-resultados">
+      <h3>Média</h3>
+    <p>{{ tipo }} {{ media }} </p>
+  </div>
+    
+    {% elif escolha == "moda" %}
+    <div class="calculos-resultados">
+    <h3>Moda</h3>
+    <p>{{ tipo }} {{ moda }} </p>
+    <p>{{ tipo_moda }}</p>
+    </div>
+    
+    {% elif escolha == "mediana" %}
+    <div class="calculos-resultados">
+    <h3>Mediana</h3>
+    <p>{{ tipo }} {{ mediana }} </p>
+    </div>
+
+    {% elif escolha == "variancia" %}
+    <div class="calculos-resultados">
+    <h3>Variância</h3>
+    <p>{{ variancia }} {{ tipo }} </p>
+    </div>
+
+    {% elif escolha == "desvioPadrao" %}
+    <div class="calculos-resultados">
+    <h3>Desvio Padrão</h3>
+    <p>{{ desvioPadrao }} {{ tipo }} </p>
+    </div>
+
+    {% elif escolha == "coeficienteVariacao" %}
+    <div class="calculos-resultados">
+    <h3>Coeficiente de Variação</h3>
+    <p>{{ coeficienteVariacao }}% </p>
+    </div>
+{% endif %}
+    {% else %}
+    
+   {% if escolha == "media" %}
     
     <div class="calculos-resultados">
       <h3>Média</h3>
@@ -281,8 +448,27 @@
     <h3>Mediana</h3>
     <p>{{ mediana }} {{ tipo }}</p>
     </div>
-    {% endif %} {% endfor %}
+    
+    {% elif escolha == "variancia" %}
+    <div class="calculos-resultados">
+    <h3>Variância</h3>
+    <p>{{ variancia }} {{ tipo }} </p>
     </div>
+
+    {% elif escolha == "desvioPadrao" %}
+    <div class="calculos-resultados">
+    <h3>Desvio Padrão</h3>
+    <p>{{ desvioPadrao }} {{ tipo }} </p>
+    </div>
+
+    {% elif escolha == "coeficienteVariacao" %}
+    <div class="calculos-resultados">
+    <h3>Coeficiente de Variação</h3>
+    <p>{{ coeficienteVariacao }}% </p>
+    </div>
+    {% endif %}
+    {% endif %} {% endfor %}
+    </div></div>
   </body>
   <script src="/static/script.js"></script>
   <script>
@@ -293,6 +479,8 @@
       const modalTabela = document.getElementById("container_modal_tabela");
       const tipoModal = "{{ mostrar_modal }}";
       const botoes = document.querySelector(".botoes-calcular-limpar");
+      const modaCzuberBotao = document.getElementById("modaCzuber"); 
+      const modaCzuberDesign = document.querySelector('label[for="modaCzuber"]'); 
       const tipo_dado = document.querySelector(".container-opcoes-tipo-dado");
       const tipoDadoMarcado = "{{ tipo }}";
       const tiposRadio = document.querySelectorAll("input.escolha-tipo-dado");
@@ -300,15 +488,19 @@
       const checkboxes = document.querySelectorAll(
         "input.escolha-checkbox:not(#todos)"
       );
+      const checkboxesSemCzuber = document.querySelectorAll("input.escolha-checkbox:not(#todos):not(#modaCzuber)");
 
       if (tipoModal === "desordenado") {
+        
         modalDesordenado.classList.add("show");
         botoes.classList.add("descer");
         tipo_dado.classList.add("descer");
+        modaCzuberBotao.disabled = true;
+        modaCzuberDesign.classList.add("disabled");
         tiposRadio.forEach(
           (radio) => (radio.checked = radio.value === tipoDadoMarcado)
         );
-        checkboxes.forEach(
+        checkboxesSemCzuber.forEach(
           (checkbox) =>
             (checkbox.checked = escolhaMarcada.includes(checkbox.value))
         );
@@ -316,13 +508,26 @@
         modalTabela.classList.add("show");
         botoes.classList.add("descer");
         tipo_dado.classList.add("descer");
+        modaCzuberBotao.disabled = true;
+        modaCzuberDesign.classList.add("disabled");
         tiposRadio.forEach(
           (radio) => (radio.checked = radio.value === tipoDadoMarcado)
         );
-        checkboxes.forEach(
+        checkboxesSemCzuber.forEach(
           (checkbox) =>
             (checkbox.checked = escolhaMarcada.includes(checkbox.value))
         );
+      }
+      
+      const formDadosDesordenados = document.getElementById("formDadosDesordenados");
+
+      const mostrarResultados = "{{ mostrarResultados }}";
+      const containerResultados = document.querySelector(".container-estatisticas-dos-dados");
+      if(mostrarResultados == "True"){
+        containerResultados.style.display = "block";
+        containerResultados.scrollIntoView({behavior:"smooth"});
+      } else {
+        containerResultados.style.display = "none";
       }
 
       const outroRadio = document.getElementById("outro");
@@ -348,6 +553,8 @@
       const formCalculoDosDados = document.getElementById(
         "form-calculo-dos-dados"
       );
+
+
       const msgErro = document.getElementById("msg-erro");
       const msgErroCalculos = document.getElementById("msg-erro-calculos");
       const btnCalcular = document.querySelector(".btn_calcular");

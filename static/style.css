@@ -83,18 +83,23 @@ button {
 }
 
 .container-opcoes-tipo-dado.descer {
-  margin-top: 3%;
+  margin-top: 10%;
   transition: margin-top 0.3s ease;
+}
+
+.titulo-medida-amostras{
+  margin-bottom: 3%;
 }
 
 .opcao-tipo-dado {
   background-color: white;
   padding: 20px;
-  width: 8%;
+  width: 4%;
   border-radius: 20px;
   cursor: pointer;
   transition: 0.5s;
   margin-right: 2%;
+  display: inline-block;
 }
 
 .opcao-tipo-dado:hover {
@@ -119,11 +124,12 @@ input[type="radio"]:checked + .opcao-tipo-dado {
 .escolha-calculo {
   background-color: white;
   padding: 20px;
-  width: 8%;
+  width: 5%;
   border-radius: 20px;
   cursor: pointer;
   transition: 0.5s;
   margin-right: 2%;
+  display: inline-block;
 }
 
 .escolha-calculo:hover {
@@ -132,6 +138,12 @@ input[type="radio"]:checked + .opcao-tipo-dado {
 
 input[type="checkbox"]:checked + .escolha-calculo {
   background-color: #63ccff;
+}
+
+label[for="modaCzuber"].disabled{
+  background-color: gray;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Cards */
@@ -164,8 +176,7 @@ input[type="checkbox"]:checked + .escolha-calculo {
   transform: rotateY(180deg);
 }
 
-.front-desordenados,
-.back-desordenados {
+.front-desordenados {
   height: 100%;
   width: 100%;
   border-radius: 2rem;
@@ -176,6 +187,15 @@ input[type="checkbox"]:checked + .escolha-calculo {
   justify-content: center;
   align-items: center;
   display: flex;
+}
+
+.back-desordenados{
+  height: 100%;
+  width: 100%;
+  border-radius: 2rem;
+  box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
+  position: absolute;
+  backface-visibility: hidden;
 }
 
 .front-desordenados {
@@ -207,8 +227,8 @@ input[type="checkbox"]:checked + .escolha-calculo {
   transform: rotateY(180deg);
 }
 
-.front-tabela,
-.back-tabela {
+.front-tabela {
+  border: #5fbb5f;
   height: 100%;
   width: 100%;
   border-radius: 2rem;
@@ -221,11 +241,58 @@ input[type="checkbox"]:checked + .escolha-calculo {
   display: flex;
 }
 
-.front-tabela {
-  border: #5fbb5f;
+.back-tabela {
+  height: 100%;
+  width: 100%;
+  border-radius: 2rem;
+  box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
+  position: absolute;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
 }
 
-.back-tabela {
+/* Card Agrupamento em Classes*/
+.card-classes {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  transition: transform 1500ms;
+  transform-style: preserve-3d;
+}
+
+.container-card-classes {
+  height: 400px;
+  width: 250px;
+  perspective: 800px;
+}
+
+.container-card-classes:hover > .card-classes {
+  cursor: pointer;
+  transform: rotateY(180deg);
+}
+
+.front-classes {
+  border: #5fbb5f;
+  height: 100%;
+  width: 100%;
+  border-radius: 2rem;
+  box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
+  position: absolute;
+  backface-visibility: hidden;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.back-classes {
+  height: 100%;
+  width: 100%;
+  border-radius: 2rem;
+  box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
+  position: absolute;
+  backface-visibility: hidden;
   transform: rotateY(180deg);
 }
 
@@ -235,7 +302,7 @@ input[type="checkbox"]:checked + .escolha-calculo {
   position: absolute;
   top: 2%;
   left: 5%;
-  height: 80%;
+  height: 70%;
   align-items: flex-start;
   width: 90%;
   opacity: 0;
@@ -288,6 +355,10 @@ input[type="checkbox"]:checked + .escolha-calculo {
 }
 
 /* Parte dos resultados */
+.container-estatisticas-dos-dados{
+  display: none;
+}
+
 .container-calculos-resultados{
   display: flex;
   justify-content: center;
