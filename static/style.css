@@ -34,6 +34,13 @@ button {
   cursor: pointer;
 }
 
+input[type="text"],
+input[type="number"] {
+    border-radius: 5px;
+    border: 1px solid;
+    height: 20px;
+ }
+
 .btn_calcular{
   padding: 10px;
   font-size: 15px;
@@ -83,7 +90,7 @@ button {
 }
 
 .container-opcoes-tipo-dado.descer {
-  margin-top: 10%;
+  margin-top: 5%;
   transition: margin-top 0.3s ease;
 }
 
@@ -302,7 +309,7 @@ label[for="modaCzuber"].disabled{
   position: absolute;
   top: 2%;
   left: 5%;
-  height: 70%;
+  height: 80%;
   align-items: flex-start;
   width: 90%;
   opacity: 0;
@@ -368,6 +375,8 @@ label[for="modaCzuber"].disabled{
   display: flex;
   justify-content: center;
   gap: 3rem;
+  width: 80%;
+  flex-wrap: wrap;
 }
 
 .calculos-resultados {

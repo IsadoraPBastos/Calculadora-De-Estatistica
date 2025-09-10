@@ -112,10 +112,12 @@
           <h1>Dados inseridos de forma Desordenada</h1>
           <div class="divisao-modal"><div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
         <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
+          <div style="margin: 10px;">
             <label for="dado"
-              >Digite os dados:
-              <input type="number" id="inputAdicionarDesordenados" name="dado" step="any" required autofocus
+              >Amostra:
+              <input type="number" id="inputAdicionarDesordenados" name="dado" step="any" placeholder="Amostra" required autofocus
             /></label>
+            </div>
           
           <div><button >Adicionar</button></div>
         </form>
@@ -137,27 +139,30 @@
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
         <h1>Dados inseridos em Tabela</h1>
+        <div class="divisao-modal">
+        <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
         <form action="{{url_for('dados_em_tabela')}}" method="POST">
-          <div>
+          <div style="margin: 10px;">
             <label for="amostra"
-              >Digite a amostra:
-              <input type="number" name="amostra" step="any" required
+              >Amostra:
+              <input type="number" name="amostra" step="any" placeholder="Amostra" required
             /></label>
           </div>
-          <div>
+          <div style="margin: 10px;">
             <label for="frequencia"
-              >Digite a frequência:
-              <input type="number" name="frequencia" step="any" required
+              >FI:
+              <input type="number" name="frequencia" step="any" placeholder="Frequência" required
             /></label>
           </div>
-          <div><button>Adicionar</button></div>
+          <div><button>Adicionar</button></div></div>
         </form>
+        <div style="width: 50%;">
         <div><h2>Dados inseridos</h2></div>
-        <table>
+        <table style="width: 60%;">
           <thead>
             <tr>
               <th>Amostra</th>
-              <th>Fequência Individual Absoluta (FI)</th>
+              <th>Frequência Individual Absoluta (FI)</th>
             </tr>
           </thead>
           <tbody>
@@ -170,6 +175,8 @@
             {% endfor %}
           </tbody>
         </table>
+        </div>
+      </div>
       </div>
     </div>
 
@@ -179,37 +186,56 @@
         <div class="botao-fechar-modal" onclick="fecharModalClasses()">
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
-        <div>
-          <h1>Agrupamento em Classes</h1>
-        <form action="{{url_for('agrupamento_classes')}}" method="POST" id="formDadosDesordenados">
-          <div>
-            <label for="li"
-              >Li:
-              <input type="number" name="li" step="any" required
-            /></label>
+        <h1>Agrupamento em Classes</h1>
+        <div class="divisao-modal">
+          <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
+            <form action="{{url_for('agrupamento_classes')}}" method="POST">
+              <div style="margin: 10px;">
+                <label for="li" 
+                  >Li:
+                  <input type="number" name="li" step="any" placeholder="Limite Inferior" required
+                /></label>
+              </div>
+              <div style="margin: 10px;">
+                <label for="amplitude"
+                  >h:
+                  <input type="number" name="amplitude" step="any" placeholder="Amplitude de classe" required
+                /></label>
+              </div>
+              <div style="margin: 10px;">
+                <label for="qtd" 
+                  >Classes:
+                  <input type="number" name="qtd" step="any" placeholder="Quantidade de classes" required
+                /></label>
+              </div>
+              <div><button>Adicionar</button></div>
+            </form>
           </div>
-          <div>
-            <label for="ls"
-              >Ls:
-              <input type="number" name="ls" step="any" required
-            /></label>
+          <div style="width: 50%;">
+            <div><h2>Classes inseridas</h2></div>
+            <table style="width: 90%;">
+              <thead>
+                <tr>
+                  <th>Li</th>
+                  <th>Ls</th>
+                  <th>FI</th>
+                  <th>PMI (Ponto Médio)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for classe in dadosClasses %}
+                <tr>
+                  <td>{{ classe.li }}</td>
+                  <td>{{ classe.ls }}</td>
+                  <td>{{ classe.fi }}</td>
+                  <td>{{ "%.2f"|format(classe.xi) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
-          <div>
-            <label for="fi"
-              >FI:
-              <input type="number" name="fi" step="any" required
-            /></label>
-          </div>
-          <div><button>Adicionar</button></div>
-        </form>
-      </div>
-        <div>
-        <div><h2>Dados inseridos</h2></div>
-        <div>
-          {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
         </div>
       </div>
-    </div>
     </div>
 
     {% if erro %}
@@ -229,6 +255,15 @@
       <!-- Tipo do dado -->
       <div class="container-opcoes-tipo-dado">
         <h1 class="titulo-medida-amostras">Qual a <u>medida</u> das amostras </h1>
+        <input
+          type="radio"
+          name="tipo"
+          id="semMedida"
+          value="semMedida"
+          class="escolha-tipo-dado"
+        />
+        <label for="semMedida" style="width: auto;" class="opcao-tipo-dado">Sem medida</label>
+        
         <input
           type="radio"
           name="tipo"
@@ -290,12 +325,12 @@
           value="outro"
           class="escolha-tipo-dado"
         />
-        <label for="outro" class="opcao-tipo-dado">
+        <label for="outro" class="opcao-tipo-dado" style="width: auto; padding: 15px;">
           <input
             type="text"
             id="tipo_custom"
             name="tipo_custom"
-            placeholder="Digite"
+            placeholder="Digite a medida"
             style="width: -webkit-fill-available; padding: 5px;"
         /></label>
 
@@ -378,7 +413,7 @@
           value="modaCzuber"
           class="escolha-checkbox"
         />
-        <label for="modaCzuber" class="escolha-calculo" id="modaCzuber" disabled>Moda de Czuber</label>
+        <label for="modaCzuber" class="escolha-calculo" id="modaCzuberLabel">Moda de Czuber</label>
 
         <div id="msg-erro-calculos">
           <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Escolha
@@ -402,12 +437,16 @@
     <div>
       <h1><u>Estatísticas desses Dados</u></h1>
     </div>
-    <h2>Tabela das Frequências</h2>
+    <h2>{% if dados_classes %}Tabela de Classes{% else %}Tabela das Frequências{% endif %}</h2>
     <table>
       <thead>
         <tr>
+          {% if dados_classes %}
+          <th>Classes</th>
+          {% else %}
           <th>Amostra</th>
-          <th>Fequência Individual Absoluta (FI)</th>
+          {% endif %}
+          <th>Frequência Individual Absoluta (FI)</th>
           <th>Frequência Acumulada Absoluta (FAC)</th>
           <th>Posições</th>
         </tr>
@@ -425,89 +464,145 @@
     </table>
 
     <h2>Tamanho da Amostra: {{ tamanhoDaAmostra }} dados</h2>
+    <div style="width: 100%; justify-content: center; display: flex;">
     <div class="container-calculos-resultados">
     {% for escolha in escolhaCalculo %} 
-    {% if tipo == "R$"
-    %}
-    {% if escolha == "media" %}
-      <div class="calculos-resultados">
-      <h3>Média</h3>
-    <p>{{ tipo }} {{ media }} </p>
-  </div>
-    
-    {% elif escolha == "moda" %}
-    <div class="calculos-resultados">
-    <h3>Moda</h3>
-    <p>{{ tipo }} {{ moda }} </p>
-    <p>{{ tipo_moda }}</p>
-    </div>
-    
-    {% elif escolha == "mediana" %}
-    <div class="calculos-resultados">
-    <h3>Mediana</h3>
-    <p>{{ tipo }} {{ mediana }} </p>
-    </div>
+    {% if tipo == "R$" %}
+      {% if escolha == "media" %}
+        <div class="calculos-resultados">
+        <h3>Média</h3>
+        <p>{{ tipo }} {{ media }} </p>
+        </div>
+      
+      {% elif escolha == "moda" %}
+        <div class="calculos-resultados">
+        <h3>{% if dados_classes %}Moda Bruta{% else %}Moda{% endif %}</h3>
+        <p>{{ moda }} </p>
+        <p>{{ tipo_moda }}</p>
+        </div>
+      
+      {% elif escolha == "modaCzuber" %}
+        <div class="calculos-resultados">
+        <h3>Moda de Czuber</h3>
+        <p>{{ tipo }} {{ modaCzuber }} </p>
+        </div>
+      
+      {% elif escolha == "mediana" %}
+        <div class="calculos-resultados">
+        <h3>Mediana</h3>
+        <p>{{ tipo }} {{ mediana }} </p>
+        </div>
 
-    {% elif escolha == "variancia" %}
-    <div class="calculos-resultados">
-    <h3>Variância</h3>
-    <p>{{ variancia }} {{ tipo }} </p>
-    </div>
+      {% elif escolha == "variancia" %}
+        <div class="calculos-resultados">
+        <h3>Variância</h3>
+        <p>{{ variancia }} {{ tipo }}² </p>
+        </div>
 
-    {% elif escolha == "desvioPadrao" %}
-    <div class="calculos-resultados">
-    <h3>Desvio Padrão</h3>
-    <p>{{ desvioPadrao }} {{ tipo }} </p>
-    </div>
+      {% elif escolha == "desvioPadrao" %}
+        <div class="calculos-resultados">
+        <h3>Desvio Padrão</h3>
+        <p>{{ desvioPadrao }} </p>
+        </div>
 
-    {% elif escolha == "coeficienteVariacao" %}
-    <div class="calculos-resultados">
-    <h3>Coeficiente de Variação</h3>
-    <p>{{ coeficienteVariacao }}% </p>
-    </div>
-{% endif %}
+      {% elif escolha == "coeficienteVariacao" %}
+        <div class="calculos-resultados">
+        <h3>Coeficiente de Variação</h3>
+        <p>{{ coeficienteVariacao }}% </p>
+        </div>
+      {% endif %}
+    {% elif tipo == "semMedida" %}
+        {% if escolha == "media" %}
+        <div class="calculos-resultados">
+        <h3>Média</h3>
+        <p> {{ media }} </p>
+        </div>
+      
+      {% elif escolha == "moda" %}
+        <div class="calculos-resultados">
+        <h3>{% if dados_classes %}Moda Bruta{% else %}Moda{% endif %}</h3>
+        <p>{{ moda }} </p>
+        <p>{{ tipo_moda }}</p>
+        </div>
+      
+      {% elif escolha == "modaCzuber" %}
+        <div class="calculos-resultados">
+        <h3>Moda de Czuber</h3>
+        <p> {{ modaCzuber }} </p>
+        </div>
+      
+      {% elif escolha == "mediana" %}
+        <div class="calculos-resultados">
+        <h3>Mediana</h3>
+        <p>{{ mediana }} </p>
+        </div>
+
+      {% elif escolha == "variancia" %}
+        <div class="calculos-resultados">
+        <h3>Variância</h3>
+        <p>{{ variancia }} </p>
+        </div>
+
+      {% elif escolha == "desvioPadrao" %}
+        <div class="calculos-resultados">
+        <h3>Desvio Padrão</h3>
+        <p>{{ desvioPadrao }} </p>
+        </div>
+
+      {% elif escolha == "coeficienteVariacao" %}
+        <div class="calculos-resultados">
+        <h3>Coeficiente de Variação</h3>
+        <p>{{ coeficienteVariacao }}% </p>
+        </div>
+      {% endif %}
+
     {% else %}
-    
-   {% if escolha == "media" %}
-    
-    <div class="calculos-resultados">
-      <h3>Média</h3>
-    <p>{{ media }} {{ tipo }}</p>
-  </div>
-    
-    {% elif escolha == "moda" %}
-    <div class="calculos-resultados">
-    <h3>Moda</h3>
-    <p>{{ moda }} {{ tipo }} </p>
-    <p>{{ tipo_moda }}</p>
-    </div>
-    
-    {% elif escolha == "mediana" %}
-    <div class="calculos-resultados">
-    <h3>Mediana</h3>
-    <p>{{ mediana }} {{ tipo }}</p>
-    </div>
-    
-    {% elif escolha == "variancia" %}
-    <div class="calculos-resultados">
-    <h3>Variância</h3>
-    <p>{{ variancia }} {{ tipo }} </p>
-    </div>
+      {% if escolha == "media" %}
+        <div class="calculos-resultados">
+          <h3>Média</h3>
+        <p>{{ media }} {{ tipo }}</p>
+        </div>
+      
+      {% elif escolha == "moda" %}
+        <div class="calculos-resultados">
+        <h3>Moda</h3>
+        <p>{{ moda }} </p>
+        <p>{{ tipo_moda }}</p>
+        </div>
+      
+      {% elif escolha == "modaCzuber" %}
+        <div class="calculos-resultados">
+        <h3>Moda de Czuber</h3>
+        <p>{{ modaCzuber }} {{ tipo }} </p>
+        </div>
+      
+      {% elif escolha == "mediana" %}
+        <div class="calculos-resultados">
+        <h3>Mediana</h3>
+        <p>{{ mediana }} {{ tipo }}</p>
+        </div>
+      
+      {% elif escolha == "variancia" %}
+        <div class="calculos-resultados">
+        <h3>Variância</h3>
+        <p>{{ variancia }} {{ tipo }}² </p>
+        </div>
 
-    {% elif escolha == "desvioPadrao" %}
-    <div class="calculos-resultados">
-    <h3>Desvio Padrão</h3>
-    <p>{{ desvioPadrao }} {{ tipo }} </p>
-    </div>
+      {% elif escolha == "desvioPadrao" %}
+        <div class="calculos-resultados">
+        <h3>Desvio Padrão</h3>
+        <p>{{ desvioPadrao }} {{ tipo }} </p>
+        </div>
 
-    {% elif escolha == "coeficienteVariacao" %}
-    <div class="calculos-resultados">
-    <h3>Coeficiente de Variação</h3>
-    <p>{{ coeficienteVariacao }}% </p>
-    </div>
-    {% endif %}
-    {% endif %} {% endfor %}
-    </div></div>
+      {% elif escolha == "coeficienteVariacao" %}
+        <div class="calculos-resultados">
+        <h3>Coeficiente de Variação</h3>
+        <p>{{ coeficienteVariacao }}% </p>
+        </div>
+      {% endif %}
+    {% endif %} 
+    {% endfor %}
+    </div></div></div>
   </body>
   <script src="/static/script.js"></script>
   <script>
@@ -516,6 +611,7 @@
         "container_modal_desordenado"
       );
       const modalTabela = document.getElementById("container_modal_tabela");
+      const modalClasses = document.getElementById("container_modal_classes");
       const tipoModal = "{{ mostrar_modal }}";
       const botoes = document.querySelector(".botoes-calcular-limpar");
       const modaCzuberBotao = document.getElementById("modaCzuber"); 
@@ -530,7 +626,6 @@
       const checkboxesSemCzuber = document.querySelectorAll("input.escolha-checkbox:not(#todos):not(#modaCzuber)");
 
       if (tipoModal === "desordenado") {
-        
         modalDesordenado.classList.add("show");
         botoes.classList.add("descer");
         tipo_dado.classList.add("descer");
@@ -553,6 +648,20 @@
           (radio) => (radio.checked = radio.value === tipoDadoMarcado)
         );
         checkboxesSemCzuber.forEach(
+          (checkbox) =>
+            (checkbox.checked = escolhaMarcada.includes(checkbox.value))
+        );
+      } else if (tipoModal === "classes") {
+        modalClasses.classList.add("show");
+        botoes.classList.add("descer");
+        tipo_dado.classList.add("descer");
+        // Para classes, habilitar moda de Czuber
+        modaCzuberBotao.disabled = false;
+        modaCzuberDesign.classList.remove("disabled");
+        tiposRadio.forEach(
+          (radio) => (radio.checked = radio.value === tipoDadoMarcado)
+        );
+        checkboxes.forEach(
           (checkbox) =>
             (checkbox.checked = escolhaMarcada.includes(checkbox.value))
         );
@@ -579,20 +688,24 @@
       const todos = document.getElementById("todos");
 
       todos.addEventListener("click", () => {
-        const todosMarcados = Array.from(checkboxes).every((cb) => cb.checked);
-        checkboxes.forEach((cb) => (cb.checked = !todosMarcados));
+        const todosMarcados = Array.from(checkboxes).every((cb) => cb.checked && !cb.disabled);
+        checkboxes.forEach((cb) => {
+          if (!cb.disabled) {
+            cb.checked = !todosMarcados;
+          }
+        });
       });
 
       checkboxes.forEach((cb) => {
         cb.addEventListener("click", () => {
-          todos.checked = Array.from(checkboxes).every((cb) => cb.checked);
+          const checkboxesHabilitados = Array.from(checkboxes).filter(cb => !cb.disabled);
+          todos.checked = checkboxesHabilitados.every((cb) => cb.checked);
         });
       });
 
       const formCalculoDosDados = document.getElementById(
         "form-calculo-dos-dados"
       );
-
 
       const msgErro = document.getElementById("msg-erro");
       const msgErroCalculos = document.getElementById("msg-erro-calculos");
@@ -624,5 +737,62 @@
         }
       });
     });
+
+    // Funções para abrir e fechar modais
+    function abrirModalDesordenado() {
+      document.getElementById("container_modal_desordenado").classList.add("show");
+      document.querySelector(".botoes-calcular-limpar").classList.add("descer");
+      document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
+      
+      // Desabilitar moda de Czuber para dados desordenados
+      const modaCzuber = document.getElementById("modaCzuber");
+      const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
+      modaCzuber.disabled = true;
+      modaCzuber.checked = false;
+      modaCzuberLabel.classList.add("disabled");
+    }
+
+    function fecharModalDesordenado() {
+      document.getElementById("container_modal_desordenado").classList.remove("show");
+      document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
+      document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
+    }
+
+    function abrirModalTabela() {
+      document.getElementById("container_modal_tabela").classList.add("show");
+      document.querySelector(".botoes-calcular-limpar").classList.add("descer");
+      document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
+      
+      // Desabilitar moda de Czuber para dados em tabela
+      const modaCzuber = document.getElementById("modaCzuber");
+      const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
+      modaCzuber.disabled = true;
+      modaCzuber.checked = false;
+      modaCzuberLabel.classList.add("disabled");
+    }
+
+    function fecharModalTabela() {
+      document.getElementById("container_modal_tabela").classList.remove("show");
+      document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
+      document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
+    }
+
+    function abrirModalClasses() {
+      document.getElementById("container_modal_classes").classList.add("show");
+      document.querySelector(".botoes-calcular-limpar").classList.add("descer");
+      document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
+      
+      // Habilitar moda de Czuber para dados em classes
+      const modaCzuber = document.getElementById("modaCzuber");
+      const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
+      modaCzuber.disabled = false;
+      modaCzuberLabel.classList.remove("disabled");
+    }
+
+    function fecharModalClasses() {
+      document.getElementById("container_modal_classes").classList.remove("show");
+      document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
+      document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
+    }
   </script>
 </html>

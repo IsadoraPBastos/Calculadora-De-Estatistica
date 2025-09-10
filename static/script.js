@@ -1,43 +1,56 @@
-const container_modal_desordenado = document.getElementById('container_modal_desordenado');
-const container_modal_tabela = document.getElementById('container_modal_tabela');
-const container_modal_classes = document.getElementById('container_modal_classes');
-const botoes = document.querySelector('.botoes-calcular-limpar');
-const tipo_dado = document.querySelector(".container-opcoes-tipo-dado");
-
-
+// Funções para abrir e fechar modais
 function abrirModalDesordenado() {
-    container_modal_desordenado.classList.add('show');
-    botoes.classList.add('descer');
-    tipo_dado.classList.add("descer");
+  document.getElementById("container_modal_desordenado").classList.add("show");
+  document.querySelector(".botoes-calcular-limpar").classList.add("descer");
+  document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
+  
+  // Desabilitar moda de Czuber para dados desordenados
+  const modaCzuber = document.getElementById("modaCzuber");
+  const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
+  modaCzuber.disabled = true;
+  modaCzuber.checked = false;
+  modaCzuberLabel.classList.add("disabled");
 }
-    
+
 function fecharModalDesordenado() {
-    container_modal_desordenado.classList.remove('show');
-    botoes.classList.remove('descer');
-    tipo_dado.classList.remove("descer");
+  document.getElementById("container_modal_desordenado").classList.remove("show");
+  document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
+  document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
 }
 
 function abrirModalTabela() {
-    container_modal_tabela.classList.add('show');
-    botoes.classList.add('descer');
-    tipo_dado.classList.add("descer");
+  document.getElementById("container_modal_tabela").classList.add("show");
+  document.querySelector(".botoes-calcular-limpar").classList.add("descer");
+  document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
+  
+  // Desabilitar moda de Czuber para dados em tabela
+  const modaCzuber = document.getElementById("modaCzuber");
+  const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
+  modaCzuber.disabled = true;
+  modaCzuber.checked = false;
+  modaCzuberLabel.classList.add("disabled");
 }
-    
+
 function fecharModalTabela() {
-    container_modal_tabela.classList.remove('show');
-    botoes.classList.remove('descer');
-    tipo_dado.classList.remove("descer");
+  document.getElementById("container_modal_tabela").classList.remove("show");
+  document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
+  document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
 }
 
 function abrirModalClasses() {
-    container_modal_classes.classList.add('show');
-    botoes.classList.add('descer');
-    tipo_dado.classList.add("descer");
+  document.getElementById("container_modal_classes").classList.add("show");
+  document.querySelector(".botoes-calcular-limpar").classList.add("descer");
+  document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
+  
+  // Habilitar moda de Czuber para dados em classes
+  const modaCzuber = document.getElementById("modaCzuber");
+  const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
+  modaCzuber.disabled = false;
+  modaCzuberLabel.classList.remove("disabled");
 }
 
-function fecharModalClasses(){
-    container_modal_classes.classList.remove('show');
-    botoes.classList.remove('descer');
-    tipo_dado.classList.remove("descer");
+function fecharModalClasses() {
+  document.getElementById("container_modal_classes").classList.remove("show");
+  document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
+  document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
 }
-   
