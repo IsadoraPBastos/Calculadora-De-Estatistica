@@ -188,8 +188,8 @@
         </div>
         <h1>Agrupamento em Classes</h1>
         <div class="divisao-modal">
+          <form action="{{url_for('agrupamento_classes')}}" method="POST" style="display: contents;">
           <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
-            <form action="{{url_for('agrupamento_classes')}}" method="POST">
               <div style="margin: 10px;">
                 <label for="li" 
                   >Li:
@@ -209,8 +209,9 @@
                 /></label>
               </div>
               <div><button>Adicionar</button></div>
-            </form>
           </div>
+          </form>
+          <form action="{{url_for('alteração_fi')}}" method="POST" style="display: contents;">
           <div style="width: 50%;">
             <div><h2>Classes inseridas</h2></div>
             <table style="width: 90%;">
@@ -227,13 +228,15 @@
                 <tr>
                   <td>{{ classe.li }}</td>
                   <td>{{ classe.ls }}</td>
-                  <td>{{ classe.fi }}</td>
+                  <td><input type="number" name="fi_{{ loop.index0 }}" id="fi" style="width: 50px;" value="{{ classe.fi }}"></td>
                   <td>{{ "%.2f"|format(classe.xi) }}</td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
+            <button>Alterar FI</button>
           </div>
+          </form>
         </div>
       </div>
     </div>

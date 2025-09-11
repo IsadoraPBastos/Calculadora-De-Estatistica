@@ -12,7 +12,7 @@ Consertar -
 - ~~Colocar R$~~ 
 - ~~Fazer o botão calcular chacoalhar quando a pessoa não inserir um dado~~
 - Trocar ponto por vírgula
-- Dividir a parte de inserção de dados em 2 (parte de inserir e mostrar os dados inseridos)
+- ~~Dividir a parte de inserção de dados em 2 (parte de inserir e mostrar os dados inseridos)~~
 - Fazer uma parte circulando os dados desordenados e a tabela, separando da outra forma de inserção de dados
 - ~~Deixar todos os botões das medidas e cálculos do mesmo tamanho~~  
 - Arrumar o fundo
@@ -21,15 +21,15 @@ Consertar -
 - Obrigar a pessoa a escrever algo no outro
 - ~~Esconder a parte de Estatísticas desses Dados para baixo~~
 - Quando a pessoa clicar no botão calcular, ir direto para a parte Estatísticas desses Dados
-- Arrumar quando a pessoa insere dados nas duas tabelas (ele prioriza a inserção por tabela, mesmo inserindo por desordenado)
-- Colocar botão limpar dentro do modal pq forças maiores pediram
-- Variância é ao ²
+- ~~Arrumar quando a pessoa insere dados nas duas tabelas (ele prioriza a inserção por tabela, mesmo inserindo por desordenado)~~
+- Colocar botão limpar dentro do modal 
+- ~~Variância é ao ²~~
 - Fazer a parte de remover linhas dos dados inseridos
 
 Professor
 - Dividir entre agrupamento discreto e agrupamento de classes
-- Na parte de agrupamento de classes, inserir o li, h e a quantidade de classes
-- Colocar a opção de sem medida
+- ~~Na parte de agrupamento de classes, inserir o li, h e a quantidade de classes~~
+- ~~Colocar a opção de sem medida~~
 - Colocar aparecer "Moda Bruta" quando for agrupamento por classes
 - Deixar a moda de Czuber do lado da moda Bruta
 

@@ -62,7 +62,7 @@ def agrupamento_classes():
                 dadosClasses.append({
                     'li': li,
                     'ls': ls, 
-                    #'fi': fi,
+                    'fi': 1,
                     'xi': (li + ls) / 2  # Ponto médio da classe
                 })
                 li = ls
@@ -75,6 +75,23 @@ def agrupamento_classes():
             FequenciaIndividualAbsolutaRecebida.clear()
             FequenciaIndividualAbsoluta.clear()
             
+    return render_template("index.html", mostrar_modal="classes", 
+    dadosClasses=dadosClasses, FequenciaIndividualAbsolutaRecebida={}, 
+    FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
+    escolhaCalculo=[], mostrarResultados=False)
+
+
+@app.route("/alteração_fi", methods=["POST", "GET"])
+def alteração_fi():
+    global dadosClasses
+    if request.method == "POST":
+            for i, classe in enumerate(dadosClasses):
+                fi = request.form.get(f'fi_{i}')
+                if fi:
+                    classe['fi'] = int(fi)
+
+
+    print(dadosClasses)
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 

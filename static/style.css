@@ -379,8 +379,15 @@ label[for="modaCzuber"].disabled{
   flex-wrap: wrap;
 }
 
+/* Outras coisas */
 .calculos-resultados {
   background-color: white;
   padding: 0 40px;
   border-radius: 25px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
