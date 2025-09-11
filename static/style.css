@@ -162,8 +162,8 @@ label[for="modaCzuber"].disabled{
   margin: 2% auto 5% auto;
   position: relative;
 }
-/* Card desordenados */
-.card-desordenados {
+/* Card Agrupamento Discreto */
+.card-discreto {
   height: 100%;
   width: 100%;
   position: relative;
@@ -172,18 +172,18 @@ label[for="modaCzuber"].disabled{
   transform-style: preserve-3d;
 }
 
-.container-card-desordenados {
+.container-card-discreto {
   height: 400px;
   width: 250px;
   perspective: 800px;
 }
 
-.container-card-desordenados:hover > .card-desordenados {
+.container-card-discreto:hover > .card-discreto {
   cursor: pointer;
   transform: rotateY(180deg);
 }
 
-.front-desordenados {
+.front-discreto {
   height: 100%;
   width: 100%;
   border-radius: 2rem;
@@ -196,7 +196,7 @@ label[for="modaCzuber"].disabled{
   display: flex;
 }
 
-.back-desordenados{
+.back-discreto{
   height: 100%;
   width: 100%;
   border-radius: 2rem;
@@ -205,11 +205,11 @@ label[for="modaCzuber"].disabled{
   backface-visibility: hidden;
 }
 
-.front-desordenados {
+.front-discreto {
   border: #5fbb5f;
 }
 
-.back-desordenados {
+.back-discreto {
   transform: rotateY(180deg);
 }
 
@@ -344,6 +344,36 @@ label[for="modaCzuber"].disabled{
 .divisao-modal{
   display: flex;
   justify-content: center;
+}
+
+#secaoDadosDesordenados,
+#secaoDadosEmTabela {
+    display: none;
+}
+
+.btn-mostrar-tipo-discreto {
+    margin: 3%;
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 5px;
+    border: solid 2px black;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+
+.btn-mostrar-tipo-discreto:hover {
+    margin: 3%;
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 5px;
+    border: solid 2px black;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
 /* Mensagem de erro */

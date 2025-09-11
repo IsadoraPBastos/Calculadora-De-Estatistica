@@ -25,6 +25,7 @@ Consertar -
 - Colocar botão limpar dentro do modal 
 - ~~Variância é ao ²~~
 - Fazer a parte de remover linhas dos dados inseridos
+- Arrumar conta de Variância, Desvio Padrão e Coeficiente de Variação
 
 Professor
 - Dividir entre agrupamento discreto e agrupamento de classes

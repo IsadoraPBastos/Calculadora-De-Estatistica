@@ -1,6 +1,6 @@
 // Funções para abrir e fechar modais
-function abrirModalDesordenado() {
-  document.getElementById("container_modal_desordenado").classList.add("show");
+function abrirModalDiscreto() {
+  document.getElementById("container_modal_discreto").classList.add("show");
   document.querySelector(".botoes-calcular-limpar").classList.add("descer");
   document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
   
@@ -12,27 +12,8 @@ function abrirModalDesordenado() {
   modaCzuberLabel.classList.add("disabled");
 }
 
-function fecharModalDesordenado() {
-  document.getElementById("container_modal_desordenado").classList.remove("show");
-  document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
-  document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
-}
-
-function abrirModalTabela() {
-  document.getElementById("container_modal_tabela").classList.add("show");
-  document.querySelector(".botoes-calcular-limpar").classList.add("descer");
-  document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
-  
-  // Desabilitar moda de Czuber para dados em tabela
-  const modaCzuber = document.getElementById("modaCzuber");
-  const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
-  modaCzuber.disabled = true;
-  modaCzuber.checked = false;
-  modaCzuberLabel.classList.add("disabled");
-}
-
-function fecharModalTabela() {
-  document.getElementById("container_modal_tabela").classList.remove("show");
+function abrirModalDiscreto() {
+  document.getElementById("container_modal_discreto").classList.remove("show");
   document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
   document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
 }

@@ -25,7 +25,7 @@ def dados_desordenados():
             FequenciaIndividualAbsolutaRecebida.clear()
             FequenciaIndividualAbsoluta.clear()
             dadosClasses.clear()
-    return render_template("index.html", mostrar_modal="desordenado", dadosDesordenados=dadosDesordenados, 
+    return render_template("index.html", mostrar_modal="discreto", dadosDesordenados=dadosDesordenados, 
     FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
 
@@ -43,7 +43,7 @@ def dados_em_tabela():
             dadosDesordenados.clear()
             dadosClasses.clear()
             
-    return render_template("index.html", mostrar_modal="tabela", 
+    return render_template("index.html", mostrar_modal="discreto", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
     FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
 
@@ -79,7 +79,6 @@ def agrupamento_classes():
     dadosClasses=dadosClasses, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
     escolhaCalculo=[], mostrarResultados=False)
-
 
 @app.route("/alteração_fi", methods=["POST", "GET"])
 def alteração_fi():
@@ -290,13 +289,13 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
     # Tamanho da amostra
     tamanhoDaAmostra = sum(classe['fi'] for classe in dadosClasses)
     
-    # CÁLCULOS ESTATÍSTICOS PARA DADOS AGRUPADOS EM CLASSES
+    # Cálculos
     
-    # 1. MÉDIA
+    # 1. Média
     soma_xi_fi = sum(classe['xi'] * classe['fi'] for classe in dadosClasses)
     media = round(soma_xi_fi / tamanhoDaAmostra, 2)
     
-    # 2. MODA DE CZUBER
+    # 2. Moda de Czuber
     # Encontrar classe modal (maior frequência)
     classe_modal = max(dadosClasses, key=lambda x: x['fi'])
     
@@ -317,7 +316,7 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
     else:
         modaCzuber = round(classe_modal['xi'], 2)  # usa ponto médio se denominador for zero
     
-    # 3. MODA BRUTA (classe com maior frequência)
+    # 3. Moda Bruta (classe com maior frequência)
     max_freq = max(classe['fi'] for classe in dadosClasses)
     modas_brutas = [classe['xi'] for classe in dadosClasses if classe['fi'] == max_freq]
 
@@ -334,7 +333,7 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
         tipo_moda = 'Multimodal'
         moda = ", ".join(str(m) for m in modas_brutas)
     
-    # 4. MEDIANA
+    # 4. Mediana
     posicao_mediana = tamanhoDaAmostra / 2
     fac_acumulado = 0
     classe_mediana = None
@@ -353,9 +352,12 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
     else:
         mediana = 0
     
-    # 5. VARIÂNCIA (fórmula para dados agrupados)
+    # 5. Variância (fórmula para dados agrupados)
     soma_xi_menos_media_ao_quadrado_fi = sum(((classe['xi'] - media) ** 2) * classe['fi'] for classe in dadosClasses)
     variancia = round(soma_xi_menos_media_ao_quadrado_fi / tamanhoDaAmostra, 2)
+    print(soma_xi_menos_media_ao_quadrado_fi)
+
+    
     
     # 6. DESVIO PADRÃO
     desvioPadrao = round(math.sqrt(variancia), 2)
