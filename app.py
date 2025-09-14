@@ -25,8 +25,8 @@ def dados_desordenados():
             FequenciaIndividualAbsolutaRecebida.clear()
             FequenciaIndividualAbsoluta.clear()
             dadosClasses.clear()
-    return render_template("index.html", mostrar_modal="discreto", dadosDesordenados=dadosDesordenados, 
-    FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
+    return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="desordenado", 
+    dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
 
 #Recebe os dados quando a pessoa envia eles pela parte de tabela
@@ -43,7 +43,7 @@ def dados_em_tabela():
             dadosDesordenados.clear()
             dadosClasses.clear()
             
-    return render_template("index.html", mostrar_modal="discreto", 
+    return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="tabela", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
     FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
 
@@ -76,7 +76,7 @@ def agrupamento_classes():
             FequenciaIndividualAbsoluta.clear()
             
     return render_template("index.html", mostrar_modal="classes", 
-    dadosClasses=dadosClasses, FequenciaIndividualAbsolutaRecebida={}, 
+    dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
     escolhaCalculo=[], mostrarResultados=False)
 
@@ -92,7 +92,7 @@ def alteração_fi():
 
     print(dadosClasses)
     return render_template("index.html", mostrar_modal="classes", 
-    dadosClasses=dadosClasses, FequenciaIndividualAbsolutaRecebida={}, 
+    dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
     escolhaCalculo=[], mostrarResultados=False)
 
@@ -112,9 +112,13 @@ def limpar_dados():
 def calculo_dos_dados():
     global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses
     
+    erroOutroVazio = False
     tipo = request.form.get("tipo")
     if tipo == "outro":
         tipo = request.form.get("tipo_custom")
+        print(tipo)
+        if tipo == Null:
+            erroOutroVazio = True
             
     escolhaCalculo = request.form.getlist("escolha-calculo")
     escolhaCalculoJson = json.dumps(escolhaCalculo).replace("'", '"')
@@ -254,14 +258,14 @@ def calculo_dos_dados():
         return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, variancia=variancia, desvioPadrao=desvioPadrao, 
         coeficienteVariacao=coeficienteVariacao,escolhaCalculo=escolhaCalculo, dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
         tamanhoDaAmostra=tamanhoDaAmostra, FrequenciaAcumulada=FrequenciaAcumulada, Posicoes=Posicoes, FequenciaIndividualAbsolutaRecebida={}, dadosClasses=[], 
-        mostrar_modal=modal_aberto, tipo=tipo, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True)
+        mostrar_modal=modal_aberto, tipo=tipo, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio)
     except ValueError:
         return render_template("index.html", erro="Você precisa inserir pelo menos um dado!", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, 
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[])
 
 def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
     """Processa dados agrupados em classes e calcula todas as estatísticas"""
-    
+
     # Criar tabela para exibição
     tabela_classes = {}
     FrequenciaAcumulada = {}
@@ -329,6 +333,9 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
     elif len(modas_brutas) == 2:
         tipo_moda = 'Bimodal'
         moda = " e ".join(str(m) for m in modas_brutas)
+    elif len(modas_brutas) == 3:
+        tipo_moda = 'Trimodal'
+        moda = " e ".join(str(m) for m in modas_brutas)
     else:
         tipo_moda = 'Multimodal'
         moda = ", ".join(str(m) for m in modas_brutas)
@@ -354,8 +361,7 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
     
     # 5. Variância (fórmula para dados agrupados)
     soma_xi_menos_media_ao_quadrado_fi = sum(((classe['xi'] - media) ** 2) * classe['fi'] for classe in dadosClasses)
-    variancia = round(soma_xi_menos_media_ao_quadrado_fi / tamanhoDaAmostra, 2)
-    print(soma_xi_menos_media_ao_quadrado_fi)
+    variancia = round(soma_xi_menos_media_ao_quadrado_fi / (tamanhoDaAmostra - 1), 2)
 
     
     
@@ -370,6 +376,7 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
                          moda=moda, 
                          modaCzuber=modaCzuber,
                          tipo_moda=tipo_moda, 
+                         modaBruta=True,
                          mediana=mediana, 
                          variancia=variancia, 
                          desvioPadrao=desvioPadrao,

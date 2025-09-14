@@ -107,11 +107,11 @@
           <div style="margin: 10px;">
             <label for="dado"
               >Amostra:
-              <input type="number" id="inputAdicionarDesordenados" name="dado" step="any" placeholder="Amostra" required autofocus
+              <input type="number" id="inputAdicionarDesordenados" name="dado" step="any" placeholder="Amostra" required
             /></label>
             </div>
           
-          <div><button >Adicionar</button></div>
+          <div><button>Adicionar</button></div>
         </form>
       </div>
         <div style="width: 50%;">
@@ -119,6 +119,9 @@
         <div style="width: 70%; margin: auto; border: 1px solid; padding: 20px;">
           {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
         </div>
+        <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
+          <button>Limpar</button>
+        </form>
         </div>
           </div>
 
@@ -325,6 +328,12 @@
           <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Escolha
           o tipo das variáveis inseridas!
         </div>
+
+        {% if erroOutroVazio %}
+        <div id="msg-erro-outro-vazio">
+          <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Digite alguma medida!
+        </div>
+        {% endif %}
       </div>
 
       <h1>Quais <u>cálculos</u> deseja realizar </h1>
@@ -355,7 +364,16 @@
           value="moda"
           class="escolha-checkbox"
         />
-        <label for="moda" class="escolha-calculo">Moda</label>
+        <label for="moda" class="escolha-calculo">{% if modaBruta %}Moda Bruta{% else %}Moda{% endif %}</label>
+
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="modaCzuber"
+          value="modaCzuber"
+          class="escolha-checkbox"
+        />
+        <label for="modaCzuber" class="escolha-calculo" id="modaCzuberLabel">Moda de Czuber</label>
 
         <input
           type="checkbox"
@@ -392,15 +410,6 @@
           class="escolha-checkbox"
         />
         <label for="coeficienteVariacao" class="escolha-calculo">Coeficiente de Variação</label>
-
-        <input
-          type="checkbox"
-          name="escolha-calculo"
-          id="modaCzuber"
-          value="modaCzuber"
-          class="escolha-checkbox"
-        />
-        <label for="modaCzuber" class="escolha-calculo" id="modaCzuberLabel">Moda de Czuber</label>
 
         <div id="msg-erro-calculos">
           <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Escolha
@@ -593,25 +602,28 @@
   </body>
   <script src="/static/script.js"></script>
   <script>
-     const secaoDadosDesordenado = document.getElementById('secaoDadosDesordenados');
-          const secaoDadosEmTabela = document.getElementById('secaoDadosEmTabela');
+      const secaoDadosDesordenado = document.getElementById('secaoDadosDesordenados');
+      const secaoDadosEmTabela = document.getElementById('secaoDadosEmTabela');
 
-          function mostrarDadosDesordenados() {
-            secaoDadosDesordenado.style.display = 'flex';
-            secaoDadosEmTabela.style.display = 'none'; 
-          }
 
-          function mostrarDadosEmTabela() {
-            secaoDadosEmTabela.style.display = 'flex';
-            secaoDadosDesordenado.style.display = 'none';
-          }
-        document.addEventListener("DOMContentLoaded", () => {
+      function mostrarDadosDesordenados() {
+        secaoDadosDesordenado.style.display = 'flex';
+        secaoDadosEmTabela.style.display = 'none'; 
+
+      }
+
+      function mostrarDadosEmTabela() {
+        secaoDadosEmTabela.style.display = 'flex';
+        secaoDadosDesordenado.style.display = 'none';
+      }
+      document.addEventListener("DOMContentLoaded", () => {
 
       const modalDiscreto = document.getElementById(
         "container_modal_discreto"
       );
       const modalClasses = document.getElementById("container_modal_classes");
       const tipoModal = "{{ mostrar_modal }}";
+      const desordenadoOuTabela = "{{ mostrar_desor_ou_tab }}";
       const botoes = document.querySelector(".botoes-calcular-limpar");
       const modaCzuberBotao = document.getElementById("modaCzuber"); 
       const modaCzuberDesign = document.querySelector('label[for="modaCzuber"]'); 
@@ -625,6 +637,11 @@
       const checkboxesSemCzuber = document.querySelectorAll("input.escolha-checkbox:not(#todos):not(#modaCzuber)");
 
       if (tipoModal === "discreto") {
+        if(desordenadoOuTabela === "desordenado"){
+          secaoDadosDesordenado.style.display = 'flex';
+        } else if (desordenadoOuTabela === "tabela"){
+          secaoDadosEmTabela.style.display = 'flex';
+        }
         modalDiscreto.classList.add("show");
         botoes.classList.add("descer");
         tipo_dado.classList.add("descer");

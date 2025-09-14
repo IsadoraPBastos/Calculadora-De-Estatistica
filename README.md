@@ -28,10 +28,10 @@ Consertar -
 - Arrumar conta de Variância, Desvio Padrão e Coeficiente de Variação
 
 Professor
-- Dividir entre agrupamento discreto e agrupamento de classes
+- ~~Dividir entre agrupamento discreto e agrupamento de classes~~
 - ~~Na parte de agrupamento de classes, inserir o li, h e a quantidade de classes~~
 - ~~Colocar a opção de sem medida~~
-- Colocar aparecer "Moda Bruta" quando for agrupamento por classes
-- Deixar a moda de Czuber do lado da moda Bruta
+- ~~Colocar aparecer "Moda Bruta" quando for agrupamento por classes~~
+- ~~Deixar a moda de Czuber do lado da moda Bruta~~
 
 Chart js
