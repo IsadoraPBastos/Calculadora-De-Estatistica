@@ -13,7 +13,7 @@ Consertar -
 - ~~Fazer o botão calcular chacoalhar quando a pessoa não inserir um dado~~
 - Trocar ponto por vírgula
 - ~~Dividir a parte de inserção de dados em 2 (parte de inserir e mostrar os dados inseridos)~~
-- Fazer uma parte circulando os dados desordenados e a tabela, separando da outra forma de inserção de dados
+- ~~Fazer uma parte circulando os dados desordenados e a tabela, separando da outra forma de inserção de dados~~
 - ~~Deixar todos os botões das medidas e cálculos do mesmo tamanho~~  
 - Arrumar o fundo
 - Divisória entre a parte de inserção dos dados e dos cálculos para ficar bonito 

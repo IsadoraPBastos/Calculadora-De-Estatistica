@@ -8,11 +8,15 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
+  
 
     <title>Calculadora de estatistica</title>
   </head>
   <body>
-    <h1>Calculadora de Estatística</h1>
+    <!-- Fundo de Triângulos -->
+    <div class="triangles-background" id="trianglesBackground"></div>
+
+    <h1 style="color:white; font-size: 35px;">Calculadora de Estatística</h1>
     <div class="container-cards">
       <!-- Parte dos cards-->
       <div class="container-card-discreto">
@@ -120,7 +124,7 @@
           {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
         </div>
         <form action="{{url_for('dados_desordenados')}}" method="POST">
-          <button name="limpar" value="limpar">Limpar</button>
+          <button name="limpar" value="limpar" class="btn_limpar">Limpar</button>
         </form>
         </div>
           </div>
@@ -160,7 +164,9 @@
               <td>{{ FequenciaIndividualAbsolutaRecebida }}</td>
               <td>
                 <form action="{{url_for('dados_em_tabela')}}" method="post">
-                  <button name="limpar" value="{{ amostra }}" >X</button>
+                  <button name="limpar" value="{{ amostra }}" style="background: none; border: none; padding: 0; cursor: pointer;">
+                    <i class="fa-solid fa-xmark fa-2xl" style="color: black;"></i>
+                  </button>                
                 </form>
               </td>
             </tr>
@@ -227,7 +233,7 @@
               </tbody>
             </table>
             <button>Alterar FI</button>
-            <button name="limpar" value="limpar">Limpar</button>
+            <button name="limpar" value="limpar" class="btn_limpar">Limpar</button>
           </div>
           </form>
         </div>
@@ -250,7 +256,7 @@
     
       <!-- Tipo do dado -->
       <div class="container-opcoes-tipo-dado">
-        <h1 class="titulo-medida-amostras">Qual a <u>medida</u> das amostras </h1>
+        <h1 class="titulo-medida-amostras" style="color:white;">Qual a <u>medida</u> das amostras </h1>
         <input
           type="radio"
           name="tipo"
@@ -342,7 +348,7 @@
         {% endif %}
       </div>
 
-      <h1>Quais <u>cálculos</u> deseja realizar </h1>
+      <h1 style="color:white;">Quais <u>cálculos</u> deseja realizar </h1>
       <!-- Botões opção dos cálculos -->
       <div class="container-escolha-calculo">
         <input
@@ -434,13 +440,16 @@
       <button class="btn_limpar">Limpar</button>
     </form></div></div>
 
+    
+
     <!-- Resultado dos cálculos -->
      <div class="container-estatisticas-dos-dados">
+      <hr>
     <div>
-      <h1><u>Estatísticas desses Dados</u></h1>
+      <h1 style="color:white;"><u>Estatísticas desses Dados</u></h1>
     </div>
-    <h2>{% if dados_classes %}Tabela de Classes{% else %}Tabela das Frequências{% endif %}</h2>
-    <table>
+    <h2 style="color:white;">{% if dados_classes %}Tabela de Classes{% else %}Tabela das Frequências{% endif %}</h2>
+    <table style="color: black; background-color: white;">
       <thead>
         <tr>
           {% if dados_classes %}
@@ -465,8 +474,9 @@
       </tbody>
     </table>
 
-    <h2>Tamanho da Amostra: {{ tamanhoDaAmostra }} dados</h2>
-    <div style="width: 100%; justify-content: center; display: flex;">
+    <p style="color:white;margin-top: 3px; margin-bottom: 40px;">Tamanho da amostra: {{ tamanhoDaAmostra }} dados<p>
+    <h2 style="color:white;">Cálculos escolhidos</h2>
+      <div style="width: 100%; justify-content: center; display: flex;">
     <div class="container-calculos-resultados">
     {% for escolha in escolhaCalculo %} 
     {% if tipo == "R$" %}
@@ -605,23 +615,126 @@
     {% endif %} 
     {% endfor %}
     </div></div></div>
+    <div style="padding: 50px;"></div>
   </body>
+  
   <script src="/static/script.js"></script>
   <script>
+      // Funções do fundo de triângulos
+      function createTriangles() {
+        const container = document.getElementById('trianglesBackground');
+        container.innerHTML = ''; // Limpar triângulos existentes
+        
+        for (let i = 0; i < 15; i++) {
+          const triangle = document.createElement('div');
+          triangle.className = 'triangle';
+          triangle.style.left = Math.random() * 100 + '%';
+          triangle.style.animationDelay = Math.random() * 15 + 's';
+          triangle.style.animationDuration = (10 + Math.random() * 10) + 's';
+          container.appendChild(triangle);
+        }
+      }
+
+      function pushTriangles(clickX, clickY) {
+        const elements = document.querySelectorAll('.triangle');
+        const pushRadius = 200; // Raio de influência do clique
+        const pushForce = 150; // Força do empurrão
+
+        elements.forEach(element => {
+          const rect = element.getBoundingClientRect();
+          const elementX = rect.left + rect.width / 2;
+          const elementY = rect.top + rect.height / 2;
+          
+          const distanceX = elementX - clickX;
+          const distanceY = elementY - clickY;
+          const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+          
+          if (distance < pushRadius && distance > 0) {
+            const force = Math.max(0.1, (pushRadius - distance) / pushRadius);
+            const pushX = (distanceX / distance) * pushForce * force;
+            const pushY = (distanceY / distance) * pushForce * force;
+            
+            // Pausar animação original temporariamente
+            element.style.animationPlayState = 'paused';
+            
+            // Aplicar transformação de empurrão
+            const currentTransform = getComputedStyle(element).transform;
+            element.style.transform = `${currentTransform} translate(${pushX}px, ${pushY}px) scale(${0.4 + force * 0.6})`;
+            element.style.opacity = `${0.05 + force * 0.2}`;
+            element.style.filter = 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))';
+            
+            // Remover o efeito após um tempo
+            setTimeout(() => {
+              element.style.animationPlayState = 'running';
+              element.style.transform = '';
+              element.style.opacity = '';
+              element.style.filter = '';
+            }, 2000);
+          }
+        });
+      }
+
+      // Event listener para clique no fundo
+      document.addEventListener('click', function(e) {
+        // Verificar se o clique foi em uma área vazia (fundo)
+        if (e.target === document.body || 
+            e.target === document.documentElement ||
+            e.target.classList.contains('triangles-background') ||
+            (e.target.tagName === 'DIV' && 
+             !e.target.closest('.modal') && 
+             !e.target.closest('.container-cards') &&
+             !e.target.closest('.container-opcoes-tipo-dado') &&
+             !e.target.closest('.container-escolha-calculo') &&
+             !e.target.closest('.botoes-calcular-limpar') &&
+             !e.target.closest('.container-estatisticas-dos-dados'))) {
+          
+          const clickX = e.clientX;
+          const clickY = e.clientY;
+          
+          // Efeito de empurrar triângulos
+          pushTriangles(clickX, clickY);
+          
+          // Efeito de ondulação no clique
+          const ripple = document.createElement('div');
+          ripple.style.position = 'fixed';
+          ripple.style.width = '15px';
+          ripple.style.height = '15px';
+          ripple.style.borderRadius = '50%';
+          ripple.style.background = 'rgba(255, 255, 255, 0.2)';
+          ripple.style.left = clickX - 7.5 + 'px';
+          ripple.style.top = clickY - 7.5 + 'px';
+          ripple.style.animation = 'ripple 0.8s ease-out forwards';
+          ripple.style.pointerEvents = 'none';
+          ripple.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.1)';
+          ripple.style.zIndex = '-998';
+          
+          document.body.appendChild(ripple);
+          
+          setTimeout(() => {
+            ripple.remove();
+          }, 800);
+        }
+      });
+
+      // Inicializar triângulos quando a página carregar
+      document.addEventListener('DOMContentLoaded', function() {
+        createTriangles();
+      });
+
+
       const secaoDadosDesordenado = document.getElementById('secaoDadosDesordenados');
       const secaoDadosEmTabela = document.getElementById('secaoDadosEmTabela');
-
 
       function mostrarDadosDesordenados() {
         secaoDadosDesordenado.style.display = 'flex';
         secaoDadosEmTabela.style.display = 'none'; 
-
       }
 
       function mostrarDadosEmTabela() {
         secaoDadosEmTabela.style.display = 'flex';
         secaoDadosDesordenado.style.display = 'none';
       }
+      
       document.addEventListener("DOMContentLoaded", () => {
 
       const modalDiscreto = document.getElementById(
@@ -766,7 +879,6 @@
       document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
       document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
     }
-
 
     function abrirModalClasses() {
       document.getElementById("container_modal_classes").classList.add("show");

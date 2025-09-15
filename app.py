@@ -122,8 +122,19 @@ def calculo_dos_dados():
     if tipo == "outro":
         tipo = request.form.get("tipo_custom")
         print(tipo)
-        if tipo == "":
+        if tipo.strip() == "":
             erroOutroVazio = True
+
+    if erroOutroVazio:
+        return render_template("index.html",
+                               erroOutroVazio=True,
+                               FequenciaIndividualAbsoluta={},
+                               FrequenciaAcumulada={},
+                               Posicoes={},
+                               FequenciaIndividualAbsolutaRecebida={},
+                               dadosClasses=[],
+                               escolhaCalculo=[],
+                               mostrarResultados=False)
             
     escolhaCalculo = request.form.getlist("escolha-calculo")
     escolhaCalculoJson = json.dumps(escolhaCalculo).replace("'", '"')

@@ -28,8 +28,8 @@ button {
   padding-left: 15px;
   padding-right: 15px;
   border-radius: 5px;
-  border: solid 1px green;
-  background-color: #5fbb5f;
+  border: solid 1px #0c1d8f;
+  background-color: #223fa3;
   color: white;
   cursor: pointer;
 }
@@ -40,6 +40,14 @@ input[type="number"] {
     border: 1px solid;
     height: 20px;
  }
+
+hr{
+    width: 80%;
+    opacity: 0.7;
+    border: none;
+    border-top: 3px dashed #fff;
+    margin: 40px auto;
+}
 
 .btn_calcular{
   padding: 10px;
@@ -65,8 +73,8 @@ input[type="number"] {
 }
 
 .btn_limpar {
-  border: solid 1px #6d0909;
-  background-color: #d91414;
+  border: solid 1px black;
+  background-color: black;
   font-style: italic;
 }
 
@@ -90,7 +98,7 @@ input[type="number"] {
 }
 
 .container-opcoes-tipo-dado.descer {
-  margin-top: 5%;
+  margin-top: 15%;
   transition: margin-top 0.3s ease;
 }
 
@@ -110,11 +118,13 @@ input[type="number"] {
 }
 
 .opcao-tipo-dado:hover {
-  background-color: #89d8ff;
+  background-color: #0e2d97;
+  color: white;
 }
 
 input[type="radio"]:checked + .opcao-tipo-dado {
-  background-color: #63ccff;
+  background-color: #0e2d97;
+  color: white;
 }
 
 /* Escolha dos calculos botão */
@@ -140,11 +150,13 @@ input[type="radio"]:checked + .opcao-tipo-dado {
 }
 
 .escolha-calculo:hover {
-  background-color: #89d8ff;
+  background-color: #0e2d97;
+  color: white;
 }
 
 input[type="checkbox"]:checked + .escolha-calculo {
-  background-color: #63ccff;
+  background-color: #0e2d97;
+  color: white;
 }
 
 label[for="modaCzuber"].disabled{
@@ -161,6 +173,11 @@ label[for="modaCzuber"].disabled{
   gap: 5%;
   margin: 2% auto 5% auto;
   position: relative;
+}
+
+.front-discreto, .back-discreto, .front-classes, .back-classes {
+  background-color: #e5e2e2;
+  border: 3px solid #0e2d97;
 }
 /* Card Agrupamento Discreto */
 .card-discreto {
@@ -205,10 +222,6 @@ label[for="modaCzuber"].disabled{
   backface-visibility: hidden;
 }
 
-.front-discreto {
-  border: #5fbb5f;
-}
-
 .back-discreto {
   transform: rotateY(180deg);
 }
@@ -235,7 +248,6 @@ label[for="modaCzuber"].disabled{
 }
 
 .front-classes {
-  border: #5fbb5f;
   height: 100%;
   width: 100%;
   border-radius: 2rem;
@@ -262,7 +274,7 @@ label[for="modaCzuber"].disabled{
 .container-modal {
   display: none;
   position: absolute;
-  top: 2%;
+  top: 6%;
   left: 5%;
   height: 80%;
   align-items: flex-start;
@@ -328,7 +340,8 @@ label[for="modaCzuber"].disabled{
 /* Mensagem de erro */
 #msg-erro,
 #msg-erro-calculos,
-#msg-erro-zero-division {
+#msg-erro-zero-division,
+#msg-erro-outro-vazio {
   display: none;
   margin-top: 4%;
   width: 30%;
@@ -340,7 +353,8 @@ label[for="modaCzuber"].disabled{
   margin-right: auto;
 }
 
-#msg-erro-zero-division {
+#msg-erro-zero-division,
+#msg-erro-outro-vazio {
   display: block;
   margin-bottom: 5%;
 }
@@ -370,3 +384,77 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+
+.triangles-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0a0a0a 100%);
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      .triangle {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0.15;
+        animation: floatTriangle 15s infinite linear;
+        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+        will-change: transform, opacity;
+      }
+
+      .triangle:nth-child(odd) {
+        border-left: 15px solid transparent;
+        border-right: 15px solid transparent;
+        border-bottom: 25px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .triangle:nth-child(even) {
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-top: 30px solid rgba(255, 255, 255, 0.15);
+      }
+
+      @keyframes floatTriangle {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.3;
+        }
+        90% {
+          opacity: 0.1;
+        }
+        100% {
+          transform: translateY(-100px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      @keyframes ripple {
+        0% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+        100% {
+          transform: scale(6);
+          opacity: 0;
+        }
+      }
+
+      /* Garantir que o conteúdo fique por cima */
+      body {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Ajustar cor de fundo do body para transparente */
+      body {
+        background: transparent !important;
+      }
