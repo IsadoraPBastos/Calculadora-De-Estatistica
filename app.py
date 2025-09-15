@@ -2,14 +2,13 @@
 import json
 import math
 from flask import Flask, render_template, request
-from collections import Counter
 
 app = Flask(__name__)
 
 dadosDesordenados = []
 FequenciaIndividualAbsolutaRecebida = {}
 FequenciaIndividualAbsoluta = {}
-dadosClasses = []  # Para armazenar dados de classes: [(li, ls, fi), ...]
+dadosClasses = []  
 
 @app.route('/')
 def index():
@@ -25,6 +24,8 @@ def dados_desordenados():
             FequenciaIndividualAbsolutaRecebida.clear()
             FequenciaIndividualAbsoluta.clear()
             dadosClasses.clear()
+        elif request.form.get("limpar") == "limpar":
+            dadosDesordenados.clear()
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="desordenado", 
     dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
@@ -39,10 +40,12 @@ def dados_em_tabela():
             frequencia = float(request.form.get('frequencia'))
 
             FequenciaIndividualAbsolutaRecebida[amostra] = frequencia
-
+            
             dadosDesordenados.clear()
             dadosClasses.clear()
-            
+        elif request.form.get("limpar"):
+            amostraLimpar = request.form.get("limpar")
+            FequenciaIndividualAbsolutaRecebida.pop(float(amostraLimpar))
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="tabela", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
     FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
@@ -63,7 +66,7 @@ def agrupamento_classes():
                     'li': li,
                     'ls': ls, 
                     'fi': 1,
-                    'xi': (li + ls) / 2  # Ponto médio da classe
+                    'xi': (li + ls) / 2  
                 })
                 li = ls
                 i += 1
@@ -84,13 +87,15 @@ def agrupamento_classes():
 def alteração_fi():
     global dadosClasses
     if request.method == "POST":
-            for i, classe in enumerate(dadosClasses):
-                fi = request.form.get(f'fi_{i}')
-                if fi:
-                    classe['fi'] = int(fi)
+        for i, classe in enumerate(dadosClasses):
+            fi = request.form.get(f'fi_{i}')
+            if fi:
+                classe['fi'] = int(fi)
 
+        if request.form.get("limpar") == "limpar":
+            dadosClasses.clear()
+            
 
-    print(dadosClasses)
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
@@ -117,7 +122,7 @@ def calculo_dos_dados():
     if tipo == "outro":
         tipo = request.form.get("tipo_custom")
         print(tipo)
-        if tipo == Null:
+        if tipo == "":
             erroOutroVazio = True
             
     escolhaCalculo = request.form.getlist("escolha-calculo")

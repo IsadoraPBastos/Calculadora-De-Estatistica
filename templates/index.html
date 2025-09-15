@@ -119,8 +119,8 @@
         <div style="width: 70%; margin: auto; border: 1px solid; padding: 20px;">
           {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
         </div>
-        <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
-          <button>Limpar</button>
+        <form action="{{url_for('dados_desordenados')}}" method="POST">
+          <button name="limpar" value="limpar">Limpar</button>
         </form>
         </div>
           </div>
@@ -158,6 +158,11 @@
             <tr>
               <td>{{ amostra }}</td>
               <td>{{ FequenciaIndividualAbsolutaRecebida }}</td>
+              <td>
+                <form action="{{url_for('dados_em_tabela')}}" method="post">
+                  <button name="limpar" value="{{ amostra }}" >X</button>
+                </form>
+              </td>
             </tr>
             {% endfor %}
           </tbody>
@@ -222,6 +227,7 @@
               </tbody>
             </table>
             <button>Alterar FI</button>
+            <button name="limpar" value="limpar">Limpar</button>
           </div>
           </form>
         </div>
