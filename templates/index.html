@@ -101,8 +101,8 @@
         </div>
         
           <h1>Agrupamento Discreto</h1>
-          <button onclick="mostrarDadosDesordenados()" class="btn-mostrar-tipo-discreto">Dados Desordenados</button>
-          <button onclick="mostrarDadosEmTabela()" class="btn-mostrar-tipo-discreto">Dados em Tabela</button>
+          <button onclick="mostrarDadosDesordenados()" id="btn-escolha-desordenado" class="btn-mostrar-tipo-discreto">Dados Desordenados</button>
+          <button onclick="mostrarDadosEmTabela()" id="btn-escolha-tabela" class="btn-mostrar-tipo-discreto">Dados em Tabela</button>
 
           <!-- Parte de inserção de dados - Desordenados -->
           <div class="divisao-modal" id="secaoDadosDesordenados">
@@ -620,6 +620,84 @@
   
   <script src="/static/script.js"></script>
   <script>
+      // SISTEMA DE FOCO AUTOMÁTICO PARA TODOS OS INPUTS
+
+      // Função principal para gerenciar foco automático
+      function focarInputAutomatico() {
+        // Inputs dos dados desordenados
+        const inputDesordenados = document.getElementById('inputAdicionarDesordenados');
+        const secaoDesordenados = document.getElementById('secaoDadosDesordenados');
+        
+        // Inputs da tabela
+        const inputAmostra = document.querySelector('input[name="amostra"]');
+        const inputFrequencia = document.querySelector('input[name="frequencia"]');
+        const secaoTabela = document.getElementById('secaoDadosEmTabela');
+        
+        // Inputs das classes
+        const inputLi = document.querySelector('input[name="li"]');
+        const inputAmplitude = document.querySelector('input[name="amplitude"]');
+        const inputQtd = document.querySelector('input[name="qtd"]');
+        const modalClasses = document.getElementById('container_modal_classes');
+        
+        const modalDiscreto = document.getElementById('container_modal_discreto');
+        
+        // Verificar qual modal está aberto e focar no input apropriado
+        if (modalDiscreto && modalDiscreto.classList.contains('show')) {
+          if (secaoDesordenados && secaoDesordenados.style.display === 'flex' && inputDesordenados) {
+            inputDesordenados.focus();
+          } else if (secaoTabela && secaoTabela.style.display === 'flex' && inputAmostra) {
+            inputAmostra.focus();
+          }
+        } else if (modalClasses && modalClasses.classList.contains('show') && inputLi) {
+          inputLi.focus();
+        }
+      }
+
+      // Função para focar no próximo input da sequência (tabela)
+      function focarProximoInputTabela(inputAtual) {
+        const inputAmostra = document.querySelector('input[name="amostra"]');
+        const inputFrequencia = document.querySelector('input[name="frequencia"]');
+        
+        if (inputAtual === inputAmostra && inputFrequencia) {
+          inputFrequencia.focus();
+        } else if (inputAtual === inputFrequencia) {
+          // Se ambos os campos estão preenchidos, enviar o formulário
+          if (inputAmostra.value.trim() !== '' && inputFrequencia.value.trim() !== '') {
+            const form = inputFrequencia.closest('form');
+            if (form) {
+              form.submit();
+            }
+          } else {
+            inputAmostra.focus();
+            inputAmostra.select();
+          }
+        }
+      }
+
+      // Função para focar no próximo input das classes
+      function focarProximoInputClasses(inputAtual) {
+        const inputLi = document.querySelector('input[name="li"]');
+        const inputAmplitude = document.querySelector('input[name="amplitude"]');
+        const inputQtd = document.querySelector('input[name="qtd"]');
+        
+        if (inputAtual === inputLi && inputAmplitude) {
+          inputAmplitude.focus();
+        } else if (inputAtual === inputAmplitude && inputQtd) {
+          inputQtd.focus();
+        } else if (inputAtual === inputQtd) {
+          // Se todos os campos estão preenchidos, enviar o formulário
+          if (inputLi.value.trim() !== '' && inputAmplitude.value.trim() !== '' && inputQtd.value.trim() !== '') {
+            const form = inputQtd.closest('form');
+            if (form) {
+              form.submit();
+            }
+          } else {
+            inputLi.focus();
+            inputLi.select();
+          }
+        }
+      }
+
       // Funções do fundo de triângulos
       function createTriangles() {
         const container = document.getElementById('trianglesBackground');
@@ -721,18 +799,37 @@
         createTriangles();
       });
 
-
       const secaoDadosDesordenado = document.getElementById('secaoDadosDesordenados');
       const secaoDadosEmTabela = document.getElementById('secaoDadosEmTabela');
 
       function mostrarDadosDesordenados() {
         secaoDadosDesordenado.style.display = 'flex';
-        secaoDadosEmTabela.style.display = 'none'; 
+        secaoDadosEmTabela.style.display = 'none';
+
+        document.getElementById('btn-escolha-desordenado').classList.add("ativo");
+        document.getElementById('btn-escolha-tabela').classList.remove("ativo");
+        
+        setTimeout(() => {
+          const input = document.getElementById('inputAdicionarDesordenados');
+          if (input) {
+            input.focus();
+          }
+        }, 100);
       }
 
       function mostrarDadosEmTabela() {
         secaoDadosEmTabela.style.display = 'flex';
         secaoDadosDesordenado.style.display = 'none';
+
+        document.getElementById('btn-escolha-desordenado').classList.remove("ativo");
+        document.getElementById('btn-escolha-tabela').classList.add("ativo");
+        
+        setTimeout(() => {
+          const input = document.querySelector('input[name="amostra"]');
+          if (input) {
+            input.focus();
+          }
+        }, 100);
       }
       
       document.addEventListener("DOMContentLoaded", () => {
@@ -758,8 +855,12 @@
       if (tipoModal === "discreto") {
         if(desordenadoOuTabela === "desordenado"){
           secaoDadosDesordenado.style.display = 'flex';
+          document.getElementById('btn-escolha-desordenado').classList.add("ativo");
+          document.getElementById('btn-escolha-tabela').classList.remove("ativo");
         } else if (desordenadoOuTabela === "tabela"){
           secaoDadosEmTabela.style.display = 'flex';
+          document.getElementById('btn-escolha-desordenado').classList.remove("ativo");
+          document.getElementById('btn-escolha-tabela').classList.add("ativo");
         }
         modalDiscreto.classList.add("show");
         botoes.classList.add("descer");
@@ -803,25 +904,35 @@
       const outroRadio = document.getElementById("outro");
       const outroInput = document.getElementById("tipo_custom");
 
-      outroInput.addEventListener("focus", () => {
-        outroRadio.checked = true;
-      });
+      if(outroInput) {
+        outroInput.addEventListener("focus", () => {
+          outroRadio.checked = true;
+        });
+      }
 
+      // CORREÇÃO DO BOTÃO "TODOS" - Nova lógica
       const todos = document.getElementById("todos");
 
-      todos.addEventListener("click", () => {
-        const todosMarcados = Array.from(checkboxes).every((cb) => cb.checked && !cb.disabled);
-        checkboxes.forEach((cb) => {
-          if (!cb.disabled) {
+      function verificarTodosCheckboxes() {
+        const checkboxesHabilitados = Array.from(checkboxes).filter(cb => !cb.disabled);
+        const todosMarcados = checkboxesHabilitados.length > 0 && checkboxesHabilitados.every((cb) => cb.checked);
+        todos.checked = todosMarcados;
+      }
+
+      if (todos) {
+        todos.addEventListener("click", () => {
+          const checkboxesHabilitados = Array.from(checkboxes).filter(cb => !cb.disabled);
+          const todosMarcados = checkboxesHabilitados.every((cb) => cb.checked);
+          
+          checkboxesHabilitados.forEach((cb) => {
             cb.checked = !todosMarcados;
-          }
+          });
         });
-      });
+      }
 
       checkboxes.forEach((cb) => {
         cb.addEventListener("click", () => {
-          const checkboxesHabilitados = Array.from(checkboxes).filter(cb => !cb.disabled);
-          todos.checked = checkboxesHabilitados.every((cb) => cb.checked);
+          verificarTodosCheckboxes();
         });
       });
 
@@ -858,6 +969,67 @@
           msgErroCalculos.style.display = "none";
         }
       });
+
+      // Event listeners para navegação com TAB/ENTER nos inputs
+      const inputAmostra = document.querySelector('input[name="amostra"]');
+      const inputFrequencia = document.querySelector('input[name="frequencia"]');
+      
+      if (inputAmostra) {
+        inputAmostra.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab' || e.key === 'Enter') {
+            e.preventDefault();
+            focarProximoInputTabela(this);
+          }
+        });
+      }
+      
+      if (inputFrequencia) {
+        inputFrequencia.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab' || e.key === 'Enter') {
+            e.preventDefault();
+            focarProximoInputTabela(this);
+          }
+        });
+      }
+      
+      // Event listeners para inputs das classes
+      const inputLi = document.querySelector('input[name="li"]');
+      const inputAmplitude = document.querySelector('input[name="amplitude"]');
+      const inputQtd = document.querySelector('input[name="qtd"]');
+      
+      if (inputLi) {
+        inputLi.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab' || e.key === 'Enter') {
+            e.preventDefault();
+            focarProximoInputClasses(this);
+          }
+        });
+      }
+      
+      if (inputAmplitude) {
+        inputAmplitude.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab' || e.key === 'Enter') {
+            e.preventDefault();
+            focarProximoInputClasses(this);
+          }
+        });
+      }
+      
+      if (inputQtd) {
+        inputQtd.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab' || e.key === 'Enter') {
+            e.preventDefault();
+            focarProximoInputClasses(this);
+          }
+        });
+      }
+
+      // Verificação inicial e foco automático
+      setTimeout(() => {
+        verificarTodosCheckboxes();
+        focarInputAutomatico();
+      }, 200);
+
     });
 
     // Funções para abrir e fechar modais
@@ -872,6 +1044,10 @@
       modaCzuber.disabled = true;
       modaCzuber.checked = false;
       modaCzuberLabel.classList.add("disabled");
+
+      setTimeout(() => {
+        focarInputAutomatico();
+      }, 100);
     }
 
     function fecharModalDiscreto() {
@@ -890,6 +1066,13 @@
       const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
       modaCzuber.disabled = false;
       modaCzuberLabel.classList.remove("disabled");
+
+      setTimeout(() => {
+        const input = document.querySelector('input[name="li"]');
+        if (input) {
+          input.focus();
+        }
+      }, 100);
     }
 
     function fecharModalClasses() {
@@ -897,5 +1080,5 @@
       document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
       document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
     }
-  </script>
+</script>
 </html>

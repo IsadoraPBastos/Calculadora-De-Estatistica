@@ -53,6 +53,7 @@ def dados_em_tabela():
 @app.route("/agrupamento_classes", methods=["POST", "GET"])
 def agrupamento_classes():
     global dadosClasses
+    dadosClasses.clear()
     if request.method == "POST":
         if request.form.get("li") and request.form.get("amplitude") and request.form.get("qtd"):
             li = float(request.form.get('li'))

@@ -336,6 +336,18 @@ label[for="modaCzuber"].disabled{
     transition: 0.3s;
 }
 
+#btn-escolha-desordenado.ativo {
+  background-color: black;
+  color: white;
+  transition: 0.3s;
+}
+
+#btn-escolha-tabela.ativo {
+  background-color: black;
+  color: white;
+  transition: 0.3s;
+}
+
 
 /* Mensagem de erro */
 #msg-erro,
