@@ -1,7 +1,7 @@
 # pip install flask
 import json
 import math
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
 
 app = Flask(__name__)
 
@@ -39,16 +39,20 @@ def dados_em_tabela():
             amostra = float(request.form.get('amostra'))
             frequencia = float(request.form.get('frequencia'))
 
-            FequenciaIndividualAbsolutaRecebida[amostra] = frequencia
-            
-            dadosDesordenados.clear()
-            dadosClasses.clear()
+            erroFIMenorZero = False
+            if frequencia <= 0:
+                erroFIMenorZero = True
+            else: 
+                FequenciaIndividualAbsolutaRecebida[amostra] = frequencia
+                
+                dadosDesordenados.clear()
+                dadosClasses.clear()
         elif request.form.get("limpar"):
             amostraLimpar = request.form.get("limpar")
             FequenciaIndividualAbsolutaRecebida.pop(float(amostraLimpar))
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="tabela", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
-    FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
+    FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, erroFIMenorZero=erroFIMenorZero)
 
 @app.route("/agrupamento_classes", methods=["POST", "GET"])
 def agrupamento_classes():
@@ -88,10 +92,13 @@ def agrupamento_classes():
 def alteração_fi():
     global dadosClasses
     if request.method == "POST":
+        erroMenorZero = False
         for i, classe in enumerate(dadosClasses):
             fi = request.form.get(f'fi_{i}')
-            if fi:
+            if int(fi) > 0:
                 classe['fi'] = int(fi)
+            else:
+                erroMenorZero = True
 
         if request.form.get("limpar") == "limpar":
             dadosClasses.clear()
@@ -100,7 +107,7 @@ def alteração_fi():
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False)
+    escolhaCalculo=[], mostrarResultados=False, erroMenorZero=erroMenorZero)
 
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
@@ -237,7 +244,7 @@ def calculo_dos_dados():
             def calcular_variancia(valores):
                 if len(valores) == 0:
                     return 0
-                return sum((x - media) ** 2 for x in valores) / len(valores)  # populacional
+                return sum((x - media) ** 2 for x in valores) / (len(valores) -1)  # populacional
             variancia = round(calcular_variancia(dadosDesordenados), 2)
 
             def calcular_desvio_padrao(valores):
@@ -246,8 +253,8 @@ def calculo_dos_dados():
             desvioPadrao = round(calcular_desvio_padrao(dadosDesordenados), 2)
 
             def calcular_coeficiente_variacao(valores):
-                desvio_padrao = calcular_desvio_padrao(valores)
-                return (desvio_padrao / media) * 100 if media != 0 else float("inf")
+                desvio_padrao = round(calcular_desvio_padrao(valores),2)
+                return (desvio_padrao * 100) / media  if media != 0 else float("inf")
             coeficienteVariacao = round(calcular_coeficiente_variacao(dadosDesordenados), 2)
 
         elif(len(FequenciaIndividualAbsoluta) != 0):
@@ -259,7 +266,7 @@ def calculo_dos_dados():
             def calcular_variancia(valores):
                 if len(valores) == 0:
                     return 0
-                return sum((x - media) ** 2 for x in valores) / len(valores)
+                return sum((x - media) ** 2 for x in valores) / (len(valores) -1)
             variancia = round(calcular_variancia(dados_expandidos), 2)
 
             def calcular_desvio_padrao(valores):
@@ -268,8 +275,10 @@ def calculo_dos_dados():
             desvioPadrao = round(calcular_desvio_padrao(dados_expandidos), 2)
 
             def calcular_coeficiente_variacao(valores):
-                desvio_padrao = calcular_desvio_padrao(valores)
-                return (desvio_padrao / media) * 100 if media != 0 else float("inf")
+                desvio_padrao = round(calcular_desvio_padrao(valores),2)
+                print(desvio_padrao)
+                print(media)
+                return (desvio_padrao * 100) / media
             coeficienteVariacao = round(calcular_coeficiente_variacao(dados_expandidos), 2)
             
         return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, variancia=variancia, desvioPadrao=desvioPadrao, 
@@ -380,8 +389,6 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
     soma_xi_menos_media_ao_quadrado_fi = sum(((classe['xi'] - media) ** 2) * classe['fi'] for classe in dadosClasses)
     variancia = round(soma_xi_menos_media_ao_quadrado_fi / (tamanhoDaAmostra - 1), 2)
 
-    
-    
     # 6. DESVIO PADRÃO
     desvioPadrao = round(math.sqrt(variancia), 2)
     
@@ -410,7 +417,8 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
                          tipo=tipo, 
                          escolhaCalculoJson=escolhaCalculoJson, 
                          mostrarResultados=True,
-                         dados_classes=True)  # Flag para indicar que são dados de classes
+                         dados_classes=True) 
+
 
 if __name__ == '__main__':
     app.run(debug=True)

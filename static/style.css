@@ -98,7 +98,7 @@ hr{
 }
 
 .container-opcoes-tipo-dado.descer {
-  margin-top: 15%;
+  margin-top: 20%;
   transition: margin-top 0.3s ease;
 }
 
@@ -387,9 +387,16 @@ label[for="modaCzuber"].disabled{
 /* Outras coisas */
 .calculos-resultados {
   background-color: white;
+  border: 3px solid white;
   padding: 0 40px;
   border-radius: 25px;
+  transition: 0.3s;
 }
+
+.calculos-resultados:hover {
+  border: 3px solid #171783;
+}
+
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

@@ -175,6 +175,11 @@
         </table>
         </div>
           </div>
+          {% if erroFIMenorZero %}
+          <div class="msg-erro" id="msg-erro-zero-division">
+            <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Digite uma Frequência Individual maior que 0!
+          </div>
+          {% endif %}
     </div>
     </div>
 
@@ -237,9 +242,14 @@
           </div>
           </form>
         </div>
+        {% if erroMenorZero %}
+          <div class="msg-erro" id="msg-erro-zero-division">
+            <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Digite uma Frequência Individual maior que 0!
+          </div>
+          {% endif %}
       </div>
     </div>
-
+    
     {% if erro %}
     <div class="msg-erro" id="msg-erro-zero-division">
       <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> {{ erro }}
@@ -448,6 +458,7 @@
     <div>
       <h1 style="color:white;"><u>Estatísticas desses Dados</u></h1>
     </div>
+                                                                                                              
     <h2 style="color:white;">{% if dados_classes %}Tabela de Classes{% else %}Tabela das Frequências{% endif %}</h2>
     <table style="color: black; background-color: white;">
       <thead>
@@ -489,7 +500,7 @@
       {% elif escolha == "moda" %}
         <div class="calculos-resultados">
         <h3>{% if dados_classes %}Moda Bruta{% else %}Moda{% endif %}</h3>
-        <p>{{ moda }} </p>
+        <p>{{ tipo }} {{ moda }} </p>
         <p>{{ tipo_moda }}</p>
         </div>
       
@@ -508,13 +519,13 @@
       {% elif escolha == "variancia" %}
         <div class="calculos-resultados">
         <h3>Variância</h3>
-        <p>{{ variancia }} {{ tipo }}² </p>
+        <p> {{ tipo }}² {{ variancia }} </p>
         </div>
 
       {% elif escolha == "desvioPadrao" %}
         <div class="calculos-resultados">
         <h3>Desvio Padrão</h3>
-        <p>{{ desvioPadrao }} </p>
+        <p>{{ tipo }} {{ desvioPadrao }} </p>
         </div>
 
       {% elif escolha == "coeficienteVariacao" %}
