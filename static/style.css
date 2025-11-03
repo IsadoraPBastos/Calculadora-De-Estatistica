@@ -36,26 +36,26 @@ button {
 
 input[type="text"],
 input[type="number"] {
-    border-radius: 5px;
-    border: 1px solid;
-    height: 20px;
- }
-
-hr{
-    width: 80%;
-    opacity: 0.7;
-    border: none;
-    border-top: 3px dashed #fff;
-    margin: 40px auto;
+  border-radius: 5px;
+  border: 1px solid;
+  height: 20px;
 }
 
-.btn_calcular{
+hr {
+  width: 80%;
+  opacity: 0.7;
+  border: none;
+  border-top: 3px dashed #fff;
+  margin: 40px auto;
+}
+
+.btn_calcular {
   padding: 10px;
   font-size: 15px;
   transition: 0.5s;
 }
 
-.btn_calcular:hover{
+.btn_calcular:hover {
   transform: scale(1.1);
 }
 
@@ -64,12 +64,24 @@ hr{
 }
 
 @keyframes chacoalhar {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .btn_limpar {
@@ -102,7 +114,7 @@ hr{
   transition: margin-top 0.3s ease;
 }
 
-.titulo-medida-amostras{
+.titulo-medida-amostras {
   margin-bottom: 3%;
 }
 
@@ -133,7 +145,8 @@ input[type="radio"]:checked + .opcao-tipo-dado {
   margin: 20px;
 }
 
-.container-escolha-calculo, .container-opcoes-tipo-dado {
+.container-escolha-calculo,
+.container-opcoes-tipo-dado {
   margin: 5%;
   margin-top: 3%;
 }
@@ -159,7 +172,7 @@ input[type="checkbox"]:checked + .escolha-calculo {
   color: white;
 }
 
-label[for="modaCzuber"].disabled{
+label[for="modaCzuber"].disabled {
   background-color: gray;
   cursor: not-allowed;
   opacity: 0.6;
@@ -175,12 +188,25 @@ label[for="modaCzuber"].disabled{
   position: relative;
 }
 
-.front-discreto, .back-discreto, .front-classes, .back-classes {
+.front-discreto,
+.back-discreto,
+.front-classes,
+.back-classes,
+.front-vac,
+.back-vac,
+.front-vad,
+.back-vad,
+.front-eq1,
+.back-eq1 {
   background-color: #e5e2e2;
   border: 3px solid #0e2d97;
 }
-/* Card Agrupamento Discreto */
-.card-discreto {
+/* Cards */
+.card-discreto,
+.card-classes,
+.card-vac,
+.card-vad,
+.card-eq1 {
   height: 100%;
   width: 100%;
   position: relative;
@@ -189,18 +215,33 @@ label[for="modaCzuber"].disabled{
   transform-style: preserve-3d;
 }
 
-.container-card-discreto {
+.container-card-discreto,
+.container-card-classes,
+.container-card-vac,
+.container-card-vad,
+.container-card-eq1 {
   height: 400px;
   width: 250px;
   perspective: 800px;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.container-card-discreto:hover > .card-discreto {
+.container-card-discreto:hover .card-discreto,
+.container-card-classes:hover .card-classes,
+.container-card-vac:hover .card-vac,
+.container-card-vad:hover .card-vad,
+.container-card-eq1:hover .card-eq1 {
   cursor: pointer;
   transform: rotateY(180deg);
 }
 
-.front-discreto {
+.front-discreto,
+.front-classes,
+.front-vac,
+.front-vad,
+.front-eq1 {
   height: 100%;
   width: 100%;
   border-radius: 2rem;
@@ -213,54 +254,11 @@ label[for="modaCzuber"].disabled{
   display: flex;
 }
 
-.back-discreto{
-  height: 100%;
-  width: 100%;
-  border-radius: 2rem;
-  box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
-  position: absolute;
-  backface-visibility: hidden;
-}
-
-.back-discreto {
-  transform: rotateY(180deg);
-}
-
-/* Card Agrupamento em Classes*/
-.card-classes {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  display: flex;
-  transition: transform 1500ms;
-  transform-style: preserve-3d;
-}
-
-.container-card-classes {
-  height: 400px;
-  width: 250px;
-  perspective: 800px;
-}
-
-.container-card-classes:hover > .card-classes {
-  cursor: pointer;
-  transform: rotateY(180deg);
-}
-
-.front-classes {
-  height: 100%;
-  width: 100%;
-  border-radius: 2rem;
-  box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
-  position: absolute;
-  backface-visibility: hidden;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-
-.back-classes {
+.back-discreto,
+.back-classes,
+.back-vac,
+.back-vad,
+.back-eq1 {
   height: 100%;
   width: 100%;
   border-radius: 2rem;
@@ -308,46 +306,80 @@ label[for="modaCzuber"].disabled{
   margin: auto;
 }
 
-.divisao-modal{
+.divisao-modal {
   display: flex;
   justify-content: center;
 }
 
 #secaoDadosDesordenados,
-#secaoDadosEmTabela {
-    display: none;
+#secaoDadosEmTabela,
+#secaoDUnifor,
+#secaoDExpo,
+#secaoDNormal,
+#secaoDBino,
+#secaoDPois {
+  display: none;
 }
 
 .btn-mostrar-tipo-discreto {
-    margin: 1% 3%;
-    padding: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-    border-radius: 5px;
-    border: solid 2px black;
-    background-color: white;
-    color: black;
-    cursor: pointer;
+  margin: 1% 3%;
+  padding: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 5px;
+  border: solid 2px black;
+  background-color: white;
+  color: black;
+  cursor: pointer;
 }
 
 .btn-mostrar-tipo-discreto:hover {
-    background-color: black;
-    color: white;
-    transition: 0.3s;
-}
-
-#btn-escolha-desordenado.ativo {
   background-color: black;
   color: white;
   transition: 0.3s;
 }
 
-#btn-escolha-tabela.ativo {
+#btn-escolha-desordenado.ativo,
+#btn-escolha-tabela.ativo,
+#btn-escolha-uniforme.ativo,
+#btn-escolha-exponecial.ativo,
+#btn-escolha-normal.ativo,
+#btn-escolha-poisson.ativo,
+#btn-escolha-binomial.ativo {
   background-color: black;
   color: white;
   transition: 0.3s;
 }
 
+#btn-par-estatisticos,
+#btn-probabilidade,
+#btn-reg-linear {
+  margin: 3%;
+  padding: 10px;
+  padding-left: 40px;
+  padding-right: 40px;
+  border-radius: 5px;
+  border: solid 1px #2955b3;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+}
+
+#btn-par-estatisticos:hover,
+#btn-probabilidade:hover,
+#btn-reg-linear:hover {
+  background-color: #2955b3;
+  color: white;
+  transition: 0.3s;
+}
+
+#btn-par-estatisticos.ativo,
+#btn-probabilidade.ativo,
+#btn-reg-linear.ativo {
+  background-color: #2955b3;
+  color: white;
+  transition: 0.3s;
+}
 
 /* Mensagem de erro */
 #msg-erro,
@@ -372,11 +404,11 @@ label[for="modaCzuber"].disabled{
 }
 
 /* Parte dos resultados */
-.container-estatisticas-dos-dados{
+.container-estatisticas-dos-dados {
   display: none;
 }
 
-.container-calculos-resultados{
+.container-calculos-resultados {
   display: flex;
   justify-content: center;
   gap: 3rem;
@@ -397,83 +429,81 @@ label[for="modaCzuber"].disabled{
   border: 3px solid #171783;
 }
 
-
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-
 .triangles-background {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0a0a0a 100%);
-        z-index: -1;
-        overflow: hidden;
-      }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0a0a0a 100%);
+  z-index: -1;
+  overflow: hidden;
+}
 
-      .triangle {
-        position: absolute;
-        width: 0;
-        height: 0;
-        opacity: 0.15;
-        animation: floatTriangle 15s infinite linear;
-        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
-        will-change: transform, opacity;
-      }
+.triangle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0.15;
+  animation: floatTriangle 15s infinite linear;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+  will-change: transform, opacity;
+}
 
-      .triangle:nth-child(odd) {
-        border-left: 15px solid transparent;
-        border-right: 15px solid transparent;
-        border-bottom: 25px solid rgba(255, 255, 255, 0.2);
-      }
+.triangle:nth-child(odd) {
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 25px solid rgba(255, 255, 255, 0.2);
+}
 
-      .triangle:nth-child(even) {
-        border-left: 20px solid transparent;
-        border-right: 20px solid transparent;
-        border-top: 30px solid rgba(255, 255, 255, 0.15);
-      }
+.triangle:nth-child(even) {
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 30px solid rgba(255, 255, 255, 0.15);
+}
 
-      @keyframes floatTriangle {
-        0% {
-          transform: translateY(100vh) rotate(0deg);
-          opacity: 0;
-        }
-        10% {
-          opacity: 0.3;
-        }
-        90% {
-          opacity: 0.1;
-        }
-        100% {
-          transform: translateY(-100px) rotate(360deg);
-          opacity: 0;
-        }
-      }
+@keyframes floatTriangle {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
 
-      @keyframes ripple {
-        0% {
-          transform: scale(1);
-          opacity: 0.7;
-        }
-        100% {
-          transform: scale(6);
-          opacity: 0;
-        }
-      }
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(6);
+    opacity: 0;
+  }
+}
 
-      /* Garantir que o conteúdo fique por cima */
-      body {
-        position: relative;
-        z-index: 1;
-      }
+/* Garantir que o conteúdo fique por cima */
+body {
+  position: relative;
+  z-index: 1;
+}
 
-      /* Ajustar cor de fundo do body para transparente */
-      body {
-        background: transparent !important;
-      }
+/* Ajustar cor de fundo do body para transparente */
+body {
+  background: transparent !important;
+}

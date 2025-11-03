@@ -419,6 +419,248 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
                          mostrarResultados=True,
                          dados_classes=True) 
 
+import math
+from scipy.stats import norm #pip install scipy
 
+#distribuicao uniforme
+class DistribuicaoUniforme:
+    def __init__(self, A: float, B: float):
+        if A >= B:
+            raise ValueError('O limite inferior (A) deve ser menor que o limite superior (B).')
+        self.A = A
+        self.B = B
+        self.amplitude = B - A
+
+    def calcular_media(self) -> float:
+        media = (self.A + self.B) / 2
+        return media
+    
+    def calcular_variancia(self) -> float:
+        variancia = (self.amplitude ** 2) / 12
+        return variancia
+    
+    def calcular_desvio_padrao(self) -> float:
+        desvio_padrao = math.sqrt(self.calcular_variancia())
+        return desvio_padrao
+    
+    def calcular_cv(self) -> float:
+        desvio_padrao = self.calcular_desvio_padrao()
+        media = self.calcular_media()
+        if media == 0:
+            return float('inf')
+        cv = (desvio_padrao / media) * 100
+        return cv
+    
+    def calcular_probabilidade_intervalo(self, x1:float, x2:float) -> float:
+        #calcula P(x1 <= X <= x2)
+        if x1 > x2:
+            x1, x2 = x2,x1
+        limite_inferior = max(x1, self.A)
+        limite_superior = min(x2, self.B)
+
+        if limite_inferior >= limite_superior:
+                return 0.0
+            
+        probabilidade = (limite_superior - limite_inferior) / self.amplitude
+        return probabilidade * 100
+
+    #retorna o valor da função densidade de probilidade f(x) para um dado ponto x
+    def densidade_probabilidade(self, x: float) -> float:
+        if self.A <= x <= self.B:
+            return 1 / self.amplitude
+        else:
+            return 0.0
+
+#--- EXERCICIO PASSADO PELO JC ---
+A = -2.75 #-27,5 ou -2.75?
+B = 10.17 
+print(f'\nDistribuição Uniforme Contínua em A={A} e B={B}\n')
+try:
+    dist = DistribuicaoUniforme(A=A, B=B)
+
+    #1.paramentros
+    media = dist.calcular_media()
+    variancia = dist.calcular_variancia()
+    desvio_padrao = dist.calcular_desvio_padrao()
+    cv = dist.calcular_cv()
+
+    print(f'Intervalo[A, B]: [{dist.A}. {dist.B}]\n')
+    print(f'A) Média: {media:.2f}\n')
+    print(f'B) Variância: {variancia:.2f}\n')
+    print(f'C) Desvio Padrão: {desvio_padrao:.2f}\n')
+    print(f'D) Coeficiente de Variação (CV): {cv:.2f}%\n')
+
+    #2.probabilidades
+    prob_e = dist.calcular_probabilidade_intervalo(3, 6.98)
+    print(f'E) P(3 < X < 6.98): {prob_e:.2f}%\n')
+
+    prob_f = dist.calcular_probabilidade_intervalo(7.77, B)
+    print(f'F) P(X >= 7.77): {prob_f:.2f}%\n')
+
+    prob_g = dist.calcular_probabilidade_intervalo(A, 5.00)
+    print(f'G) P(X < 5.00): {prob_g:.2f}%\n')
+
+    prob_h = dist.calcular_probabilidade_intervalo(4.57, 4.57)
+    print(f'H) P(X = 4.57): {prob_h:.2f}%\n')
+
+except ValueError as e:
+    print(f'Erro: {e}')
+
+#distribuicao exponencial
+class DistribuicaoExponencial:
+
+    def __init__(self, taxa_lambda: float ):
+        if taxa_lambda <= 0:
+            raise ValueError('O parâmetro lambda deve ser positivo')
+        self.taxa_lambda = taxa_lambda
+
+    def calcular_media(self) -> float:
+        return 1 / self.taxa_lambda
+    
+    def calcular_variancia(self) -> float:
+        return 1 / (self.taxa_lambda ** 2)
+    
+    def calcular_desvio_padrao(self) -> float:
+        return self.calcular_media()
+    
+    def calcular_cv(self) -> float:
+        return 100.0
+    
+    def calcular_probabilidade_acumulada(self, A: float) -> float:
+        #calcula a probabilidade P(X <= A)
+        if A < 0:
+            return 0.0
+        prob = 100 * (1 - math.exp(-self.taxa_lambda * A))
+        return prob
+    
+    def calcular_prob_sobrevivencia(self, A: float) -> float:
+        #calcula a probabilidade P(X >= A)
+        if A < 0:
+            return 100.0
+        prob = 100 * math.exp(-self.taxa_lambda * A)
+        return prob
+    
+    def calcular_probabilidade_intervalo(self, x1: float, x2: float) -> float:
+        #calcula a probabilidade P(x1 <= X <= x2)
+        if x1 > x2:
+            x1, x2 = x2, x1
+        prob_x2 = self.calcular_probabilidade_acumulada(x2)
+        prob_x1 = self.calcular_probabilidade_acumulada(x1)
+        return prob_x2 - prob_x1
+        
+
+# --- EXERCICIO PASSADO PELO JC ---
+DESVIO_PADRAO = 5.47
+
+LAMBDA = 1 / DESVIO_PADRAO
+
+print(f'\nDistribuição Exponencial')
+print(f'Desvio Padrão dado: {DESVIO_PADRAO:.2f}')
+print(f'Taxa calculada: {LAMBDA:.2f}')
+try:
+    exp_dist = DistribuicaoExponencial(taxa_lambda=LAMBDA)
+
+    media = exp_dist.calcular_media()
+    print(f'Média de conferência: {media:.2f}\n')
+
+    prob_a = exp_dist.calcular_prob_sobrevivencia(6.99)
+    print(f'A) P(X > 6.99): {prob_a:.2f}%\n')
+
+    prob_b = exp_dist.calcular_probabilidade_acumulada(3.33)
+    print(f'B) P(X <= 3.33): {prob_b:.2F}%\n')
+
+    prob_c = exp_dist.calcular_probabilidade_intervalo(17, 17)
+    print(f'C) P(X = 17): {prob_c:.2F}%\n')
+
+    prob_d = exp_dist.calcular_probabilidade_intervalo(4, 5.50)
+    print(f'D) P(4 < X <= 5,50): {prob_d:.2f}%\n')  
+except ValueError as e:
+    print(f'Erro: {e}')
+
+#-- Distribuição Normal Padronizada --
+class DistribuicaoNormalPadrao:
+    def __init__(self):
+        self.media = 0
+        self.desvio_padrao = 1.0
+        self.variancia = 1.0
+
+    def calcular_media(self) -> float:
+        return self.media
+    
+    def calcular_variancia(self) -> float:
+        return self.variancia
+    
+    def calcular_desvio_padrao(self) -> float:
+        return self.desvio_padrao
+    
+    def calcular_cv(self) -> float:
+        return float('inf')
+    
+    def calcular_prob_acumulada(self, z: float) -> float:
+        #P(Z <= a) = P(Z < a)
+        prob = norm.cdf(z)
+        return prob * 100
+    
+    def calcular_prob_sobrevivencia(self, z: float) -> float:
+        #P(Z >= a) = P(Z > a)
+        prob = norm.sf(z)
+        return prob * 100
+    
+    def calcular_probabilidade_intervalo(self, z1: float, z2: float) -> float:
+        #P(a <= Z <= b) = P(a < Z < b)
+        if z1 > z2:
+            z1, z2 = z2, z1
+        prob_z2 = self.calcular_prob_acumulada(z2)
+        prob_z1 = self.calcular_prob_acumulada(z1)
+
+        return prob_z2 - prob_z1
+
+#conversor x pra z
+class TransformacaoZ:
+    def calcular_z_tabela_amostra(X: float, Mu: float, Sigma: float, N: int) -> float:
+        if N <= 0:
+            raise ValueError('O tamanho da amostra (N) deve ser positivo')
+        if Sigma <= 0:
+            raise ValueError('O Desvio Padrão (Sigma) deve ser positivo')
+        
+        numerador = X - Mu
+        raiz_N = math.sqrt(N)
+        Z_tabela = (numerador * raiz_N) / Sigma
+        return Z_tabela
+    
+# --- EXERCICIO DE EXEMPLO ---
+MEDIA_POPULACIONAL = 25.42  
+TAMANHO_AMOSTRA = 36        
+DESVIO_POPULACIONAL = 7.25  
+MEDIA_AMOSTRAL_INTERESSE = 23.99
+
+print("\n\n--- Distribuição Amostral ---")
+print(f'Dados: média ={MEDIA_POPULACIONAL}, amostra ={TAMANHO_AMOSTRA}, D.P ={DESVIO_POPULACIONAL} para P(X > 23.99)\n')
+
+try:
+    z_calculado = TransformacaoZ.calcular_z_tabela_amostra(
+        X=MEDIA_AMOSTRAL_INTERESSE, 
+        Mu=MEDIA_POPULACIONAL, 
+        Sigma=DESVIO_POPULACIONAL, 
+        N=TAMANHO_AMOSTRA
+    )
+
+    print(f'1. Tabela Z (Z_x) calculado: {z_calculado:.4f}')
+    
+    z_dist = DistribuicaoNormalPadrao()
+    
+    prob_a = z_dist.calcular_prob_sobrevivencia(z_calculado)
+    
+    print(f'2. Probabilidade P(Z > {z_calculado:.4f}): {prob_a:.2f}%')
+
+    # A) P(X > 23.99)
+    print(f'\nA) P(X > 23.99): {prob_a:.2f}%')
+
+except ValueError as e:
+    print(f'Erro: {e}')
+except NameError:
+    print("Erro: Certifique que as classes 'TransformacaoZ' e 'DistribuicaoNormalPadrao' estão definidas.")
+
+    
 if __name__ == '__main__':
     app.run(debug=True)
