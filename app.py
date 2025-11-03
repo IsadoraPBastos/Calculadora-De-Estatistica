@@ -135,7 +135,6 @@ def dist_exponencial():
     if request.method == "POST":
         if request.form.get("vLambda"):
             vLambda = float(request.form.get('vLambda'))       
-            print(vLambda)
 
     return render_template("index.html", vLambda=vLambda, mostrar_modal="exponencial", 
     dadosClasses={}, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
