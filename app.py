@@ -2,6 +2,8 @@
 import json
 import math
 from flask import Flask, render_template, request, Response
+import math
+from scipy.stats import norm #pip install scipy
 
 app = Flask(__name__)
 
@@ -9,11 +11,13 @@ dadosDesordenados = []
 FequenciaIndividualAbsolutaRecebida = {}
 FequenciaIndividualAbsoluta = {}
 dadosClasses = []  
+num1 = 0
+num2 = 0
 
 @app.route('/')
 def index():
     return render_template('index.html', FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-                           FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
+                           FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[], num1=0, num2=0, mostrarResultados=False)
 
 #Recebe os dados quando a pessoa envia eles pela parte desordenada 
 @app.route("/dados_desordenados", methods=["POST", "GET"])
@@ -28,7 +32,7 @@ def dados_desordenados():
             dadosDesordenados.clear()
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="desordenado", 
     dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
+    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, num1=0, num2=0)
 
 #Recebe os dados quando a pessoa envia eles pela parte de tabela
 @app.route("/dados_em_tabela", methods=["POST", "GET"])
@@ -52,7 +56,8 @@ def dados_em_tabela():
             FequenciaIndividualAbsolutaRecebida.pop(float(amostraLimpar))
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="tabela", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
-    FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, erroFIMenorZero=erroFIMenorZero)
+    FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, erroFIMenorZero=erroFIMenorZero, 
+    num1=0, num2=0)
 
 @app.route("/agrupamento_classes", methods=["POST", "GET"])
 def agrupamento_classes():
@@ -86,7 +91,7 @@ def agrupamento_classes():
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False)
+    escolhaCalculo=[], mostrarResultados=False, num1=0, num2=0)
 
 @app.route("/alteração_fi", methods=["POST", "GET"])
 def alteração_fi():
@@ -107,23 +112,39 @@ def alteração_fi():
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False, erroMenorZero=erroMenorZero)
+    escolhaCalculo=[], mostrarResultados=False, erroMenorZero=erroMenorZero, num1=0, num2=0)
+
+@app.route("/dist_uniforme", methods=["POST", "GET"])
+def dist_uniforme():
+    global num1, num2
+    if request.method == "POST":
+        if request.form.get("num1") and request.form.get("num2"):
+            num1 = float(request.form.get('num1'))
+            num2 = float(request.form.get('num2'))           
+            
+
+    return render_template("index.html", num1=num1, num2=num2, mostrar_modal="uniforme", 
+    dadosClasses={}, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
+    FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
+    escolhaCalculo=[], mostrarResultados=False)
 
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
 def limpar_dados():
-    global dadosDesordenados, FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses
+    global dadosDesordenados, FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, num1, num2
     dadosDesordenados = []
     FequenciaIndividualAbsoluta = {}
     FequenciaIndividualAbsolutaRecebida = {}
     dadosClasses = []
+    num1=0
+    num2=0
     return render_template("index.html", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
 
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
 def calculo_dos_dados():
-    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses
+    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, num1, num2
     
     erroOutroVazio = False
     tipo = request.form.get("tipo")
@@ -151,12 +172,17 @@ def calculo_dos_dados():
     
     try:
         #Mensagem de erro caso a pessoa não insira um valor para os cálculos 
+        if num1 != 0 and num2 != 0:
+            return processar_dist_uniforme(num1, num2, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+
         if not FequenciaIndividualAbsolutaRecebida and not dadosDesordenados and not dadosClasses:
             raise ValueError
         
         # Processamento para dados agrupados em classes
         if dadosClasses:
             return processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+
+        
             
         #Organização dos dados inseridos em tabela
         elif FequenciaIndividualAbsolutaRecebida:
@@ -419,8 +445,44 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
                          mostrarResultados=True,
                          dados_classes=True) 
 
-import math
-from scipy.stats import norm #pip install scipy
+def processar_dist_uniforme(num1, num2, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+    distU = DistribuicaoUniforme(A=num1, B=num2)
+
+    #1.paramentros
+    media = distU.calcular_media()
+    variancia = distU.calcular_variancia()
+    desvioPadrao = distU.calcular_desvio_padrao()
+    coeficienteVariacao = distU.calcular_cv()
+
+    print(f'Intervalo[A, B]: [{distU.A}. {distU.B}]\n')
+    print(f'A) Média: {media:.2f}\n')
+    print(f'B) Variância: {variancia:.2f}\n')
+    # print(f'C) Desvio Padrão: {desvio_padrao:.2f}\n')
+    # print(f'D) Coeficiente de Variação (CV): {cv:.2f}%\n')
+
+    return render_template("index.html", 
+                         media=media, 
+                        #  moda=moda, 
+                        #  modaCzuber=modaCzuber,
+                        #  tipo_moda=tipo_moda, 
+                         modaBruta=True,
+                        #  mediana=mediana, 
+                         variancia=variancia, 
+                         desvioPadrao=desvioPadrao,
+                         coeficienteVariacao=coeficienteVariacao,
+                         escolhaCalculo=escolhaCalculo, 
+                         dadosDesordenados=[], 
+                         FequenciaIndividualAbsoluta={},
+                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
+                         FrequenciaAcumulada={}, 
+                         Posicoes={}, 
+                         FequenciaIndividualAbsolutaRecebida={}, 
+                         dadosClasses={},
+                         mostrar_modal=modal_aberto, 
+                         tipo=tipo, 
+                         escolhaCalculoJson=escolhaCalculoJson, 
+                         mostrarResultados=True) 
+
 
 #distribuicao uniforme
 class DistribuicaoUniforme:
@@ -432,15 +494,15 @@ class DistribuicaoUniforme:
         self.amplitude = B - A
 
     def calcular_media(self) -> float:
-        media = (self.A + self.B) / 2
+        media = round((self.A + self.B) / 2, 2)
         return media
     
     def calcular_variancia(self) -> float:
-        variancia = (self.amplitude ** 2) / 12
+        variancia = round((self.amplitude ** 2) / 12, 2)
         return variancia
     
     def calcular_desvio_padrao(self) -> float:
-        desvio_padrao = math.sqrt(self.calcular_variancia())
+        desvio_padrao = round(math.sqrt(self.calcular_variancia()))
         return desvio_padrao
     
     def calcular_cv(self) -> float:
@@ -448,7 +510,7 @@ class DistribuicaoUniforme:
         media = self.calcular_media()
         if media == 0:
             return float('inf')
-        cv = (desvio_padrao / media) * 100
+        cv = round((desvio_padrao / media) * 100, 2)
         return cv
     
     def calcular_probabilidade_intervalo(self, x1:float, x2:float) -> float:
@@ -461,7 +523,7 @@ class DistribuicaoUniforme:
         if limite_inferior >= limite_superior:
                 return 0.0
             
-        probabilidade = (limite_superior - limite_inferior) / self.amplitude
+        probabilidade = round((limite_superior - limite_inferior) / self.amplitude,2)
         return probabilidade * 100
 
     #retorna o valor da função densidade de probilidade f(x) para um dado ponto x

@@ -288,12 +288,19 @@
 
           <!-- Parte de inserção de dados - Distribuição Uniforme -->
           <div class="divisao-modal" id="secaoDUnifor">
-       <h1>Distribuição Uniforme</h1>
+              <form action="{{url_for('dist_uniforme')}}" method="POST" style="display: contents;">
+                  <input type="text" name="num1" placeholder="Número 1">
+                  <input type="text" name="num2" placeholder="Número 2">
+                  <button>Calcular</button>
+              </form>
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Exponencial -->
           <div class="divisao-modal" id="secaoDExpo">
-         <h1>Distribuição Exponencial</h1>
+         <form action="{{url_for('dist_exponencial')}}" method="POST" style="display: contents;">
+                  <input type="text" name="lambda" placeholder="Valor do Lambda">
+                  <button>Calcular</button>
+              </form>
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Normal -->
