@@ -13,11 +13,12 @@ FequenciaIndividualAbsoluta = {}
 dadosClasses = []  
 num1 = 0
 num2 = 0
+vLambda = 0
 
 @app.route('/')
 def index():
     return render_template('index.html', FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-                           FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[], num1=0, num2=0, mostrarResultados=False)
+    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[], num1=0, num2=0, vLambda=0, mostrarResultados=False)
 
 #Recebe os dados quando a pessoa envia eles pela parte desordenada 
 @app.route("/dados_desordenados", methods=["POST", "GET"])
@@ -128,23 +129,37 @@ def dist_uniforme():
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
     escolhaCalculo=[], mostrarResultados=False)
 
+@app.route("/dist_exponencial", methods=["POST", "GET"])
+def dist_exponencial():
+    global vLambda
+    if request.method == "POST":
+        if request.form.get("vLambda"):
+            vLambda = float(request.form.get('vLambda'))       
+            print(vLambda)
+
+    return render_template("index.html", vLambda=vLambda, mostrar_modal="exponencial", 
+    dadosClasses={}, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
+    FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
+    escolhaCalculo=[], mostrarResultados=False)
+
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
 def limpar_dados():
-    global dadosDesordenados, FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, num1, num2
+    global dadosDesordenados, FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, num1, num2, vLambda
     dadosDesordenados = []
     FequenciaIndividualAbsoluta = {}
     FequenciaIndividualAbsolutaRecebida = {}
     dadosClasses = []
     num1=0
     num2=0
+    vLambda=0
     return render_template("index.html", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
 
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
 def calculo_dos_dados():
-    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, num1, num2
+    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, num1, num2, vLambda
     
     erroOutroVazio = False
     tipo = request.form.get("tipo")
@@ -174,6 +189,9 @@ def calculo_dos_dados():
         #Mensagem de erro caso a pessoa não insira um valor para os cálculos 
         if num1 != 0 and num2 != 0:
             return processar_dist_uniforme(num1, num2, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+        
+        if vLambda != 0:
+            return processar_dist_exponencial(vLambda, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
         if not FequenciaIndividualAbsolutaRecebida and not dadosDesordenados and not dadosClasses:
             raise ValueError
@@ -454,11 +472,36 @@ def processar_dist_uniforme(num1, num2, escolhaCalculo, escolhaCalculoJson, moda
     desvioPadrao = distU.calcular_desvio_padrao()
     coeficienteVariacao = distU.calcular_cv()
 
-    print(f'Intervalo[A, B]: [{distU.A}. {distU.B}]\n')
-    print(f'A) Média: {media:.2f}\n')
-    print(f'B) Variância: {variancia:.2f}\n')
-    # print(f'C) Desvio Padrão: {desvio_padrao:.2f}\n')
-    # print(f'D) Coeficiente de Variação (CV): {cv:.2f}%\n')
+    return render_template("index.html", 
+                         media=media, 
+                        #  moda=moda, 
+                        #  modaCzuber=modaCzuber,
+                        #  tipo_moda=tipo_moda, 
+                         modaBruta=True,
+                        #  mediana=mediana, 
+                         variancia=variancia, 
+                         desvioPadrao=desvioPadrao,
+                         coeficienteVariacao=coeficienteVariacao,
+                         escolhaCalculo=escolhaCalculo, 
+                         dadosDesordenados=[], 
+                         FequenciaIndividualAbsoluta={},
+                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
+                         FrequenciaAcumulada={}, 
+                         Posicoes={}, 
+                         FequenciaIndividualAbsolutaRecebida={}, 
+                         dadosClasses={},
+                         mostrar_modal=modal_aberto, 
+                         tipo=tipo, 
+                         escolhaCalculoJson=escolhaCalculoJson, 
+                         mostrarResultados=True) 
+
+def processar_dist_exponencial(vLambda, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+    exp_dist = DistribuicaoExponencial(taxa_lambda=vLambda)
+
+    media = exp_dist.calcular_media()
+    variancia = exp_dist.calcular_variancia()
+    desvioPadrao = exp_dist.calcular_desvio_padrao()
+    coeficienteVariacao = exp_dist.calcular_cv()
 
     return render_template("index.html", 
                          media=media, 
@@ -577,13 +620,13 @@ class DistribuicaoExponencial:
         self.taxa_lambda = taxa_lambda
 
     def calcular_media(self) -> float:
-        return 1 / self.taxa_lambda
+        return round(1 / self.taxa_lambda, 2)
     
     def calcular_variancia(self) -> float:
-        return 1 / (self.taxa_lambda ** 2)
+        return round(1 / (self.taxa_lambda ** 2),2)
     
     def calcular_desvio_padrao(self) -> float:
-        return self.calcular_media()
+        return round(self.calcular_media(),2)
     
     def calcular_cv(self) -> float:
         return 100.0
