@@ -10,5 +10,6 @@ Calculadora para as aulas de estatistica
 - Selecionar os botões de opções de contas de acordo com a conta
 - Aparecer na tela os dados inseridos e os intervalos escolhidos
 - "could not convert string to float: '3,33'" -> não dá para usar virgula
+- Erro agrupamento discreto: Inserir só 1 dado no dados desordenados
 
 Chart js

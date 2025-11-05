@@ -322,7 +322,22 @@
 
           <!-- Parte de inserção de dados - Distribuição Normal -->
           <div class="divisao-modal" id="secaoDNormal">
-         <h1>Distribuição Normal</h1>
+            <form action="{{url_for('dist_normal_pad')}}" method="POST" style="display: contents;">
+                  <input type="text" name="valorANorm" placeholder="Valor do A">
+                  <input type="text" name="valorBNorm" placeholder="Valor do B">
+                  <input type="text" name="mediaNorm" placeholder="Média">
+                  <input type="text" name="desvioPadraoNorm" placeholder="Desvio Padrão">
+                  <select name="intervalo" id="">
+                    <option value="maiorQue">></option>
+                    <option value="menorQue"><</option>
+                    <option value="menorQueMenorQue">< <</option>
+                    <option value="menorQueMenorQue"><= <</option>
+                    <option value="menorQueMenorQue">< <=</option>
+                    <option value="menorQueMenorQue"><= <=</option>
+                    <option value="intervaloIgual">=</option>
+                  </select>
+                  <button>Calcular</button>
+              </form>
           </div>
         </div>
       </div>
@@ -527,6 +542,15 @@
         />
         <label for="coeficienteVariacao" class="escolha-calculo">Coeficiente de Variação</label>
 
+        <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="probabilidade"
+          value="probabilidade"
+          class="escolha-checkbox"
+        />
+        <label for="probabilidade" class="escolha-calculo">Probabilidade</label>
+
         <div id="msg-erro-calculos">
           <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Escolha
           ao menos um cálculo!
@@ -554,7 +578,7 @@
       <h1 style="color:white;"><u>Estatísticas desses Dados</u></h1>
     </div>
                                                                                                               
-    <h2 style="color:white;">{% if dados_classes %}Tabela de Classes{% else %}Tabela das Frequências{% endif %}</h2>
+    <h2 style="color:white;">{% if dados_classes %} Tabela de Classes {% elif dados_agrup_disc %} Tabela das Frequências {% else %} Resultados {% endif %}</h2>
     <table style="color: black; background-color: white;">
       <thead>
         <tr>
@@ -628,6 +652,12 @@
         <h3>Coeficiente de Variação</h3>
         <p>{{ coeficienteVariacao }}% </p>
         </div>
+
+      {% elif escolha == "probabilidade" %}
+        <div class="calculos-resultados">
+        <h3>Probabilidade</h3>
+        <p>{{ probabilidade }}% </p>
+        </div>
       {% endif %}
     {% elif tipo == "semMedida" %}
         {% if escolha == "media" %}
@@ -671,6 +701,12 @@
         <div class="calculos-resultados">
         <h3>Coeficiente de Variação</h3>
         <p>{{ coeficienteVariacao }}% </p>
+        </div>
+
+      {% elif escolha == "probabilidade" %}
+        <div class="calculos-resultados">
+        <h3>Probabilidade</h3>
+        <p>{{ probabilidade }}% </p>
         </div>
       {% endif %}
 
@@ -716,6 +752,12 @@
         <div class="calculos-resultados">
         <h3>Coeficiente de Variação</h3>
         <p>{{ coeficienteVariacao }}% </p>
+        </div>
+      
+      {% elif escolha == "probabilidade" %}
+        <div class="calculos-resultados">
+        <h3>Probabilidade</h3>
+        <p>{{ probabilidade }}% </p>
         </div>
       {% endif %}
     {% endif %} 

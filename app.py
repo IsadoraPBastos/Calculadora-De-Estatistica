@@ -15,6 +15,9 @@ limiteSuperior = 0
 limiteInferior = 0
 vLambda = 0
 desvioPadrao = 0
+intervalo = 0
+valorANorm = 0
+valorBNorm = 0
 
 @app.route('/')
 def index():
@@ -173,6 +176,28 @@ def dist_exponencial():
     FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, 
     Posicoes={}, escolhaCalculo=[], mostrarResultados=False)
 
+@app.route("/dist_normal_pad", methods=["POST", "GET"])
+def dist_normal_pad():
+    global valorANorm, valorBNorm, intervalo
+    if request.method == "POST":
+        if request.form.get("valorANorm") and request.form.get("intervalo"):
+            valorANorm = float(request.form.get('valorANorm'))      
+            intervalo = request.form.get("intervalo")
+            if request.form.get("mediaNorm") and request.form.get("desvioPadraoNorm"):
+                mediaNorm = float(request.form.get("mediaNorm"))
+                desvioPadraoNorm = float(request.form.get("desvioPadraoNorm"))
+            if intervalo == "menorQueMenorQue" or intervalo == "menorIgualQueMenorQue" or intervalo == "menorQueMenorIgualQue" or intervalo == "menorIgualQueMenorIgualQue":
+                valorBNorm = float(request.form.get('valorBNorm')) 
+            else: 
+                valorBNorm = 0
+            
+    return render_template("index.html", valorANorm=valorANorm, valorBNorm=valorBNorm,
+    intervalo=intervalo, mostrar_modal="uniforme", 
+    dadosClasses={}, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
+    FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
+    escolhaCalculo=[], mostrarResultados=False)
+
+
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
 def limpar_dados():
@@ -185,13 +210,14 @@ def limpar_dados():
     limiteInferior=0
     vLambda=0
     desvioPadrao=0
+    intervalo=""
     return render_template("index.html", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
 
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
 def calculo_dos_dados():
-    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, intervalo
+    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo
     
     erroOutroVazio = False
     tipo = request.form.get("tipo")
@@ -225,6 +251,9 @@ def calculo_dos_dados():
         if vLambda != 0 or desvioPadrao != 0:
             if intervalo != "" and valorA != 0:
                 return processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+
+        if valorANorm != 0 and intervalo != "":
+            return processar_dist_normal(valorANorm, valorBNorm, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
         if not FequenciaIndividualAbsolutaRecebida and not dadosDesordenados and not dadosClasses:
             raise ValueError
@@ -361,7 +390,7 @@ def calculo_dos_dados():
         return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, variancia=variancia, desvioPadrao=desvioPadrao, 
         coeficienteVariacao=coeficienteVariacao,escolhaCalculo=escolhaCalculo, dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
         tamanhoDaAmostra=tamanhoDaAmostra, FrequenciaAcumulada=FrequenciaAcumulada, Posicoes=Posicoes, FequenciaIndividualAbsolutaRecebida={}, dadosClasses=[], 
-        mostrar_modal=modal_aberto, tipo=tipo, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio)
+        mostrar_modal=modal_aberto, tipo=tipo, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio, dados_agrup_disc=True)
     except ValueError:
         return render_template("index.html", erro="Você precisa inserir pelo menos um dado!", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, 
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[])
@@ -555,18 +584,18 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
 
         if(valorA != 0 and intervalo != ""):
             if(valorB != 0 and intervalo == "menorQueMenorQue"):
-                prob_intervalo = exp_dist.calcular_probabilidade_intervalo(valorA, valorB) 
-                print(f"prob_intervalo {prob_intervalo}")
+                resultProb = exp_dist.calcular_probabilidade_intervalo(valorA, valorB) 
+                print(f"prob_intervalo {resultProb}")
             else: 
                 if(intervalo == "maiorQue"):
-                    prob_MaiorQue = exp_dist.calcular_prob_sobrevivencia(valorA)
-                    print("prob_MaiorQue ", prob_MaiorQue)
+                    resultProb = exp_dist.calcular_prob_sobrevivencia(valorA)
+                    print("prob_MaiorQue ", resultProb)
                 elif(intervalo == "menorQue"):
-                    prob_MenorQue = exp_dist.calcular_probabilidade_acumulada(valorA)
-                    print("prob_MenorQue ", prob_MenorQue)
+                    resultProb = exp_dist.calcular_probabilidade_acumulada(valorA)
+                    print("prob_MenorQue ", resultProb)
                 elif(intervalo == "intervaloIgual"):
-                    prob_Igual = 0.00
-                    print(prob_Igual)
+                    resultProb = 0.00
+                    print(resultProb)
 
     elif(desvioPadrao != 0 and vLambda == 0):
         vLambda = 1 / desvioPadrao
@@ -581,23 +610,74 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
         print("intervalo: ", intervalo)
         if(valorA != 0 and intervalo != ""):
             if(valorB != 0 and intervalo == "menorQueMenorQue"):
-                prob_intervalo = exp_dist.calcular_probabilidade_intervalo(valorA, valorB) 
-                print(f"prob_intervalo {prob_intervalo}")
+                resultProb = exp_dist.calcular_probabilidade_intervalo(valorA, valorB) 
+                print(f"prob_intervalo {resultProb}")
             else: 
                 if(intervalo == "maiorQue"):
-                    prob_MaiorQue = exp_dist.calcular_prob_sobrevivencia(valorA)
-                    print("prob_MaiorQue ", prob_MaiorQue)
+                    resultProb = exp_dist.calcular_prob_sobrevivencia(valorA)
+                    print("prob_MaiorQue ", resultProb)
                 elif(intervalo == "menorQue"):
-                    prob_MenorQue = exp_dist.calcular_probabilidade_acumulada(valorA)
-                    print("prob_MenorQue ", prob_MenorQue)
+                    resultProb = exp_dist.calcular_probabilidade_acumulada(valorA)
+                    print("prob_MenorQue ", resultProb)
                 elif(intervalo == "intervaloIgual"):
-                    prob_Igual = 0.00
-                    print(prob_Igual)
+                    resultProb = 0.00
+                    print(resultProb)
     else: 
         print("Tem algum erro ai")
 
     return render_template("index.html", 
                          media=media, 
+                         probabilidade=resultProb,
+                        #  moda=moda, 
+                        #  modaCzuber=modaCzuber,
+                        #  tipo_moda=tipo_moda, 
+                         modaBruta=True,
+                        #  mediana=mediana, 
+                         variancia=variancia, 
+                         desvioPadrao=desvioPadrao,
+                         coeficienteVariacao=coeficienteVariacao,
+                         escolhaCalculo=escolhaCalculo, 
+                         dadosDesordenados=[], 
+                         FequenciaIndividualAbsoluta={},
+                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
+                         FrequenciaAcumulada={}, 
+                         Posicoes={}, 
+                         FequenciaIndividualAbsolutaRecebida={}, 
+                         dadosClasses={},
+                         mostrar_modal=modal_aberto, 
+                         tipo=tipo, 
+                         escolhaCalculoJson=escolhaCalculoJson, 
+                         mostrarResultados=True) 
+
+def processar_dist_normal(valorANorm, valorBNorm, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+    distN = DistribuicaoNormalPadrao()
+
+    #1.paramentros
+    media = distN.calcular_media()
+    variancia = distN.calcular_variancia()
+    desvioPadrao = distN.calcular_desvio_padrao()
+    coeficienteVariacao = distN.calcular_cv()
+
+    if(intervalo == "maiorQue"):
+        resultProb = distN.calcular_prob_sobrevivencia(valorANorm)
+        print("prob_MaiorQue", resultProb)
+    elif(intervalo == "menorQue"):
+        resultProb = distN.calcular_prob_acumulada(valorANorm)
+        print("prob_MenorQue", resultProb)
+    elif(intervalo == "intervaloIgual"):
+        resultProb = 0.00
+        print(resultProb)
+    elif(intervalo == "menorQueMenorQue"):
+        resultProb = distN.calcular_probabilidade_intervalo(valorANorm, valorBNorm)
+        print(valorANorm)
+        print(valorBNorm)
+        print("menorQueMenorQue", resultProb)
+    else:
+        print("Tem algo errado")
+
+    return render_template("index.html", 
+                         media=media, 
+                         probabilidade=resultProb,
                         #  moda=moda, 
                         #  modaCzuber=modaCzuber,
                         #  tipo_moda=tipo_moda, 
@@ -728,14 +808,14 @@ class DistribuicaoExponencial:
         #calcula a probabilidade P(X <= A)
         if A < 0:
             return 0.0
-        prob = 100 * (1 - math.exp(-self.taxa_lambda * A))
+        prob = round(100 * (1 - math.exp(-self.taxa_lambda * A)),2)
         return prob
     
     def calcular_prob_sobrevivencia(self, A: float) -> float:
         #calcula a probabilidade P(X >= A)
         if A < 0:
             return 100.0
-        prob = 100 * math.exp(-self.taxa_lambda * A)
+        prob = round(100 * math.exp(-self.taxa_lambda * A),2)
         return prob
     
     def calcular_probabilidade_intervalo(self, x1: float, x2: float) -> float:
@@ -744,7 +824,7 @@ class DistribuicaoExponencial:
             x1, x2 = x2, x1
         prob_x2 = self.calcular_probabilidade_acumulada(x2)
         prob_x1 = self.calcular_probabilidade_acumulada(x1)
-        return prob_x2 - prob_x1
+        return round(prob_x2 - prob_x1,2)
         
 
 # --- EXERCICIO PASSADO PELO JC ---
@@ -797,12 +877,12 @@ class DistribuicaoNormalPadrao:
     def calcular_prob_acumulada(self, z: float) -> float:
         #P(Z <= a) = P(Z < a)
         prob = norm.cdf(z)
-        return prob * 100
+        return round(prob * 100,2)
     
     def calcular_prob_sobrevivencia(self, z: float) -> float:
         #P(Z >= a) = P(Z > a)
         prob = norm.sf(z)
-        return prob * 100
+        return round(prob * 100,2)
     
     def calcular_probabilidade_intervalo(self, z1: float, z2: float) -> float:
         #P(a <= Z <= b) = P(a < Z < b)
@@ -811,7 +891,7 @@ class DistribuicaoNormalPadrao:
         prob_z2 = self.calcular_prob_acumulada(z2)
         prob_z1 = self.calcular_prob_acumulada(z1)
 
-        return prob_z2 - prob_z1
+        return round(prob_z2 - prob_z1,2)
 
 #conversor x pra z
 class TransformacaoZ:
