@@ -289,8 +289,10 @@
           <!-- Parte de inserção de dados - Distribuição Uniforme -->
           <div class="divisao-modal" id="secaoDUnifor">
               <form action="{{url_for('dist_uniforme')}}" method="POST" style="display: contents;">
-                  <input type="text" name="num1" placeholder="Número 1">
-                  <input type="text" name="num2" placeholder="Número 2">
+                  <input type="text" name="limiteSuperior" placeholder="Limite Inferior">
+                  <input type="text" name="limiteInferior" placeholder="Limite Superior">
+                  <input type="text" name="num1" placeholder="Limite Inferior">
+                  <input type="text" name="num2" placeholder="Limite Superior">
                   <button>Calcular</button>
               </form>
           </div>
@@ -299,6 +301,14 @@
           <div class="divisao-modal" id="secaoDExpo">
          <form action="{{url_for('dist_exponencial')}}" method="POST" style="display: contents;">
                   <input type="text" name="vLambda" placeholder="Valor do Lambda">
+                  <input type="text" name="desvioPadrao" placeholder="Desvio Padrão" disabled>
+                  <input type="text" name="valorA" placeholder="Valor do A">
+                  <input type="text" name="valorB" placeholder="Valor do B">
+                  <select name="intervalo" id="">
+                    <option value="maiorQue">></option>
+                    <option value="menorQue"><</option>
+                    <option value="menorQueMenorQue"><<</option>
+                  </select>
                   <button>Calcular</button>
               </form>
           </div>
