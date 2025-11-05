@@ -291,8 +291,14 @@
               <form action="{{url_for('dist_uniforme')}}" method="POST" style="display: contents;">
                   <input type="text" name="limiteSuperior" placeholder="Limite Inferior">
                   <input type="text" name="limiteInferior" placeholder="Limite Superior">
-                  <input type="text" name="num1" placeholder="Limite Inferior">
-                  <input type="text" name="num2" placeholder="Limite Superior">
+                  <input type="text" name="valorCUnif" placeholder="Valor 1">
+                  <input type="text" name="valorDUnif" placeholder="Valor 2">
+                  <select name="intervalo" id="">
+                    <option value="maiorQue">></option>
+                    <option value="menorQue"><</option>
+                    <option value="menorQueMenorQue"><<</option>
+                    <option value="intervaloIgual">=</option>
+                  </select>
                   <button>Calcular</button>
               </form>
           </div>
@@ -300,14 +306,15 @@
           <!-- Parte de inserção de dados - Distribuição Exponencial -->
           <div class="divisao-modal" id="secaoDExpo">
          <form action="{{url_for('dist_exponencial')}}" method="POST" style="display: contents;">
-                  <input type="text" name="vLambda" placeholder="Valor do Lambda">
-                  <input type="text" name="desvioPadrao" placeholder="Desvio Padrão" disabled>
+                  <input type="text" name="vLambda" placeholder="Valor do Lambda" disabled>
+                  <input type="text" name="desvioPadrao" placeholder="Desvio Padrão">
                   <input type="text" name="valorA" placeholder="Valor do A">
                   <input type="text" name="valorB" placeholder="Valor do B">
                   <select name="intervalo" id="">
                     <option value="maiorQue">></option>
                     <option value="menorQue"><</option>
                     <option value="menorQueMenorQue"><<</option>
+                    <option value="intervaloIgual">=</option>
                   </select>
                   <button>Calcular</button>
               </form>
