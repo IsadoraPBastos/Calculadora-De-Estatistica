@@ -321,12 +321,13 @@
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Normal -->
-          <div class="divisao-modal" id="secaoDNormal">
+          <div class="divisao-modal" id="secaoDNormal" style="flex-direction: column;">
             <form action="{{url_for('dist_normal_pad')}}" method="POST" style="display: contents;">
                   <input type="text" name="valorANorm" placeholder="Valor do A">
                   <input type="text" name="valorBNorm" placeholder="Valor do B">
-                  <input type="text" name="mediaNorm" placeholder="Média">
-                  <input type="text" name="desvioPadraoNorm" placeholder="Desvio Padrão">
+                  <input type="text" name="mediaNorm" placeholder="Média Populacional">
+                  <input type="text" name="desvioPadraoNorm" placeholder="Desvio Padrão Populacional">
+                  <input type="text" name="tamanhoAmostraNorm" placeholder="Tamanho da Amostra">
                   <select name="intervalo" id="">
                     <option value="maiorQue">></option>
                     <option value="menorQue"><</option>
@@ -488,6 +489,7 @@
         />
         <label for="media" class="escolha-calculo">Média</label>
 
+        {% if mostrar_modal == "padrao" or mostrar_modal == "discreto" or mostrar_modal == "classes"%}
         <input
           type="checkbox"
           name="escolha-calculo"
@@ -514,6 +516,7 @@
           class="escolha-checkbox"
         />
         <label for="mediana" class="escolha-calculo">Mediana</label>
+        {% endif %}
 
         <input
           type="checkbox"
@@ -542,6 +545,7 @@
         />
         <label for="coeficienteVariacao" class="escolha-calculo">Coeficiente de Variação</label>
 
+        {% if dados_vac == True %}
         <input
           type="checkbox"
           name="escolha-calculo"
@@ -550,6 +554,7 @@
           class="escolha-checkbox"
         />
         <label for="probabilidade" class="escolha-calculo">Probabilidade</label>
+        {% endif %}
 
         <div id="msg-erro-calculos">
           <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Escolha
@@ -574,6 +579,7 @@
     <!-- Resultado dos cálculos -->
      <div class="container-estatisticas-dos-dados">
       <hr>
+      {% if dados_agrup_disc == True or dados_classes == True %}
     <div>
       <h1 style="color:white;"><u>Estatísticas desses Dados</u></h1>
     </div>
@@ -605,7 +611,8 @@
     </table>
 
     <p style="color:white;margin-top: 3px; margin-bottom: 40px;">Tamanho da amostra: {{ tamanhoDaAmostra }} dados<p>
-    <h2 style="color:white;">Cálculos escolhidos</h2>
+    {% endif %}
+      <h2 style="color:white;">Cálculos escolhidos</h2>
       <div style="width: 100%; justify-content: center; display: flex;">
     <div class="container-calculos-resultados">
     {% for escolha in escolhaCalculo %} 
@@ -955,6 +962,7 @@
         "container_modal_discreto"
       );
       const modalClasses = document.getElementById("container_modal_classes");
+      const modalVac = document.getElementById("container_modal_vac")
       const tipoModal = "{{ mostrar_modal }}";
       const desordenadoOuTabela = "{{ mostrar_desor_ou_tab }}";
       const botoes = document.querySelector(".botoes-calcular-limpar");
@@ -1005,7 +1013,16 @@
           (checkbox) =>
             (checkbox.checked = escolhaMarcada.includes(checkbox.value))
         );
-      }
+      } else if (tipoModal == "uniforme"){
+        modalVac.classList.add("show")
+        mostrarDUnifor()
+      }  else if (tipoModal == "exponencial"){
+        modalVac.classList.add("show")
+        mostrarDExpo()
+      }  else if (tipoModal == "normal"){
+        modalVac.classList.add("show")
+        mostrarDNormal()
+      } 
       
       const formDadosDesordenados = document.getElementById("formDadosDesordenados");
 
