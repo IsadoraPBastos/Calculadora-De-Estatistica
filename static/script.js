@@ -3,6 +3,7 @@ function abrirModalDiscreto() {
   document.getElementById("container_modal_discreto").classList.add("show");
   document.querySelector(".botoes-calcular-limpar").classList.add("descer");
   document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
+  document.getElementById("container_modal_vac").classList.remove("show");
 
   // Desabilitar moda de Czuber para dados desordenados
   const modaCzuber = document.getElementById("modaCzuber");
@@ -12,7 +13,7 @@ function abrirModalDiscreto() {
   modaCzuberLabel.classList.add("disabled");
 }
 
-function abrirModalDiscreto() {
+function fecharModalDiscreto() {
   document.getElementById("container_modal_discreto").classList.remove("show");
   document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
   document
@@ -164,6 +165,24 @@ function mostrarDNormal() {
   document.getElementById("btn-escolha-exponecial").classList.remove("ativo");
   document.getElementById("btn-escolha-uniforme").classList.remove("ativo");
   document.getElementById("btn-escolha-normal").classList.add("ativo");
+}
+
+const secaoDNormal_Amostral = document.getElementById("secaoDNormal_Amostral");
+const secaoDNormal_Final = document.getElementById("secaoDNormal_Final");
+
+function mostrarDNormal_Amostral() {
+  secaoDNormal_Final.style.display = "none";
+  if (secaoDNormal_Amostral.style.display == "flex") {
+    secaoDNormal_Amostral.style.display = "none";
+  } else {
+    secaoDNormal_Amostral.style.display = "flex";
+  }
+}
+
+
+function mostrarDNormal_Final() {
+  secaoDNormal_Amostral.style.display = "none";
+  secaoDNormal_Final.style.display = "flex";
 }
 
 // Cards

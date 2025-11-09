@@ -124,7 +124,7 @@
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
         
-          <h1>Agrupamento Discreto</h1>
+          <h1>Agrupamento Discreto {% if reqDistNormal %} - Pela Distribuição Normal {% endif %} </h1>
           <button onclick="mostrarDadosDesordenados()" id="btn-escolha-desordenado" class="btn-mostrar-tipo-discreto">Dados Desordenados</button>
           <button onclick="mostrarDadosEmTabela()" id="btn-escolha-tabela" class="btn-mostrar-tipo-discreto">Dados em Tabela</button>
 
@@ -151,6 +151,7 @@
           <button name="limpar" value="limpar" class="btn_limpar">Limpar</button>
         </form>
         </div>
+        
           </div>
 
           <!-- Parte de inserção de dados - Tabela -->
@@ -203,6 +204,12 @@
           <div class="msg-erro" id="msg-erro-zero-division">
             <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Digite uma Frequência Individual maior que 0!
           </div>
+          {% endif %}
+          {% if reqDistNormal %}
+          <form action="{{url_for('calculo_dos_dados')}}" method="POST" style="display: contents;">
+          <button class="btnCalcularDiscDistNormal">Calcular Dados</button>
+          <p class="details">*Esses dados serão processados e enviados para a utilização na Distribuição Normal.</p>
+          </form> 
           {% endif %}
     </div>
     </div>
@@ -321,8 +328,20 @@
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Normal -->
-          <div class="divisao-modal" id="secaoDNormal" style="flex-direction: column;">
+          <div class="divisao-modal" id="secaoDNormal">
+            
+            <div class="secao-normal">
+            <div class="normal-botoes">
+               <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
+            <button onclick="abrirModalDiscreto()" type="submit" value="1" id="btn-escolha-normal" name="reqDistNormal" class="btn-mostrar-tipo-discreto">Agrupamento Discreto</button>
+            </form>
+            <button onclick="mostrarDNormal_Amostral()" id="btn-escolha-normal" class="btn-mostrar-tipo-discreto">Amostral</button>
+            {% if reqDistNormal %}
+            <button onclick="mostrarDNormal_Final()" id="btn-escolha-normal" class="btn-mostrar-tipo-discreto">Final</button>
+            {% endif %}
+            </div>
             <form action="{{url_for('dist_normal_pad')}}" method="POST" style="display: contents;">
+              <div id="secaoDNormal_Amostral">
                   <input type="text" name="valorANorm" placeholder="Valor do A">
                   <input type="text" name="valorBNorm" placeholder="Valor do B">
                   <input type="text" name="mediaNorm" placeholder="Média Populacional">
@@ -338,8 +357,41 @@
                     <option value="intervaloIgual">=</option>
                   </select>
                   <button>Calcular</button>
+                </div>
               </form>
+              <div id="secaoDNormal_Final">
+                  {% if reqDistNormal %}
+                  <div style="background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                      <h3>📊 Dados Calculados</h3>
+                      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                          <div><strong>Média:</strong> {{ mediaNorm }}</div>
+                          <div><strong>Moda:</strong> {{ moda }}</div>
+                          <div><strong>Mediana:</strong> {{ mediana }}</div>
+                          <div><strong>Desvio Padrão:</strong> {{ desvioPadraoNorm }}</div>
+                      </div>
+                  </div>
+                  <form action="{{url_for('dist_normal_pad')}}" method="POST" style="display: contents;">
+                        <input type="text" name="valorANorm" placeholder="Valor do A">
+                        <input type="text" name="valorBNorm" placeholder="Valor do B">
+                        <select name="escolha-opcoes-resultados" id="">
+                          <option value="escolha_Moda">Moda</option>
+                          <option value="escolha_Mediana">Mediana</option>
+                        </select>
+                        <select name="intervalo" id="">
+                          <option value="maiorQue">></option>
+                          <option value="menorQue"><</option>
+                          <option value="menorQueMenorQue">< <</option>
+                          <option value="menorQueMenorQue"><= <</option>
+                          <option value="menorQueMenorQue">< <=</option>
+                          <option value="menorQueMenorQue"><= <=</option>
+                          <option value="intervaloIgual">=</option>
+                        </select>
+                        <button>Calcular</button>
+                    </form>
+                  {% endif %}
+                </div>
           </div>
+        </div>
         </div>
       </div>
       
@@ -545,7 +597,7 @@
         />
         <label for="coeficienteVariacao" class="escolha-calculo">Coeficiente de Variação</label>
 
-        {% if dados_vac == True %}
+        {% if dados_vac == True or reqDistNormal == True %}
         <input
           type="checkbox"
           name="escolha-calculo"
@@ -1020,8 +1072,13 @@
         modalVac.classList.add("show")
         mostrarDExpo()
       }  else if (tipoModal == "normal"){
-        modalVac.classList.add("show")
-        mostrarDNormal()
+        modalVac.classList.add("show");
+        mostrarDNormal();
+
+        const tipoDadoMarcado = "{{ secaoDNormalFinal }}";
+        if(tipoDadoMarcado){
+          document.getElementById("secaoDNormal_Final").style.display = "flex";
+        }
       } 
       
       const formDadosDesordenados = document.getElementById("formDadosDesordenados");
@@ -1165,30 +1222,6 @@
       }, 200);
 
     });
-
-    // Funções para abrir e fechar modais
-    function abrirModalDiscreto() {
-      document.getElementById("container_modal_discreto").classList.add("show");
-      document.querySelector(".botoes-calcular-limpar").classList.add("descer");
-      document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
-      
-      // Desabilitar moda de Czuber para dados desordenados
-      const modaCzuber = document.getElementById("modaCzuber");
-      const modaCzuberLabel = document.querySelector('label[for="modaCzuber"]');
-      modaCzuber.disabled = true;
-      modaCzuber.checked = false;
-      modaCzuberLabel.classList.add("disabled");
-
-      setTimeout(() => {
-        focarInputAutomatico();
-      }, 100);
-    }
-
-    function fecharModalDiscreto() {
-      document.getElementById("container_modal_discreto").classList.remove("show");
-      document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
-      document.querySelector(".container-opcoes-tipo-dado").classList.remove("descer");
-    }
 
     function abrirModalClasses() {
       document.getElementById("container_modal_classes").classList.add("show");

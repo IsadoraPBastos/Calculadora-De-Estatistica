@@ -23,6 +23,8 @@ valorBNorm = 0
 tamanhoAmostraNorm = 0
 mediaNorm = 0
 desvioPadraoNorm = 0
+reqDistNormal = False
+secaoDNormalFinal = False
 
 @app.route('/')
 def index():
@@ -32,6 +34,7 @@ def index():
 #Recebe os dados quando a pessoa envia eles pela parte desordenada 
 @app.route("/dados_desordenados", methods=["POST", "GET"])
 def dados_desordenados():
+    global reqDistNormal
     if request.method == "POST":
         if request.form.get("dado"):
             dadosDesordenados.append(float(request.form.get("dado")))
@@ -40,9 +43,11 @@ def dados_desordenados():
             dadosClasses.clear()
         elif request.form.get("limpar") == "limpar":
             dadosDesordenados.clear()
+        elif request.form.get("reqDistNormal"):
+            reqDistNormal = True
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="desordenado", 
     dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, limiteSuperior=0, limiteInferior=0)
+    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, limiteSuperior=0, limiteInferior=0, reqDistNormal=reqDistNormal)
 
 #Recebe os dados quando a pessoa envia eles pela parte de tabela
 @app.route("/dados_em_tabela", methods=["POST", "GET"])
@@ -183,11 +188,15 @@ def dist_exponencial():
 
 @app.route("/dist_normal_pad", methods=["POST", "GET"])
 def dist_normal_pad():
-    global valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm
+    global valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, moda, mediana
+    #if moda != 0 and mediana != 0: 
+
     if request.method == "POST":
         if request.form.get("valorANorm") and request.form.get("intervalo"):
             valorANorm = float(request.form.get('valorANorm'))      
             intervalo = request.form.get("intervalo")
+            print("Valor a:", valorANorm)
+            print("Intervalo:", intervalo)
             if request.form.get("mediaNorm") and request.form.get("desvioPadraoNorm") and request.form.get("tamanhoAmostraNorm"):
                 mediaNorm = float(request.form.get("mediaNorm"))
                 desvioPadraoNorm = float(request.form.get("desvioPadraoNorm"))
@@ -208,7 +217,7 @@ def dist_normal_pad():
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
 def limpar_dados():
-    global dadosDesordenados, FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda
+    global dadosDesordenados, FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, reqDistNormal
     dadosDesordenados = []
     FequenciaIndividualAbsoluta = {}
     FequenciaIndividualAbsolutaRecebida = {}
@@ -218,19 +227,21 @@ def limpar_dados():
     vLambda=0
     desvioPadrao=0
     intervalo=""
+    valorANorm = 0
+    valorBNorm = 0
+    reqDistNormal = False
     return render_template("index.html", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, mostrar_modal="padrao")
 
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
 def calculo_dos_dados():
-    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm,tamanhoAmostraNorm
+    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm,tamanhoAmostraNorm, modal_aberto, tipo
     
     erroOutroVazio = False
     tipo = request.form.get("tipo")
     if tipo == "outro":
         tipo = request.form.get("tipo_custom")
-        print(tipo)
         if tipo.strip() == "":
             erroOutroVazio = True
 
@@ -244,6 +255,7 @@ def calculo_dos_dados():
                                dadosClasses=[],
                                escolhaCalculo=[],
                                mostrarResultados=False)
+    print("Tipo: ", tipo)
             
     escolhaCalculo = request.form.getlist("escolha-calculo")
     escolhaCalculoJson = json.dumps(escolhaCalculo).replace("'", '"')
@@ -258,9 +270,6 @@ def calculo_dos_dados():
         if vLambda != 0 or desvioPadrao != 0:
             if intervalo != "" and valorA != 0:
                 return processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
-
-        if valorANorm != 0 and intervalo != "":
-            return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
         if not FequenciaIndividualAbsolutaRecebida and not dadosDesordenados and not dadosClasses:
             raise ValueError
@@ -393,6 +402,37 @@ def calculo_dos_dados():
                 print(media)
                 return (desvio_padrao * 100) / media
             coeficienteVariacao = round(calcular_coeficiente_variacao(dados_expandidos), 2)
+        
+        if reqDistNormal:
+            mediana = mediana_calculada
+            if valorANorm != 0 and intervalo != "":
+                return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, moda, mediana, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+            else:
+                return render_template("index.html", 
+                                    mediaNorm=media, 
+                                    moda=moda, 
+                                    tipo_moda=tipo_moda, 
+                                    mediana=mediana, 
+                                    variancia=variancia, 
+                                    desvioPadraoNorm=desvioPadrao,
+                                    coeficienteVariacao=coeficienteVariacao,
+                                    escolhaCalculo=escolhaCalculo, 
+                                    dadosDesordenados=dadosDesordenados, 
+                                    FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
+                                    tamanhoDaAmostra=tamanhoDaAmostra, 
+                                    FrequenciaAcumulada=FrequenciaAcumulada, 
+                                    Posicoes=Posicoes, 
+                                    FequenciaIndividualAbsolutaRecebida={}, 
+                                    dadosClasses=[], 
+                                    mostrar_modal="normal",  # Mantém o modal aberto
+                                    tipo=tipo, 
+                                    escolhaCalculoJson=escolhaCalculoJson, 
+                                    mostrarResultados=False,
+                                    dados_agrup_disc=True,
+                                    secaoDNormalFinal = True,
+                                    # Adiciona flags para mostrar botão de prosseguir
+                                    reqDistNormal=True)
+
             
         return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, variancia=variancia, desvioPadrao=desvioPadrao, 
         coeficienteVariacao=coeficienteVariacao,escolhaCalculo=escolhaCalculo, dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
@@ -658,7 +698,7 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
                          mostrarResultados=True,
                          dados_vac=True) 
 
-def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, moda, mediana, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
     distN = DistribuicaoNormalPadrao()
 
     #1.paramentros

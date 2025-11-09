@@ -308,6 +308,23 @@ label[for="modaCzuber"].disabled {
 .divisao-modal {
   display: flex;
   justify-content: center;
+  white-space: nowrap;
+}
+
+.secao-normal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* 🔹 Botões no topo */
+.normal-botoes {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 #secaoDadosDesordenados,
@@ -316,7 +333,9 @@ label[for="modaCzuber"].disabled {
 #secaoDExpo,
 #secaoDNormal,
 #secaoDBino,
-#secaoDPois {
+#secaoDPois,
+#secaoDNormal_Amostral,
+#secaoDNormal_Final {
   display: none;
 }
 
@@ -378,6 +397,16 @@ label[for="modaCzuber"].disabled {
   background-color: #2955b3;
   color: white;
   transition: 0.3s;
+}
+
+.btnCalcularDiscDistNormal {
+  background-color: #830e0e;
+  border: 1px solid #6d0606;
+  padding: 25px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: 40px;
+  margin-bottom: 3px;
 }
 
 /* Mensagem de erro */
