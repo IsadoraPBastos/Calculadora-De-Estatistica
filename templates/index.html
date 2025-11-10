@@ -220,7 +220,7 @@
         <div class="botao-fechar-modal" onclick="fecharModalClasses()">
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
-        <h1>Agrupamento em Classes</h1>
+        <h1>Agrupamento em Classes {% if reqDistNormal %} - Pela Distribuição Normal {% endif %}</h1>
         <div class="divisao-modal">
           <form action="{{url_for('agrupamento_classes')}}" method="POST" style="display: contents;">
           <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
@@ -278,6 +278,12 @@
             <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Digite uma Frequência Individual maior que 0!
           </div>
           {% endif %}
+          {% if reqDistNormal %}
+          <form action="{{url_for('calculo_dos_dados')}}" method="POST" style="display: contents;">
+          <button class="btnCalcularDiscDistNormal">Calcular Dados</button>
+          <p class="details">*Esses dados serão processados e enviados para a utilização na Distribuição Normal.</p>
+          </form> 
+          {% endif %}
       </div>
     </div>
 
@@ -332,8 +338,11 @@
             
             <div class="secao-normal">
             <div class="normal-botoes">
-               <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
-            <button onclick="abrirModalDiscreto()" type="submit" value="1" id="btn-escolha-normal" name="reqDistNormal" class="btn-mostrar-tipo-discreto">Agrupamento Discreto</button>
+            <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
+              <button onclick="abrirModalDiscreto()" type="submit" value="1" id="btn-escolha-normal" name="reqDistNormal" class="btn-mostrar-tipo-discreto">Agrupamento Discreto</button>
+            </form>
+            <form action="{{url_for('agrupamento_classes')}}" method="POST" id="formDadosDesordenados">
+              <button onclick="abrirModalClasses()" type="submit" value="1" id="btn-escolha-normal" name="reqDistNormal" class="btn-mostrar-tipo-discreto">Agrupamento em Classes</button>
             </form>
             <button onclick="mostrarDNormal_Amostral()" id="btn-escolha-normal" class="btn-mostrar-tipo-discreto">Amostral</button>
             {% if reqDistNormal %}
@@ -359,24 +368,28 @@
                   <button>Calcular</button>
                 </div>
               </form>
-              <div id="secaoDNormal_Final">
+              <div id="secaoDNormal_Final" style="gap: 2rem;">
                   {% if reqDistNormal %}
                   <div style="background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                       <h3>📊 Dados Calculados</h3>
-                      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                      <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px;">
                           <div><strong>Média:</strong> {{ mediaNorm }}</div>
-                          <div><strong>Moda:</strong> {{ moda }}</div>
+                          <div><strong>Moda {% if modaBruta %} Bruta {% endif %} :</strong> {{ moda }}</div>
+                          {% if modaCzuber %}<div><strong>Moda Czuber:</strong> {{ modaCzuber }}</div>{% endif %}
                           <div><strong>Mediana:</strong> {{ mediana }}</div>
                           <div><strong>Desvio Padrão:</strong> {{ desvioPadraoNorm }}</div>
                       </div>
                   </div>
                   <form action="{{url_for('dist_normal_pad')}}" method="POST" style="display: contents;">
-                        <input type="text" name="valorANorm" placeholder="Valor do A">
-                        <input type="text" name="valorBNorm" placeholder="Valor do B">
-                        <select name="escolha-opcoes-resultados" id="">
-                          <option value="escolha_Moda">Moda</option>
-                          <option value="escolha_Mediana">Mediana</option>
-                        </select>
+                        <div class="insercao-infos">
+                          <input type="text" name="valorANorm" placeholder="Valor do A">
+                          <select name="escolha-opcoes-resultados" id="">
+                            <option value="escolha_Moda">Moda</option>
+                            <option value="escolha_Mediana">Mediana</option>
+                          </select>
+                          <input type="text" name="valorBNorm" placeholder="Valor do B">
+                        </div>
+                        
                         <select name="intervalo" id="">
                           <option value="maiorQue">></option>
                           <option value="menorQue"><</option>
@@ -428,7 +441,7 @@
     
       <!-- Tipo do dado -->
       <div class="container-opcoes-tipo-dado">
-        <h1 class="titulo-medida-amostras" style="color:white;">Qual a <u>medida</u> das amostras </h1>
+        <h1 class="titulo-medida-amostras" style="color: white;">Qual a <u>medida</u> das amostras </h1>
         <input
           type="radio"
           name="tipo"
@@ -631,6 +644,8 @@
     <!-- Resultado dos cálculos -->
      <div class="container-estatisticas-dos-dados">
       <hr>
+
+
       {% if dados_agrup_disc == True or dados_classes == True %}
     <div>
       <h1 style="color:white;"><u>Estatísticas desses Dados</u></h1>

@@ -311,7 +311,7 @@ label[for="modaCzuber"].disabled {
   white-space: nowrap;
 }
 
-.secao-normal {
+.secao-normal, .insercao-infos {
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -7,24 +7,17 @@ from scipy.stats import norm #pip install scipy
 
 app = Flask(__name__)
 
-dadosDesordenados = []
-FequenciaIndividualAbsolutaRecebida = {}
-FequenciaIndividualAbsoluta = {}
-dadosClasses = []  
-limiteSuperior = 0
-limiteInferior = 0
-vLambda = 0
-desvioPadrao = 0
-intervalo = 0
-valorA = 0
-valorB = 0
-valorANorm = 0
-valorBNorm = 0
-tamanhoAmostraNorm = 0
-mediaNorm = 0
-desvioPadraoNorm = 0
-reqDistNormal = False
-secaoDNormalFinal = False
+# Definição das variáveis 
+dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []
+
+limiteSuperior = limiteInferior = vLambda = desvioPadrao = 0
+valorA = valorB = valorANorm = valorBNorm = 0
+tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
+
+reqDistNormal = secaoDNormalFinal = calcularNormal = False
+
+moda = mediana = None
+
 
 @app.route('/')
 def index():
@@ -34,7 +27,7 @@ def index():
 #Recebe os dados quando a pessoa envia eles pela parte desordenada 
 @app.route("/dados_desordenados", methods=["POST", "GET"])
 def dados_desordenados():
-    global reqDistNormal
+    global reqDistNormal, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
     if request.method == "POST":
         if request.form.get("dado"):
             dadosDesordenados.append(float(request.form.get("dado")))
@@ -52,6 +45,7 @@ def dados_desordenados():
 #Recebe os dados quando a pessoa envia eles pela parte de tabela
 @app.route("/dados_em_tabela", methods=["POST", "GET"])
 def dados_em_tabela():
+    global reqDistNormal, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
     #Organiza os dados na tabela de FI
     if request.method == "POST":
         if request.form.get("amostra" and "frequencia"):
@@ -69,15 +63,19 @@ def dados_em_tabela():
         elif request.form.get("limpar"):
             amostraLimpar = request.form.get("limpar")
             FequenciaIndividualAbsolutaRecebida.pop(float(amostraLimpar))
+        elif request.form.get("reqDistNormal"):
+            reqDistNormal = True
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="tabela", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
     FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, erroFIMenorZero=erroFIMenorZero, 
-    limiteSuperior=0, limiteInferior=0)
+    limiteSuperior=0, limiteInferior=0, reqDistNormal=reqDistNormal)
 
 @app.route("/agrupamento_classes", methods=["POST", "GET"])
 def agrupamento_classes():
-    global dadosClasses
+    global dadosClasses, reqDistNormal, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
     dadosClasses.clear()
+    if request.form.get("reqDistNormal"):
+        reqDistNormal = True
     if request.method == "POST":
         if request.form.get("li") and request.form.get("amplitude") and request.form.get("qtd"):
             li = float(request.form.get('li'))
@@ -102,15 +100,21 @@ def agrupamento_classes():
             dadosDesordenados.clear()
             FequenciaIndividualAbsolutaRecebida.clear()
             FequenciaIndividualAbsoluta.clear()
-            
+            print("---------------------- dados Classes ----------------------")
+            print("li", li)
+            print("amplitude", amplitude)
+            print("qtd", qtd)
+            print("reqDistNormal", reqDistNormal)
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False, limiteSuperior=0, limiteInferior=0)
+    escolhaCalculo=[], mostrarResultados=False, limiteSuperior=0, reqDistNormal=reqDistNormal, limiteInferior=0)
 
 @app.route("/alteração_fi", methods=["POST", "GET"])
 def alteração_fi():
-    global dadosClasses
+    global dadosClasses, reqDistNormal, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
+    if request.form.get("reqDistNormal"):
+        reqDistNormal = True
     if request.method == "POST":
         erroMenorZero = False
         for i, classe in enumerate(dadosClasses):
@@ -127,7 +131,7 @@ def alteração_fi():
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False, erroMenorZero=erroMenorZero, limiteSuperior=0, limiteInferior=0)
+    escolhaCalculo=[], mostrarResultados=False, erroMenorZero=erroMenorZero, limiteSuperior=0, reqDistNormal=reqDistNormal, limiteInferior=0)
 
 @app.route("/dist_uniforme", methods=["POST", "GET"])
 def dist_uniforme():
@@ -188,55 +192,58 @@ def dist_exponencial():
 
 @app.route("/dist_normal_pad", methods=["POST", "GET"])
 def dist_normal_pad():
-    global valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, moda, mediana
-    #if moda != 0 and mediana != 0: 
-
+    global desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
     if request.method == "POST":
         if request.form.get("valorANorm") and request.form.get("intervalo"):
             valorANorm = float(request.form.get('valorANorm'))      
             intervalo = request.form.get("intervalo")
+            print("------------------------- dist_normal_pad -------------------------")
             print("Valor a:", valorANorm)
             print("Intervalo:", intervalo)
-            if request.form.get("mediaNorm") and request.form.get("desvioPadraoNorm") and request.form.get("tamanhoAmostraNorm"):
+            # print('tamanhoAmostraNorm', tamanhoAmostraNorm)
+            if request.form.get("mediaNorm") and request.form.get("desvioPadraoNorm"):
                 mediaNorm = float(request.form.get("mediaNorm"))
                 desvioPadraoNorm = float(request.form.get("desvioPadraoNorm"))
-                tamanhoAmostraNorm = int(request.form.get("tamanhoAmostraNorm"))
+                if(request.form.get("tamanhoAmostraNorm")):
+                    tamanhoAmostraNorm = int(request.form.get("tamanhoAmostraNorm"))
+                else:
+                    tamanhoAmostraNorm = None
             if intervalo == "menorQueMenorQue" or intervalo == "menorIgualQueMenorQue" or intervalo == "menorQueMenorIgualQue" or intervalo == "menorIgualQueMenorIgualQue":
                 valorBNorm = float(request.form.get('valorBNorm')) 
             else: 
                 valorBNorm = 0
+            print('valorANorm', valorANorm)
+            print('mediaNorm', mediaNorm)
+            print('desvioPadraoNorm', desvioPadraoNorm)
+            print('tamanhoAmostraNorm', tamanhoAmostraNorm)
+            if(valorANorm != 0 and mediaNorm != 0 and desvioPadraoNorm != 0):
+                calcularNormal = True
             
     return render_template("index.html", valorANorm=valorANorm, valorBNorm=valorBNorm,
     intervalo=intervalo, mediaNorm=mediaNorm, desvioPadraoNorm=desvioPadraoNorm, tamanhoAmostraNorm=tamanhoAmostraNorm, 
-    mostrar_modal="normal", dados_vac=True,
+    mostrar_modal="normal", dados_vac=True, calcularNormal=calcularNormal, moda=moda, mediana=mediana,
     dadosClasses={}, modaBruta=False, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False)
+    escolhaCalculo=[], mostrarResultados=False, reqDistNormal=True)
 
 
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
 def limpar_dados():
-    global dadosDesordenados, FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, reqDistNormal
-    dadosDesordenados = []
-    FequenciaIndividualAbsoluta = {}
-    FequenciaIndividualAbsolutaRecebida = {}
-    dadosClasses = []
-    limiteSuperior=0
-    limiteInferior=0
-    vLambda=0
-    desvioPadrao=0
-    intervalo=""
-    valorANorm = 0
-    valorBNorm = 0
-    reqDistNormal = False
+    global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana
+    dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []
+    limiteSuperior = limiteInferior = vLambda = desvioPadrao = 0
+    valorA = valorB = valorANorm = valorBNorm = 0
+    tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
+    reqDistNormal = secaoDNormalFinal = calcularNormal = False
+    moda = mediana = None
     return render_template("index.html", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, mostrar_modal="padrao")
 
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
 def calculo_dos_dados():
-    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm,tamanhoAmostraNorm, modal_aberto, tipo
+    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm,tamanhoAmostraNorm, modal_aberto, tipo, moda, mediana
     
     erroOutroVazio = False
     tipo = request.form.get("tipo")
@@ -278,8 +285,6 @@ def calculo_dos_dados():
         if dadosClasses:
             return processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
-        
-            
         #Organização dos dados inseridos em tabela
         elif FequenciaIndividualAbsolutaRecebida:
             FequenciaIndividualAbsoluta = dict(sorted(FequenciaIndividualAbsolutaRecebida.items()))
@@ -403,11 +408,17 @@ def calculo_dos_dados():
                 return (desvio_padrao * 100) / media
             coeficienteVariacao = round(calcular_coeficiente_variacao(dados_expandidos), 2)
         
+        print("reqDistNormal", reqDistNormal)
         if reqDistNormal:
-            mediana = mediana_calculada
-            if valorANorm != 0 and intervalo != "":
-                return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, moda, mediana, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
-            else:
+            print("calcularNormal",calcularNormal)
+            if(calcularNormal == True):
+                return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+
+            else: 
+                mediaNorm = media  # Atribui à variável global
+                desvioPadraoNorm = desvioPadrao  # Atribui à variável global
+                mediana = mediana_calculada  # Atribui à variável global
+                
                 return render_template("index.html", 
                                     mediaNorm=media, 
                                     moda=moda, 
@@ -424,11 +435,9 @@ def calculo_dos_dados():
                                     Posicoes=Posicoes, 
                                     FequenciaIndividualAbsolutaRecebida={}, 
                                     dadosClasses=[], 
-                                    mostrar_modal="normal",  # Mantém o modal aberto
-                                    tipo=tipo, 
-                                    escolhaCalculoJson=escolhaCalculoJson, 
+                                    modal_aberto="normal",  # Mantém o modal aberto
+                                    tipolhaCalculoJson=escolhaCalculoJson, 
                                     mostrarResultados=False,
-                                    dados_agrup_disc=True,
                                     secaoDNormalFinal = True,
                                     # Adiciona flags para mostrar botão de prosseguir
                                     reqDistNormal=True)
@@ -443,6 +452,7 @@ def calculo_dos_dados():
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[])
 
 def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+    global reqDistNormal, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
     """Processa dados agrupados em classes e calcula todas as estatísticas"""
 
     # Criar tabela para exibição
@@ -452,20 +462,20 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
     
     fac_anterior = 0
     for i, classe in enumerate(dadosClasses):
-        intervalo = f"[{classe['li']:.1f} - {classe['ls']:.1f})"
+        intervaloClasses = f"[{classe['li']:.1f} - {classe['ls']:.1f})"
         fi = classe['fi']
         fac_atual = fac_anterior + fi
         
-        tabela_classes[intervalo] = fi
-        FrequenciaAcumulada[intervalo] = f"{fac_atual:g}"
+        tabela_classes[intervaloClasses] = fi
+        FrequenciaAcumulada[intervaloClasses] = f"{fac_atual:g}"
         
         # Posições
         inicio = fac_anterior + 1
         fim = fac_atual
         if inicio == fim:
-            Posicoes[intervalo] = f"{int(fim)}º"
+            Posicoes[intervaloClasses] = f"{int(fim)}º"
         else:
-            Posicoes[intervalo] = f"{int(inicio)}º à {int(fim)}º"
+            Posicoes[intervaloClasses] = f"{int(inicio)}º à {int(fim)}º"
         
         fac_anterior = fac_atual
     
@@ -547,6 +557,42 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
     
     # 7. COEFICIENTE DE VARIAÇÃO
     coeficienteVariacao = round((desvioPadrao / media) * 100, 2) if media != 0 else float("inf")
+    
+    print("---------------------- Dados Classes ----------------------")
+    print("reqDistNormal", reqDistNormal)
+    if reqDistNormal:
+        print("calcularNormal",calcularNormal)
+        if(calcularNormal == True):
+            return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+            
+        else: 
+            mediaNorm = media  # Atribui à variável 
+            desvioPadraoNorm = desvioPadrao  # Atribui à variável global
+                    
+            return render_template("index.html", 
+                                mediaNorm=media, 
+                                moda=moda, 
+                                modaCzuber=modaCzuber,
+                                tipo_moda=tipo_moda, 
+                                mediana=mediana,  
+                                variancia=variancia, 
+                                desvioPadraoNorm=desvioPadrao,
+                                coeficienteVariacao=coeficienteVariacao,
+                                escolhaCalculo=escolhaCalculo, 
+                                dadosDesordenados=dadosDesordenados, 
+                                FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
+                                tamanhoDaAmostra=tamanhoDaAmostra, 
+                                FrequenciaAcumulada=FrequenciaAcumulada, 
+                                Posicoes=Posicoes, 
+                                FequenciaIndividualAbsolutaRecebida={}, 
+                                dadosClasses=[], 
+                                modal_aberto="normal",  # Mantém o modal aberto
+                                tipolhaCalculoJson=escolhaCalculoJson, 
+                                mostrarResultados=False,
+                                secaoDNormalFinal = True,
+                                # Adiciona flags para mostrar botão de prosseguir
+                                reqDistNormal=True)
+    
     
     return render_template("index.html", 
                          media=media, 
@@ -698,7 +744,9 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
                          mostrarResultados=True,
                          dados_vac=True) 
 
-def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, moda, mediana, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+    global moda, mediana
+    
     distN = DistribuicaoNormalPadrao()
 
     #1.paramentros
@@ -707,7 +755,20 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
     desvioPadrao = distN.calcular_desvio_padrao()
     coeficienteVariacao = distN.calcular_cv()
 
-    if(mediaNorm != 0 and desvioPadraoNorm != 0 and tamanhoAmostraNorm != 0):
+    print('tamanhoAmostraNorm', tamanhoAmostraNorm)
+    print('valorANorm', valorANorm)
+    print('mediaNorm', mediaNorm)
+    print('desvioPadraoNorm', desvioPadraoNorm)
+    print('moda', moda)
+    print('mediana', mediana)
+    print('intervalo', intervalo)
+
+    if(tamanhoAmostraNorm == 0 or tamanhoAmostraNorm == None):
+        tamanhoAmostraNorm = None
+
+    print('tamanhoAmostraNorm DEPOIS', tamanhoAmostraNorm)
+
+    if(mediaNorm != 0 and desvioPadraoNorm != 0):
         valorANorm = TransformacaoZ.calcular_z_tabela_amostra(
         X=valorANorm, 
         Mu=mediaNorm, 
@@ -761,7 +822,9 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          tipo=tipo, 
                          escolhaCalculoJson=escolhaCalculoJson, 
                          mostrarResultados=True,
-                         dados_vac=True) 
+                         dados_vac=True,
+                         reqDistNormal = True, 
+                         calcularNormal = False) 
 
 
 #distribuicao uniforme
@@ -946,7 +1009,7 @@ class DistribuicaoNormalPadrao:
     def calcular_prob_sobrevivencia(self, z: float) -> float:
         #P(Z >= a) = P(Z > a)
         prob = norm.sf(z)
-        return round(prob * 100,2)
+        return round(prob * 100,5)
     
     def calcular_probabilidade_intervalo(self, z1: float, z2: float) -> float:
         #P(a <= Z <= b) = P(a < Z < b)
@@ -959,15 +1022,18 @@ class DistribuicaoNormalPadrao:
 
 #conversor x pra z
 class TransformacaoZ:
-    def calcular_z_tabela_amostra(X: float, Mu: float, Sigma: float, N: int) -> float:
-        if N <= 0:
-            raise ValueError('O tamanho da amostra (N) deve ser positivo')
+    def calcular_z_tabela_amostra(X: float, Mu: float, Sigma: float, N: int = None) -> float:
         if Sigma <= 0:
             raise ValueError('O Desvio Padrão (Sigma) deve ser positivo')
         
-        numerador = round(X - Mu,2)
-        raiz_N = math.sqrt(N)
-        Z_tabela = round((numerador * raiz_N) / Sigma,2)
+        numerador = round(X - Mu, 2)
+
+        if N is not None and N > 0:
+            raiz_N = math.sqrt(N)
+            Z_tabela = round((numerador * raiz_N) / Sigma, 2)
+        else:
+            Z_tabela = round(numerador / Sigma, 2)
+
         return Z_tabela
     
 # --- EXERCICIO DE EXEMPLO ---
@@ -1002,7 +1068,6 @@ except ValueError as e:
     print(f'Erro: {e}')
 except NameError:
     print("Erro: Certifique que as classes 'TransformacaoZ' e 'DistribuicaoNormalPadrao' estão definidas.")
-
     
 if __name__ == '__main__':
     app.run(debug=True)
