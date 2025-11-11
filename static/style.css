@@ -105,7 +105,7 @@ hr {
 }
 
 /* Tipo de dados botão*/
-.container-opcoes-tipo-dado input[type="radio"] {
+.container-opcoes-tipo-dado input[type="radio"], .container-opcoes-tipo-intervalo input[type="radio"] {
   display: none;
 }
 
@@ -118,7 +118,8 @@ hr {
   margin-bottom: 3%;
 }
 
-.opcao-tipo-dado {
+.opcao-tipo-dado,
+.opcao-tipo-intervalo {
   background-color: white;
   padding: 20px;
   width: 4%;
@@ -129,12 +130,18 @@ hr {
   display: inline-block;
 }
 
-.opcao-tipo-dado:hover {
+.opcao-tipo-intervalo {
+  border: solid 2px black;
+}
+
+.opcao-tipo-dado:hover,
+.opcao-tipo-intervalo:hover {
   background-color: #0e2d97;
   color: white;
 }
 
-input[type="radio"]:checked + .opcao-tipo-dado {
+input[type="radio"]:checked + .opcao-tipo-dado,
+input[type="radio"]:checked + .opcao-tipo-intervalo {
   background-color: #0e2d97;
   color: white;
 }
@@ -311,7 +318,8 @@ label[for="modaCzuber"].disabled {
   white-space: nowrap;
 }
 
-.secao-normal, .insercao-infos {
+.secao-normal,
+.insercao-infos {
   display: flex;
   flex-direction: column;
   align-items: center;

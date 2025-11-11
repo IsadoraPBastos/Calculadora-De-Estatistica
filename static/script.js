@@ -157,16 +157,6 @@ function mostrarDPois() {
   document.getElementById("btn-escolha-binomial").classList.remove("ativo");
 }
 
-function mostrarDNormal() {
-  secaoDExpo.style.display = "none";
-  secaoDUnifor.style.display = "none";
-  secaoDNormal.style.display = "flex";
-
-  document.getElementById("btn-escolha-exponecial").classList.remove("ativo");
-  document.getElementById("btn-escolha-uniforme").classList.remove("ativo");
-  document.getElementById("btn-escolha-normal").classList.add("ativo");
-}
-
 const secaoDNormal_Amostral = document.getElementById("secaoDNormal_Amostral");
 const secaoDNormal_Final = document.getElementById("secaoDNormal_Final");
 

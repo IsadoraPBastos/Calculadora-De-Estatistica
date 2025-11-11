@@ -11,7 +11,7 @@ app = Flask(__name__)
 dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []
 
 limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-valorA = valorB = valorANorm = valorBNorm  = 0
+valorA = valorB = valorANorm = valorBNorm = vQuantidade = vTotal  = 0
 tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
 
 reqDistNormal = secaoDNormalFinal = calcularNormal = False
@@ -227,6 +227,25 @@ def dist_normal_pad():
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
     escolhaCalculo=[], mostrarResultados=False, reqDistNormal=reqDistNormal)
 
+@app.route("/dist_binomial", methods=["POST", "GET"])
+def dist_binomial():
+    global vTotal, vQuantidade, valorA, valorB, intervalo
+    if request.method == "POST":
+        if request.form.get("vTotal") and request.form.get("vQuantidade") and request.form.get("valorA") and request.form.get("intervalo"):
+            vTotal = int(request.form.get("vTotal"))
+            vQuantidade = int(request.form.get("vQuantidade"))
+            valorA = int(request.form.get("valorA"))
+            intervalo = request.form.get("intervalo")
+            
+            if request.form.get("valorB"):
+                valorB = int(request.form.get("valorB"))
+            else: 
+                valorB = 0
+    return render_template("index.html", vQuantidade=vQuantidade, vTotal=vTotal, valorA=valorA, 
+    valorB=valorB, intervalo=intervalo, mostrar_modal="binomial", dados_vac=True, dadosClasses={}, modaBruta=False, 
+    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, 
+    Posicoes={}, escolhaCalculo=[], mostrarResultados=False)
+
 @app.route("/dist_poisson", methods=["POST", "GET"])
 def dist_poisson():
     global vMedia, valorA, valorB, intervalo
@@ -299,11 +318,10 @@ def calculo_dos_dados():
 
         if(valorANorm != 0 and mediaNorm != 0 and desvioPadraoNorm != 0 and tamanhoAmostraNorm != None):
                 return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
-        print("------------- Poisson Calculo ---------------")
-        print("vMedia", vMedia)
-        print("valorA", valorA)
-        print("valorB", valorB)
-        print("intervalo", intervalo)
+
+        if(vTotal != 0 and vQuantidade != 0 and intervalo != "" and valorA != ""):
+            return processar_dist_binomial(vTotal, vQuantidade, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+
         if(vMedia != 0 and intervalo != "" and valorA != ""):
                 return processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
@@ -855,6 +873,77 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          dados_vac=True,
                          reqDistNormal = True, 
                          calcularNormal = False) 
+
+def processar_dist_binomial(vTotal, vQuantidade, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+    print("------------- Binomial ---------------")
+    print("vTotal", vTotal)
+    print("vQuantidade", vQuantidade)
+    print("valorA", valorA)
+    print("valorB", valorB)
+    print("intervalo", intervalo)
+    if(vTotal != 0 and vQuantidade != 0):
+        n = vTotal
+        p = vQuantidade / vTotal
+        dist = DistribuicaoBinomial(n, p)
+
+        media = dist.calcular_media()
+        variancia = dist.calcular_variancia()
+        desvio_padrao = dist.calcular_desvio_padrao()
+        coeficienteVariacao = dist.calcular_cv()
+
+        if(valorA != "" and intervalo != ""):
+            if(valorB != 0 and intervalo in ["menorQueMenorQue", "menorIgualMenorQue", "menorQueMenorIgual", "menorIgualMenorIgual"]):
+                match intervalo:
+                    case "menorQueMenorQue":
+                        resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB - 1)
+                    case "menorIgualMenorQue":
+                        resultProb = dist.calcular_probabilidade_intervalo(valorA, valorB - 1)
+                    case "menorQueMenorIgual":
+                        resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB)
+                    case "menorIgualMenorIgual":
+                        resultProb = dist.calcular_probabilidade_intervalo(valorA, valorB)
+                resultProb = round(resultProb,2)
+            elif(intervalo in ["maiorQue", "maiorIgual", "menorQue", "menorIgual", "intervaloIgual"]): 
+                match intervalo:
+                    case "maiorQue":
+                        resultProb = 100 - dist.calcular_probabilidade_intervalo(0, valorA)
+                    case "maiorIgual":
+                        resultProb = 100 - dist.calcular_probabilidade_intervalo(0, valorA - 1)
+                    case "menorQue":
+                        resultProb = dist.calcular_probabilidade_intervalo(0, valorA - 1)
+                    case "menorIgual":
+                        resultProb = dist.calcular_probabilidade_intervalo(0, valorA)
+                    case "intervaloIgual":
+                        resultProb = dist.calcular_probabilidade(valorA) * 100
+                resultProb = round(resultProb,2)
+            else: 
+                print("Tem algum erro ai")
+
+    return render_template("index.html", 
+                         media=media, 
+                         probabilidade=resultProb,
+                        #  moda=moda, 
+                        #  modaCzuber=modaCzuber,
+                        #  tipo_moda=tipo_moda, 
+                        #  modaBruta=True,
+                        #  mediana=mediana, 
+                         variancia=variancia, 
+                         desvioPadrao=desvio_padrao,
+                         coeficienteVariacao=coeficienteVariacao,
+                         escolhaCalculo=escolhaCalculo, 
+                         dadosDesordenados=[], 
+                         FequenciaIndividualAbsoluta={},
+                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
+                         FrequenciaAcumulada={}, 
+                         Posicoes={}, 
+                         FequenciaIndividualAbsolutaRecebida={}, 
+                         dadosClasses={},
+                         mostrar_modal=modal_aberto, 
+                         tipo=tipo, 
+                         escolhaCalculoJson=escolhaCalculoJson, 
+                         mostrarResultados=True,
+                        #  dados_vac=True)
+                        ) 
 
 def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
     vLambda = vMedia

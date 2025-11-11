@@ -424,23 +424,92 @@
           <button onclick="mostrarDPois()" id="btn-escolha-poisson" class="btn-mostrar-tipo-discreto">Distribuição Poisson</button>
 
           <!-- Parte de inserção de dados - Distribuição Binomial -->
-          <div class="divisao-modal" id="secaoDBino">
-            <form action="{{url_for('dist_poisson')}}" method="POST" style="display: contents;">
+          <div class="divisao-modal" id="secaoDBino" style="gap: 2rem;">
+            <form action="{{url_for('dist_binomial')}}" method="POST" style="display: contents;">
+                    <div class="insercao-infos">
                       <input type="text" name="vTotal" placeholder="Total">
                       <input type="text" name="vQuantidade" placeholder="Quantidade">
+                    </div>
+                    <div class="insercao-infos">
                       <input type="text" name="valorA" placeholder="Valor do A">
                       <input type="text" name="valorB" placeholder="Valor do B">
-                      <select name="intervalo" id="">
-                        <option value="maiorQue">></option>
-                        <option value="maiorIgual">>=</option>
-                        <option value="menorQue"><</option>
-                        <option value="menorIgual"><=</option>
-                        <option value="menorQueMenorQue">< <</option>
-                        <option value="menorIgualMenorQue"><= <</option>
-                        <option value="menorQueMenorIgual">< <=</option>
-                        <option value="menorIgualMenorIgual"><= <=</option>
-                        <option value="intervaloIgual">=</option>
-                      </select>
+                    </div>
+                    <div class="container-opcoes-tipo-intervalo">
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorQue"
+                        value="maiorQue"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorQue" class="opcao-tipo-intervalo">></label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorIgual"
+                        value="maiorIgual"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorIgual" class="opcao-tipo-intervalo">>=</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQue"
+                        value="menorQue"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQue" class="opcao-tipo-intervalo"><</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgual"
+                        value="menorIgual"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgual"  class="opcao-tipo-intervalo"><=</label>
+                        <br>
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorQue"
+                        value="menorQueMenorQue"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorQue"class="opcao-tipo-intervalo">< <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorQue"
+                        value="menorIgualMenorQue"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorQue" class="opcao-tipo-intervalo"><= <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorIgual"
+                        value="menorQueMenorIgual"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorIgual" class="opcao-tipo-intervalo">< <=</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorIgual"
+                        value="menorIgualMenorIgual"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorIgual" class="opcao-tipo-intervalo"><= <=</label>
+                      <br>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="intervaloIgual"
+                        value="intervaloIgual"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="intervaloIgual" class="opcao-tipo-intervalo">=</label>
+                      </div>
                       <button>Calcular</button>
                   </form>
           </div>
@@ -675,9 +744,6 @@
     <form action="{{url_for('limpar_dados')}}" method="POST">
       <button class="btn_limpar">Limpar</button>
     </form></div></div>
-
-    
-    
 
     <!-- Resultado dos cálculos -->
      <div class="container-estatisticas-dos-dados">
@@ -1068,6 +1134,7 @@
       );
       const modalClasses = document.getElementById("container_modal_classes");
       const modalVac = document.getElementById("container_modal_vac")
+      const modalVad = document.getElementById("container_modal_vad")
       const tipoModal = "{{ mostrar_modal }}";
       const desordenadoOuTabela = "{{ mostrar_desor_ou_tab }}";
       const botoes = document.querySelector(".botoes-calcular-limpar");
@@ -1132,7 +1199,13 @@
         if(tipoDadoMarcado){
           document.getElementById("secaoDNormal_Final").style.display = "flex";
         }
-      } 
+      } else if(tipoModal == "binomial"){
+        modalVad.classList.add("show")
+        mostrarDBino()
+      } else if(tipoModal == "poisson"){
+        modalVad.classList.add("show")
+        mostrarDPois()
+      }
       
       const formDadosDesordenados = document.getElementById("formDadosDesordenados");
 
