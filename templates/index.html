@@ -350,21 +350,25 @@
             {% endif %}
             </div>
             <form action="{{url_for('dist_normal_pad')}}" method="POST" style="display: contents;">
-              <div id="secaoDNormal_Amostral">
-                  <input type="text" name="valorANorm" placeholder="Valor do A">
-                  <input type="text" name="valorBNorm" placeholder="Valor do B">
-                  <input type="text" name="mediaNorm" placeholder="Média Populacional">
-                  <input type="text" name="desvioPadraoNorm" placeholder="Desvio Padrão Populacional">
-                  <input type="text" name="tamanhoAmostraNorm" placeholder="Tamanho da Amostra">
-                  <select name="intervalo" id="">
-                    <option value="maiorQue">></option>
-                    <option value="menorQue"><</option>
-                    <option value="menorQueMenorQue">< <</option>
-                    <option value="menorQueMenorQue"><= <</option>
-                    <option value="menorQueMenorQue">< <=</option>
-                    <option value="menorQueMenorQue"><= <=</option>
-                    <option value="intervaloIgual">=</option>
-                  </select>
+              <div id="secaoDNormal_Amostral" style="gap: 2rem;">
+                  <div class="insercao-infos">
+                    <input type="text" name="valorANorm" placeholder="Valor do A">
+                      <select name="intervalo" id="">
+                        <option value="maiorQue">></option>
+                        <option value="menorQue"><</option>
+                        <option value="menorQueMenorQue">< <</option>
+                        <option value="menorQueMenorQue"><= <</option>
+                        <option value="menorQueMenorQue">< <=</option>
+                        <option value="menorQueMenorQue"><= <=</option>
+                        <option value="intervaloIgual">=</option>
+                      </select>
+                    <input type="text" name="valorBNorm" placeholder="Valor do B">   
+                  </div>
+                  <div class="insercao-infos">
+                    <input type="text" name="mediaNorm" placeholder="Média Populacional">
+                    <input type="text" name="desvioPadraoNorm" placeholder="Desvio Padrão Populacional">
+                    <input type="text" name="tamanhoAmostraNorm" placeholder="Tamanho da Amostra">
+                  </div>
                   <button>Calcular</button>
                 </div>
               </form>
@@ -421,12 +425,46 @@
 
           <!-- Parte de inserção de dados - Distribuição Binomial -->
           <div class="divisao-modal" id="secaoDBino">
-       <h1>Distribuição Binomial</h1>
+            <form action="{{url_for('dist_poisson')}}" method="POST" style="display: contents;">
+                      <input type="text" name="vTotal" placeholder="Total">
+                      <input type="text" name="vQuantidade" placeholder="Quantidade">
+                      <input type="text" name="valorA" placeholder="Valor do A">
+                      <input type="text" name="valorB" placeholder="Valor do B">
+                      <select name="intervalo" id="">
+                        <option value="maiorQue">></option>
+                        <option value="maiorIgual">>=</option>
+                        <option value="menorQue"><</option>
+                        <option value="menorIgual"><=</option>
+                        <option value="menorQueMenorQue">< <</option>
+                        <option value="menorIgualMenorQue"><= <</option>
+                        <option value="menorQueMenorIgual">< <=</option>
+                        <option value="menorIgualMenorIgual"><= <=</option>
+                        <option value="intervaloIgual">=</option>
+                      </select>
+                      <button>Calcular</button>
+                  </form>
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Poisson -->
           <div class="divisao-modal" id="secaoDPois">
-         <h1>Distribuição Poisson</h1>
+            <form action="{{url_for('dist_poisson')}}" method="POST" style="display: contents;">
+                      <input type="text" name="vMedia" placeholder="Desvio Padrão" disabled>
+                      <input type="text" name="vMedia" placeholder="Valor da Média / Lambda">
+                      <input type="text" name="valorA" placeholder="Valor do A">
+                      <input type="text" name="valorB" placeholder="Valor do B">
+                      <select name="intervalo" id="">
+                        <option value="maiorQue">></option>
+                        <option value="maiorIgual">>=</option>
+                        <option value="menorQue"><</option>
+                        <option value="menorIgual"><=</option>
+                        <option value="menorQueMenorQue">< <</option>
+                        <option value="menorIgualMenorQue"><= <</option>
+                        <option value="menorQueMenorIgual">< <=</option>
+                        <option value="menorIgualMenorIgual"><= <=</option>
+                        <option value="intervaloIgual">=</option>
+                      </select>
+                      <button>Calcular</button>
+                  </form>
           </div>
         </div>
       </div>

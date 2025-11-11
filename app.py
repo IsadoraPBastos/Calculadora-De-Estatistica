@@ -10,8 +10,8 @@ app = Flask(__name__)
 # Definição das variáveis 
 dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []
 
-limiteSuperior = limiteInferior = vLambda = desvioPadrao = 0
-valorA = valorB = valorANorm = valorBNorm = 0
+limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
+valorA = valorB = valorANorm = valorBNorm  = 0
 tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
 
 reqDistNormal = secaoDNormalFinal = calcularNormal = False
@@ -192,7 +192,7 @@ def dist_exponencial():
 
 @app.route("/dist_normal_pad", methods=["POST", "GET"])
 def dist_normal_pad():
-    global desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
+    global desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana, reqDistNormal
     if request.method == "POST":
         if request.form.get("valorANorm") and request.form.get("intervalo"):
             valorANorm = float(request.form.get('valorANorm'))      
@@ -216,15 +216,34 @@ def dist_normal_pad():
             print('mediaNorm', mediaNorm)
             print('desvioPadraoNorm', desvioPadraoNorm)
             print('tamanhoAmostraNorm', tamanhoAmostraNorm)
-            if(valorANorm != 0 and mediaNorm != 0 and desvioPadraoNorm != 0):
+            if(valorANorm != 0 and mediaNorm != 0 and desvioPadraoNorm != 0 and tamanhoAmostraNorm == None):
                 calcularNormal = True
+                reqDistNormal = True
             
     return render_template("index.html", valorANorm=valorANorm, valorBNorm=valorBNorm,
     intervalo=intervalo, mediaNorm=mediaNorm, desvioPadraoNorm=desvioPadraoNorm, tamanhoAmostraNorm=tamanhoAmostraNorm, 
     mostrar_modal="normal", dados_vac=True, calcularNormal=calcularNormal, moda=moda, mediana=mediana,
     dadosClasses={}, modaBruta=False, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False, reqDistNormal=True)
+    escolhaCalculo=[], mostrarResultados=False, reqDistNormal=reqDistNormal)
+
+@app.route("/dist_poisson", methods=["POST", "GET"])
+def dist_poisson():
+    global vMedia, valorA, valorB, intervalo
+    if request.method == "POST":
+        if request.form.get("vMedia") and request.form.get("valorA") and request.form.get("intervalo"):
+            vMedia = float(request.form.get('vMedia')) 
+            valorA = int(request.form.get("valorA"))
+            intervalo = request.form.get("intervalo")
+            
+            if request.form.get("valorB"):
+                valorB = int(request.form.get("valorB"))
+            else: 
+                valorB = 0
+    return render_template("index.html", vMedia=vMedia, valorA=valorA, 
+    valorB=valorB, intervalo=intervalo, mostrar_modal="poisson", dados_vac=True, dadosClasses={}, modaBruta=False, 
+    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, 
+    Posicoes={}, escolhaCalculo=[], mostrarResultados=False)
 
 
 #Limpa os dados inseridos
@@ -232,7 +251,7 @@ def dist_normal_pad():
 def limpar_dados():
     global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana
     dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []
-    limiteSuperior = limiteInferior = vLambda = desvioPadrao = 0
+    limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
     valorA = valorB = valorANorm = valorBNorm = 0
     tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
     reqDistNormal = secaoDNormalFinal = calcularNormal = False
@@ -243,7 +262,7 @@ def limpar_dados():
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
 def calculo_dos_dados():
-    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm,tamanhoAmostraNorm, modal_aberto, tipo, moda, mediana
+    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm,tamanhoAmostraNorm, modal_aberto, tipo, moda, mediana, vMedia
     
     erroOutroVazio = False
     tipo = request.form.get("tipo")
@@ -278,9 +297,20 @@ def calculo_dos_dados():
             if intervalo != "" and valorA != 0:
                 return processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
+        if(valorANorm != 0 and mediaNorm != 0 and desvioPadraoNorm != 0 and tamanhoAmostraNorm != None):
+                return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+        print("------------- Poisson Calculo ---------------")
+        print("vMedia", vMedia)
+        print("valorA", valorA)
+        print("valorB", valorB)
+        print("intervalo", intervalo)
+        if(vMedia != 0 and intervalo != "" and valorA != ""):
+                return processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+
         if not FequenciaIndividualAbsolutaRecebida and not dadosDesordenados and not dadosClasses:
             raise ValueError
         
+
         # Processamento para dados agrupados em classes
         if dadosClasses:
             return processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
@@ -288,7 +318,7 @@ def calculo_dos_dados():
         #Organização dos dados inseridos em tabela
         elif FequenciaIndividualAbsolutaRecebida:
             FequenciaIndividualAbsoluta = dict(sorted(FequenciaIndividualAbsolutaRecebida.items()))
-            
+          
         #Cálculo do FI e organização da tabela se os dados inseridos forem os desordenados
         else:
             for dado in sorted(dadosDesordenados):
@@ -296,7 +326,7 @@ def calculo_dos_dados():
                     FequenciaIndividualAbsoluta[dado] += 1
                 else:
                     FequenciaIndividualAbsoluta[dado] = 1
-                    
+          
         #Tamanho da amostra
         tamanhoDaAmostra = f"{sum(FequenciaIndividualAbsoluta.values()):g}"
         
@@ -783,7 +813,7 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
     )
 
     if(intervalo == "maiorQue"):
-        resultProb = distN.calcular_prob_sobrevivencia(valorANorm)
+        resultProb = round(distN.calcular_prob_sobrevivencia(valorANorm),2)
         print("prob_MaiorQue", resultProb)
     elif(intervalo == "menorQue"):
         resultProb = round(distN.calcular_prob_acumulada(valorANorm),2)
@@ -792,7 +822,7 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
         resultProb = 0.00
         print(resultProb)
     elif(intervalo == "menorQueMenorQue"):
-        resultProb = distN.calcular_probabilidade_intervalo(valorANorm, valorBNorm)
+        resultProb = round(distN.calcular_probabilidade_intervalo(valorANorm, valorBNorm),2)
         print(valorANorm)
         print(valorBNorm)
         print("menorQueMenorQue", resultProb)
@@ -825,6 +855,76 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          dados_vac=True,
                          reqDistNormal = True, 
                          calcularNormal = False) 
+
+def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+    vLambda = vMedia
+    print("------------- Poisson ---------------")
+    print("vMedia", vMedia)
+    print("valorA", valorA)
+    print("valorB", valorB)
+    print("intervalo", intervalo)
+    print("vLambda", vLambda)
+    if(vLambda != 0):
+        dist = DistribuicaoPoisson(vLambda)
+
+        media = dist.calcular_media()
+        variancia = dist.calcular_variancia()
+        desvio_padrao = dist.calcular_desvio_padrao()
+        coeficienteVariacao = dist.calcular_coeficiente_variacao()
+
+        if(valorA != "" and intervalo != ""):
+            if(valorB != 0 and intervalo in ["menorQueMenorQue", "menorIgualMenorQue", "menorQueMenorIgual", "menorIgualMenorIgual"]):
+                match intervalo:
+                    case "menorQueMenorQue":
+                        resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB - 1)
+                    case "menorIgualMenorQue":
+                        resultProb = dist.calcular_probabilidade_intervalo(valorA, valorB - 1)
+                    case "menorQueMenorIgual":
+                        resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB)
+                    case "menorIgualMenorIgual":
+                        resultProb = dist.calcular_probabilidade_intervalo(valorA, valorB)
+                resultProb = round(resultProb,2)
+            elif(intervalo in ["maiorQue", "maiorIgual", "menorQue", "menorIgual", "intervaloIgual"]): 
+                match intervalo:
+                    case "maiorQue":
+                        resultProb = 100 - dist.calcular_probabilidade_intervalo(0, valorA)
+                    case "maiorIgual":
+                        resultProb = 100 - dist.calcular_probabilidade_intervalo(0, valorA - 1)
+                    case "menorQue":
+                        resultProb = dist.calcular_probabilidade_intervalo(0, valorA - 1)
+                    case "menorIgual":
+                        resultProb = dist.calcular_probabilidade_intervalo(0, valorA)
+                    case "intervaloIgual":
+                        resultProb = dist.calcular_probabilidade(valorA) * 100
+                resultProb = round(resultProb,2)
+            else: 
+                print("Tem algum erro ai")
+
+    return render_template("index.html", 
+                         media=media, 
+                         probabilidade=resultProb,
+                        #  moda=moda, 
+                        #  modaCzuber=modaCzuber,
+                        #  tipo_moda=tipo_moda, 
+                        #  modaBruta=True,
+                        #  mediana=mediana, 
+                         variancia=variancia, 
+                         desvioPadrao=desvio_padrao,
+                         coeficienteVariacao=coeficienteVariacao,
+                         escolhaCalculo=escolhaCalculo, 
+                         dadosDesordenados=[], 
+                         FequenciaIndividualAbsoluta={},
+                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
+                         FrequenciaAcumulada={}, 
+                         Posicoes={}, 
+                         FequenciaIndividualAbsolutaRecebida={}, 
+                         dadosClasses={},
+                         mostrar_modal=modal_aberto, 
+                         tipo=tipo, 
+                         escolhaCalculoJson=escolhaCalculoJson, 
+                         mostrarResultados=True,
+                        #  dados_vac=True)
+                        ) 
 
 
 #distribuicao uniforme
@@ -876,41 +976,6 @@ class DistribuicaoUniforme:
         else:
             return 0.0
 
-#--- EXERCICIO PASSADO PELO JC ---
-A = -2.75 #-27,5 ou -2.75?
-B = 10.17 
-print(f'\nDistribuição Uniforme Contínua em A={A} e B={B}\n')
-try:
-    dist = DistribuicaoUniforme(A=A, B=B)
-
-    #1.paramentros
-    media = dist.calcular_media()
-    variancia = dist.calcular_variancia()
-    desvio_padrao = dist.calcular_desvio_padrao()
-    cv = dist.calcular_cv()
-
-    print(f'Intervalo[A, B]: [{dist.A}. {dist.B}]\n')
-    print(f'A) Média: {media:.2f}\n')
-    print(f'B) Variância: {variancia:.2f}\n')
-    print(f'C) Desvio Padrão: {desvio_padrao:.2f}\n')
-    print(f'D) Coeficiente de Variação (CV): {cv:.2f}%\n')
-
-    #2.probabilidades
-    prob_e = dist.calcular_probabilidade_intervalo(3, 6.98)
-    print(f'E) P(3 < X < 6.98): {prob_e:.2f}%\n')
-
-    prob_f = dist.calcular_probabilidade_intervalo(7.77, B)
-    print(f'F) P(X >= 7.77): {prob_f:.2f}%\n')
-
-    prob_g = dist.calcular_probabilidade_intervalo(A, 5.00)
-    print(f'G) P(X < 5.00): {prob_g:.2f}%\n')
-
-    prob_h = dist.calcular_probabilidade_intervalo(4.57, 4.57)
-    print(f'H) P(X = 4.57): {prob_h:.2f}%\n')
-
-except ValueError as e:
-    print(f'Erro: {e}')
-
 #distribuicao exponencial
 class DistribuicaoExponencial:
 
@@ -953,35 +1018,6 @@ class DistribuicaoExponencial:
         prob_x1 = self.calcular_probabilidade_acumulada(x1)
         return round(prob_x2 - prob_x1,2)
         
-
-# --- EXERCICIO PASSADO PELO JC ---
-DESVIO_PADRAO = 5.47
-
-LAMBDA = 1 / DESVIO_PADRAO
-
-print(f'\nDistribuição Exponencial')
-print(f'Desvio Padrão dado: {DESVIO_PADRAO:.2f}')
-print(f'Taxa calculada: {LAMBDA:.2f}')
-try:
-    exp_dist = DistribuicaoExponencial(taxa_lambda=LAMBDA)
-    
-    media = exp_dist.calcular_media()
-    print(f'Média de conferência: {media:.2f}\n')
-
-    prob_a = exp_dist.calcular_prob_sobrevivencia(6.99)
-    print(f'A) P(X > 6.99): {prob_a:.2f}%\n')
-
-    prob_b = exp_dist.calcular_probabilidade_acumulada(3.33)
-    print(f'B) P(X <= 3.33): {prob_b:.2F}%\n')
-
-    prob_c = exp_dist.calcular_probabilidade_intervalo(17, 17)
-    print(f'C) P(X = 17): {prob_c:.2F}%\n')
-
-    prob_d = exp_dist.calcular_probabilidade_intervalo(4, 5.50)
-    print(f'D) P(4 < X <= 5,50): {prob_d:.2f}%\n')  
-except ValueError as e:
-    print(f'Erro: {e}')
-
 #-- Distribuição Normal Padronizada --
 class DistribuicaoNormalPadrao:
     def __init__(self):
@@ -1009,7 +1045,7 @@ class DistribuicaoNormalPadrao:
     def calcular_prob_sobrevivencia(self, z: float) -> float:
         #P(Z >= a) = P(Z > a)
         prob = norm.sf(z)
-        return round(prob * 100,5)
+        return prob * 100
     
     def calcular_probabilidade_intervalo(self, z1: float, z2: float) -> float:
         #P(a <= Z <= b) = P(a < Z < b)
@@ -1018,7 +1054,7 @@ class DistribuicaoNormalPadrao:
         prob_z2 = self.calcular_prob_acumulada(z2)
         prob_z1 = self.calcular_prob_acumulada(z1)
 
-        return round(prob_z2 - prob_z1,2)
+        return prob_z2 - prob_z1
 
 #conversor x pra z
 class TransformacaoZ:
@@ -1035,39 +1071,85 @@ class TransformacaoZ:
             Z_tabela = round(numerador / Sigma, 2)
 
         return Z_tabela
-    
-# --- EXERCICIO DE EXEMPLO ---
-MEDIA_POPULACIONAL = 25.42  
-TAMANHO_AMOSTRA = 36        
-DESVIO_POPULACIONAL = 7.23  
-MEDIA_AMOSTRAL_INTERESSE = 23.99
 
-print("\n\n--- Distribuição Amostral ---")
-print(f'Dados: média ={MEDIA_POPULACIONAL}, amostra ={TAMANHO_AMOSTRA}, D.P ={DESVIO_POPULACIONAL} para P(X > 23.99)\n')
+#-- Distribuição Binomial --    
+class DistribuicaoBinomial:
+    def __init__(self, n: int, p: float):
+        if n <= 0:
+            raise ValueError("O número de tentativas (n) deve ser positivo.")
+        if not (0 <= p <= 1):
+            raise ValueError("A probabilidade (p) deve estar entre 0 e 1.")
+        self.n = n
+        self.p = p
+        self.q = 1 - p
 
-try:
-    z_calculado = TransformacaoZ.calcular_z_tabela_amostra(
-        X=MEDIA_AMOSTRAL_INTERESSE, 
-        Mu=MEDIA_POPULACIONAL, 
-        Sigma=DESVIO_POPULACIONAL, 
-        N=TAMANHO_AMOSTRA
-    )
+    def calcular_media(self):
+        return round(self.n * self.p, 2)
 
-    print(f'1. Tabela Z (Z_x) calculado: {z_calculado:.4f}')
-    
-    z_dist = DistribuicaoNormalPadrao()
-    
-    prob_a = z_dist.calcular_prob_sobrevivencia(z_calculado)
-    
-    print(f'2. Probabilidade P(Z > {z_calculado:.4f}): {prob_a:.2f}%')
+    def calcular_variancia(self):
+        return round(self.n * self.p * self.q, 2)
 
-    # A) P(X > 23.99)
-    print(f'\nA) P(X > 23.99): {prob_a:.2f}%')
+    def calcular_desvio_padrao(self):
+        return round(math.sqrt(self.calcular_variancia()), 2)
 
-except ValueError as e:
-    print(f'Erro: {e}')
-except NameError:
-    print("Erro: Certifique que as classes 'TransformacaoZ' e 'DistribuicaoNormalPadrao' estão definidas.")
-    
+    def calcular_cv(self):
+        media = self.calcular_media()
+        desvio_padrao = self.calcular_desvio_padrao()
+        if media == 0:
+            return float('inf')
+        return round((desvio_padrao / media) * 100, 2)
+
+    def calcular_probabilidade(self, k: int):
+        """P(X = k)"""
+        if k < 0 or k > self.n:
+            return 0.0
+        comb = (math.comb(self.n, k))
+        prob = comb * (self.p ** k) * (self.q ** (self.n - k))
+        return round(prob, 4)
+
+    def calcular_probabilidade_intervalo(self, k1: int, k2: int):
+        """P(k1 <= X <= k2)"""
+        if k1 > k2:
+            k1, k2 = k2, k1
+        prob = sum(self.calcular_probabilidade(k) for k in range(k1, k2 + 1))
+        return round(prob * 100, 2)
+
+#-- Distribuição Poisson --
+class DistribuicaoPoisson:
+    def __init__(self, vLambda: float):
+        if vLambda <= 0:
+            raise ValueError('Lambda deve ser positivo.')
+        self.vLambda = vLambda
+
+    def calcular_media(self):
+        return round(self.vLambda, 2)
+
+    def calcular_variancia(self):
+        return round(self.vLambda, 2)
+
+    def calcular_desvio_padrao(self):
+        return round(math.sqrt(self.vLambda), 2)
+
+    def calcular_coeficiente_variacao(self):
+        media = self.calcular_media()
+        desvio_padrao = self.calcular_desvio_padrao()
+        if (media == 0):
+          return float('inf')
+        return round((desvio_padrao / media) * 100,2)
+
+    def calcular_probabilidade(self, x: int):
+        """P(X = x)"""
+        if x < 0:
+            return 0
+        prob = (math.exp(-self.vLambda) * (self.vLambda ** x)) / math.factorial(x)
+        return round(prob, 4)
+
+    def calcular_probabilidade_intervalo(self, x1: int, x2: int):
+        """P(x1 <= X <= x2)"""
+        if x1 > x2:
+            x1, x2 = x2, x1
+        prob = sum(self.calcular_probabilidade(x) for x in range(x1, x2 + 1))
+        return round(prob * 100, 2)
+
 if __name__ == '__main__':
     app.run(debug=True)
