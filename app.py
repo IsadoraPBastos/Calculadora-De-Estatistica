@@ -271,7 +271,7 @@ def limpar_dados():
     global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana
     dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []
     limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-    valorA = valorB = valorANorm = valorBNorm = 0
+    valorA = valorB = valorANorm = valorBNorm = vQuantidade = vTotal  = 0
     tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
     reqDistNormal = secaoDNormalFinal = calcularNormal = False
     moda = mediana = None
@@ -892,28 +892,28 @@ def processar_dist_binomial(vTotal, vQuantidade, valorA, valorB, intervalo, esco
         coeficienteVariacao = dist.calcular_cv()
 
         if(valorA != "" and intervalo != ""):
-            if(valorB != 0 and intervalo in ["menorQueMenorQue", "menorIgualMenorQue", "menorQueMenorIgual", "menorIgualMenorIgual"]):
+            if(valorB != 0 and intervalo in ["menorQueMenorQueBin", "menorIgualMenorQueBin", "menorQueMenorIgualBin", "menorIgualMenorIgualBin"]):
                 match intervalo:
-                    case "menorQueMenorQue":
+                    case "menorQueMenorQueBin":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB - 1)
-                    case "menorIgualMenorQue":
+                    case "menorIgualMenorQueBin":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA, valorB - 1)
-                    case "menorQueMenorIgual":
+                    case "menorQueMenorIgualBin":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB)
-                    case "menorIgualMenorIgual":
+                    case "menorIgualMenorIgualBin":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA, valorB)
                 resultProb = round(resultProb,2)
-            elif(intervalo in ["maiorQue", "maiorIgual", "menorQue", "menorIgual", "intervaloIgual"]): 
+            elif(intervalo in ["maiorQueBin", "maiorIgualBin", "menorQueBin", "menorIgualBin", "intervaloIgualBin"]): 
                 match intervalo:
-                    case "maiorQue":
+                    case "maiorQueBin":
                         resultProb = 100 - dist.calcular_probabilidade_intervalo(0, valorA)
-                    case "maiorIgual":
+                    case "maiorIgualBin":
                         resultProb = 100 - dist.calcular_probabilidade_intervalo(0, valorA - 1)
-                    case "menorQue":
+                    case "menorQueBin":
                         resultProb = dist.calcular_probabilidade_intervalo(0, valorA - 1)
-                    case "menorIgual":
+                    case "menorIgualBin":
                         resultProb = dist.calcular_probabilidade_intervalo(0, valorA)
-                    case "intervaloIgual":
+                    case "intervaloIgualBin":
                         resultProb = dist.calcular_probabilidade(valorA) * 100
                 resultProb = round(resultProb,2)
             else: 
@@ -962,28 +962,28 @@ def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, es
         coeficienteVariacao = dist.calcular_coeficiente_variacao()
 
         if(valorA != "" and intervalo != ""):
-            if(valorB != 0 and intervalo in ["menorQueMenorQue", "menorIgualMenorQue", "menorQueMenorIgual", "menorIgualMenorIgual"]):
+            if(valorB != 0 and intervalo in ["menorQueMenorQuePoi", "menorIgualMenorQuePoi", "menorQueMenorIgualPoi", "menorIgualMenorIgualPoi"]):
                 match intervalo:
-                    case "menorQueMenorQue":
+                    case "menorQueMenorQuePoi":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB - 1)
-                    case "menorIgualMenorQue":
+                    case "menorIgualMenorQuePoi":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA, valorB - 1)
-                    case "menorQueMenorIgual":
+                    case "menorQueMenorIgualPoi":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB)
-                    case "menorIgualMenorIgual":
+                    case "menorIgualMenorIgualPoi":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA, valorB)
                 resultProb = round(resultProb,2)
-            elif(intervalo in ["maiorQue", "maiorIgual", "menorQue", "menorIgual", "intervaloIgual"]): 
+            elif(intervalo in ["maiorQuePoi", "maiorIgualPoi", "menorQuePoi", "menorIgualPoi", "intervaloIgualPoi"]): 
                 match intervalo:
-                    case "maiorQue":
+                    case "maiorQuePoi":
                         resultProb = 100 - dist.calcular_probabilidade_intervalo(0, valorA)
-                    case "maiorIgual":
+                    case "maiorIgualPoi":
                         resultProb = 100 - dist.calcular_probabilidade_intervalo(0, valorA - 1)
-                    case "menorQue":
+                    case "menorQuePoi":
                         resultProb = dist.calcular_probabilidade_intervalo(0, valorA - 1)
-                    case "menorIgual":
+                    case "menorIgualPoi":
                         resultProb = dist.calcular_probabilidade_intervalo(0, valorA)
-                    case "intervaloIgual":
+                    case "intervaloIgualPoi":
                         resultProb = dist.calcular_probabilidade(valorA) * 100
                 resultProb = round(resultProb,2)
             else: 

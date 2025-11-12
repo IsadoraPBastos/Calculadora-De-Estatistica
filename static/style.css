@@ -105,7 +105,8 @@ hr {
 }
 
 /* Tipo de dados botão*/
-.container-opcoes-tipo-dado input[type="radio"], .container-opcoes-tipo-intervalo input[type="radio"] {
+.container-opcoes-tipo-dado input[type="radio"],
+.container-opcoes-tipo-intervalo input[type="radio"] {
   display: none;
 }
 
@@ -131,7 +132,10 @@ hr {
 }
 
 .opcao-tipo-intervalo {
-  border: solid 2px black;
+  border: solid 1px black;
+  padding: 5px 15px;
+  width: 35px;
+  margin: 5px;
 }
 
 .opcao-tipo-dado:hover,
@@ -543,3 +547,6 @@ body {
 body {
   background: transparent !important;
 }
+
+.hidden { display: none; }
+.show { display: block; }

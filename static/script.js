@@ -247,3 +247,45 @@ function regreLinear() {
     cardEQ1.style.opacity = 1;
   });
 }
+
+// Btn B
+document.addEventListener("DOMContentLoaded", () => {
+  // Valores de intervalo que precisam do segundo input (valorB)
+  const intervalosComB = [
+    "menorQueMenorQueBin",
+    "menorIgualMenorQueBin",
+    "menorQueMenorIgualBin",
+    "menorIgualMenorIgualBin",
+    "menorQueMenorQuePoi",
+    "menorIgualMenorQuePoi",
+    "menorQueMenorIgualPoi",
+    "menorIgualMenorIgualPoi",
+  ];
+
+  // Função genérica pra ativar/desativar o input B
+  function configurarIntervalo(containerId, inputBId) {
+    const container = document.getElementById(containerId);
+    const inputB = document.getElementById(inputBId);
+    if (!container || !inputB) return;
+
+    const radios = container.querySelectorAll('input[type="radio"][name="intervalo"]');
+
+    radios.forEach((radio) => {
+      radio.addEventListener("change", () => {
+        if (intervalosComB.includes(radio.value)) {
+          inputB.classList.remove("hidden");
+          inputB.style.display = "inline-block";
+        } else {
+          inputB.classList.add("hidden");
+          inputB.style.display = "none";
+        }
+      });
+    });
+  }
+
+  // Configura cada distribuição
+  configurarIntervalo("secaoDBino", "inputDuasVariaveisBin");
+  configurarIntervalo("secaoDPois", "inputDuasVariaveisPois");
+});
+
+
