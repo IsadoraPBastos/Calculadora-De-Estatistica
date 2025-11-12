@@ -69,6 +69,20 @@ function fecharModalVAD() {
     .classList.remove("descer");
 }
 
+function abrirModalEq1(){
+  document.getElementById("container_modal_equ_1").classList.add("show");
+  document.querySelector(".botoes-calcular-limpar").classList.add("descer");
+  document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
+}
+
+function fecharModalEq1(){
+   document.getElementById("container_modal_equ_1").classList.remove("show");
+  document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
+  document
+    .querySelector(".container-opcoes-tipo-dado")
+    .classList.remove("descer");
+}
+
 // Seleção dos botões dentro dos modais
 
 const secaoDadosDesordenado = document.getElementById("secaoDadosDesordenados");

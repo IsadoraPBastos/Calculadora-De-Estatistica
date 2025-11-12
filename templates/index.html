@@ -108,7 +108,7 @@
         </div>
       </div>
       <div class="container-card-eq1">
-        <div onclick="abrirModalDiscreto()" class="card-eq1">
+        <div onclick="abrirModalEq1()" class="card-eq1">
           <div class="front-eq1"><b>Equação 1 Grau </b></div>
           <div class="back-eq1"><h3 style="margin-top: 35px">Agrupamento Discreto</h3>
           </div>
@@ -300,12 +300,16 @@
           <button onclick="mostrarDNormal()" id="btn-escolha-normal" class="btn-mostrar-tipo-discreto">Distribuição Normal</button>
 
           <!-- Parte de inserção de dados - Distribuição Uniforme -->
-          <div class="divisao-modal" id="secaoDUnifor">
+          <div class="divisao-modal" id="secaoDUnifor" style="gap: 2rem;">
               <form action="{{url_for('dist_uniforme')}}" method="POST" style="display: contents;">
+                <div class="insercao-infos">
                   <input type="text" name="limiteSuperior" placeholder="Limite Inferior">
                   <input type="text" name="limiteInferior" placeholder="Limite Superior">
+                  </div>
+                  <div class="insercao-infos">
                   <input type="text" name="valorCUnif" placeholder="Valor 1">
                   <input type="text" name="valorDUnif" placeholder="Valor 2">
+                  </div>
                   <select name="intervalo" id="">
                     <option value="maiorQue">></option>
                     <option value="menorQue"><</option>
@@ -317,12 +321,16 @@
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Exponencial -->
-          <div class="divisao-modal" id="secaoDExpo">
+          <div class="divisao-modal" id="secaoDExpo" style="gap: 2rem;">
          <form action="{{url_for('dist_exponencial')}}" method="POST" style="display: contents;">
+          <div class="insercao-infos">
                   <input type="text" name="vLambda" placeholder="Valor do Lambda" disabled>
                   <input type="text" name="desvioPadrao" placeholder="Desvio Padrão">
+                  </div>
+                  <div class="insercao-infos">
                   <input type="text" name="valorA" placeholder="Valor do A">
                   <input type="text" name="valorB" placeholder="Valor do B">
+                  </div>
                   <select name="intervalo" id="">
                     <option value="maiorQue">></option>
                     <option value="menorQue"><</option>
@@ -607,6 +615,68 @@
         </div>
       </div>
 
+          <!-- Parte de inserção de dados - Equação 1º Grau -->
+    <div class="container-modal" id="container_modal_equ_1">
+      <div class="modal">
+        <div class="botao-fechar-modal" onclick="fecharModalEq1()">
+          <i class="fa-solid fa-circle-xmark fa-2xl"></i>
+        </div>
+        
+          <h1>Equação 1º Grau </h1>
+
+          <!-- Parte de inserção de dados - Tabela -->
+          <div class="divisao-modal">
+        <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
+        <form action="{{url_for('regr_linear_eq_1')}}" method="POST">
+          <div style="margin: 10px;">
+            <label for="valorX"
+              >X:
+              <input type="number" name="valorX" step="any" placeholder="Valor X" required
+            /></label>
+          </div>
+          <div style="margin: 10px;">
+            <label for="valorY"
+              >Y:
+              <input type="number" name="valorY" step="any" placeholder="Valor Y" required
+            /></label>
+          </div>
+          <div><button>Adicionar</button></div></div>
+        </form>
+        <div style="width: 50%;">
+        <div><h2>Dados inseridos</h2></div>
+        <table style="width: 60%;">
+          <thead>
+            <tr>
+              <th>X</th>
+              <th>Y</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for valorX, valorY in TabelaDeDados.items() %}
+            <tr>
+              <td>{{ valorX }}</td>
+              <td>{{ valorY }}</td>
+              <td>
+                <form action="{{url_for('regr_linear_eq_1')}}" method="post">
+                  <button name="limpar" value="{{ valorX }}" style="background: none; border: none; padding: 0; cursor: pointer;">
+                    <i class="fa-solid fa-xmark fa-2xl" style="color: black;"></i>
+                  </button>                
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+          </div>
+          {% if erroFIMenorZero %}
+          <div class="msg-erro" id="msg-erro-zero-division">
+            <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Digite uma Frequência Individual maior que 0!
+          </div>
+          {% endif %}
+    </div>
+    </div>
+
     <!-- Calcular os dados recebidos -->
     <form
       action="{{url_for('calculo_dos_dados')}}"
@@ -721,6 +791,7 @@
         />
         <label for="todos" class="escolha-calculo">Todos</label>
 
+        {% if mostrar_modal != "equacao1" %}
         <input
           type="checkbox"
           name="escolha-calculo"
@@ -729,6 +800,7 @@
           class="escolha-checkbox"
         />
         <label for="media" class="escolha-calculo">Média</label>
+        {% endif %}
 
         {% if mostrar_modal == "padrao" or mostrar_modal == "discreto" or mostrar_modal == "classes"%}
         <input
@@ -759,6 +831,7 @@
         <label for="mediana" class="escolha-calculo">Mediana</label>
         {% endif %}
 
+        {% if mostrar_modal != "equacao1" %}
         <input
           type="checkbox"
           name="escolha-calculo"
@@ -785,6 +858,7 @@
           class="escolha-checkbox"
         />
         <label for="coeficienteVariacao" class="escolha-calculo">Coeficiente de Variação</label>
+        {% endif %}
 
         {% if dados_vac == True or reqDistNormal == True %}
         <input
@@ -795,6 +869,26 @@
           class="escolha-checkbox"
         />
         <label for="probabilidade" class="escolha-calculo">Probabilidade</label>
+        {% endif %}
+
+        {% if mostrar_modal == "equacao1" %}
+         <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="equacaoReta"
+          value="equacaoReta"
+          class="escolha-checkbox"
+        />
+        <label for="equacaoReta" class="escolha-calculo">Equação da Reta</label>
+
+         <input
+          type="checkbox"
+          name="escolha-calculo"
+          id="coefiDeterminacao"
+          value="coefiDeterminacao"
+          class="escolha-checkbox"
+        />
+        <label for="coefiDeterminacao" class="escolha-calculo">Coeficiente Determinação</label>
         {% endif %}
 
         <div id="msg-erro-calculos">
@@ -905,6 +999,18 @@
         <h3>Probabilidade</h3>
         <p>{{ probabilidade }}% </p>
         </div>
+      
+      {% elif escolha == "equacaoReta" %}
+        <div class="calculos-resultados">
+        <h3>Equação da Reta</h3>
+        <p>{{ equacaoReta }} </p>
+        </div>
+      
+      {% elif escolha == "coefiDeterminacao" %}
+        <div class="calculos-resultados">
+        <h3>Coeficiente Determinação <h3>
+        <p>{{ coefiDeterminacao }}% </p>
+        </div>
       {% endif %}
     {% elif tipo == "semMedida" %}
         {% if escolha == "media" %}
@@ -954,6 +1060,18 @@
         <div class="calculos-resultados">
         <h3>Probabilidade</h3>
         <p>{{ probabilidade }}% </p>
+        </div>
+
+      {% elif escolha == "equacaoReta" %}
+        <div class="calculos-resultados">
+        <h3>Equação da Reta</h3>
+        <p>{{ equacaoReta }} </p>
+        </div>
+      
+      {% elif escolha == "coefiDeterminacao" %}
+        <div class="calculos-resultados">
+        <h3>Coeficiente Determinação <h3>
+        <p>{{ coefiDeterminacao }}% </p>
         </div>
       {% endif %}
 
@@ -1005,6 +1123,18 @@
         <div class="calculos-resultados">
         <h3>Probabilidade</h3>
         <p>{{ probabilidade }}% </p>
+        </div>
+      
+      {% elif escolha == "equacaoReta" %}
+        <div class="calculos-resultados">
+        <h3>Equação da Reta</h3>
+        <p>{{ equacaoReta }} </p>
+        </div>
+      
+      {% elif escolha == "coefiDeterminacao" %}
+        <div class="calculos-resultados">
+        <h3>Coeficiente Determinação <h3>
+        <p>{{ coefiDeterminacao }}% </p>
         </div>
       {% endif %}
     {% endif %} 
@@ -1204,6 +1334,7 @@
       const modalClasses = document.getElementById("container_modal_classes");
       const modalVac = document.getElementById("container_modal_vac")
       const modalVad = document.getElementById("container_modal_vad")
+      const equacao1Grau = document.getElementById("container_modal_equ_1")
       const tipoModal = "{{ mostrar_modal }}";
       const desordenadoOuTabela = "{{ mostrar_desor_ou_tab }}";
       const botoes = document.querySelector(".botoes-calcular-limpar");
@@ -1274,6 +1405,8 @@
       } else if(tipoModal == "poisson"){
         modalVad.classList.add("show")
         mostrarDPois()
+      } else if(tipoModal == "equacao1"){
+        equacao1Grau.classList.add("show")
       }
       
       const formDadosDesordenados = document.getElementById("formDadosDesordenados");

@@ -8,10 +8,10 @@ from scipy.stats import norm #pip install scipy
 app = Flask(__name__)
 
 # Definição das variáveis 
-dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []
+dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []; TabelaDeDados = {}
 
 limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-valorA = valorB = valorANorm = valorBNorm = vQuantidade = vTotal  = 0
+valorA = valorB = valorANorm = valorBNorm = vQuantidade = vTotal = valorX = valorY = 0
 tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
 
 reqDistNormal = secaoDNormalFinal = calcularNormal = False
@@ -22,7 +22,7 @@ moda = mediana = None
 @app.route('/')
 def index():
     return render_template('index.html', FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[], mostrar_modal="padrao", limiteSuperior=0, limiteInferior=0, vLambda=0, mostrarResultados=False)
+    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[], mostrar_modal="padrao", TabelaDeDados={}, limiteSuperior=0, limiteInferior=0, vLambda=0, mostrarResultados=False)
 
 #Recebe os dados quando a pessoa envia eles pela parte desordenada 
 @app.route("/dados_desordenados", methods=["POST", "GET"])
@@ -264,19 +264,38 @@ def dist_poisson():
     FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, 
     Posicoes={}, escolhaCalculo=[], mostrarResultados=False)
 
+#Recebe os dados quando a pessoa envia eles pela parte de tabela
+@app.route("/regr_linear_eq_1", methods=["POST", "GET"])
+def regr_linear_eq_1():
+    #Organiza os dados na tabela de FI
+    if request.method == "POST":
+        if request.form.get("valorX" and "valorY"):
+            valorX = float(request.form.get('valorX'))
+            valorY = float(request.form.get('valorY'))
+
+            TabelaDeDados[valorX] = valorY
+            print(TabelaDeDados)
+
+        if request.form.get("limpar"):
+            limparDados = request.form.get("limpar")
+            TabelaDeDados.pop(float(limparDados))
+    return render_template("index.html", mostrar_modal="equacao1",
+    TabelaDeDados=TabelaDeDados, FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={},
+    FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
+
 
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
 def limpar_dados():
-    global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana
-    dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []
+    global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana, valorX, valorY, TabelaDeDados
+    dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []; TabelaDeDados = {}
     limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-    valorA = valorB = valorANorm = valorBNorm = vQuantidade = vTotal  = 0
+    valorA = valorB = valorANorm = valorBNorm = vQuantidade = vTotal = valorX = valorY = 0
     tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
     reqDistNormal = secaoDNormalFinal = calcularNormal = False
     moda = mediana = None
     return render_template("index.html", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, mostrar_modal="padrao")
+    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], TabelaDeDados={}, escolhaCalculo=[],mostrarResultados=False, mostrar_modal="padrao")
 
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
@@ -324,6 +343,9 @@ def calculo_dos_dados():
 
         if(vMedia != 0 and intervalo != "" and valorA != ""):
                 return processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+
+        if(TabelaDeDados != 0):
+                return processar_regr_linear_eq_1(TabelaDeDados, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
         if not FequenciaIndividualAbsolutaRecebida and not dadosDesordenados and not dadosClasses:
             raise ValueError
@@ -494,10 +516,10 @@ def calculo_dos_dados():
         return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, variancia=variancia, desvioPadrao=desvioPadrao, 
         coeficienteVariacao=coeficienteVariacao,escolhaCalculo=escolhaCalculo, dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
         tamanhoDaAmostra=tamanhoDaAmostra, FrequenciaAcumulada=FrequenciaAcumulada, Posicoes=Posicoes, FequenciaIndividualAbsolutaRecebida={}, dadosClasses=[], 
-        mostrar_modal=modal_aberto, tipo=tipo, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio, dados_agrup_disc=True)
+        mostrar_modal=modal_aberto, tipo=tipo, TabelaDeDados={}, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio, dados_agrup_disc=True)
     except ValueError:
         return render_template("index.html", erro="Você precisa inserir pelo menos um dado!", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, 
-        Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[])
+        Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, TabelaDeDados={}, dadosClasses=[], escolhaCalculo=[])
 
 def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
     global reqDistNormal, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
@@ -823,6 +845,7 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
         Sigma=desvioPadraoNorm, 
         N=tamanhoAmostraNorm
     )
+    if intervalo in ["menorQueMenorQue", "menorIgualQueMenorQue", "menorQueMenorIgualQue", "menorIgualQueMenorIgualQue"]:
         valorBNorm = TransformacaoZ.calcular_z_tabela_amostra(
         X=valorBNorm, 
         Mu=mediaNorm, 
@@ -831,16 +854,19 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
     )
 
     if(intervalo == "maiorQue"):
-        resultProb = round(distN.calcular_prob_sobrevivencia(valorANorm),2)
+        # Adiciona a multiplicação por 100 para exibir como porcentagem.
+        resultProb = round(distN.calcular_prob_sobrevivencia(valorANorm) * 100, 2) 
         print("prob_MaiorQue", resultProb)
     elif(intervalo == "menorQue"):
-        resultProb = round(distN.calcular_prob_acumulada(valorANorm),2)
+        # Adiciona a multiplicação por 100 para exibir como porcentagem.
+        resultProb = round(distN.calcular_prob_acumulada(valorANorm) * 100, 2)
         print("prob_MenorQue", resultProb)
     elif(intervalo == "intervaloIgual"):
         resultProb = 0.00
         print(resultProb)
     elif(intervalo == "menorQueMenorQue"):
-        resultProb = round(distN.calcular_probabilidade_intervalo(valorANorm, valorBNorm),2)
+        # Adiciona a multiplicação por 100 para exibir como porcentagem.
+        resultProb = round(distN.calcular_probabilidade_intervalo(valorANorm, valorBNorm) * 100, 2) 
         print(valorANorm)
         print(valorBNorm)
         print("menorQueMenorQue", resultProb)
@@ -1015,6 +1041,40 @@ def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, es
                         #  dados_vac=True)
                         ) 
 
+def processar_regr_linear_eq_1(TabelaDeDados, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+    print("------------- Equação 1º Grau ---------------")
+    print("TabelaDeDados", TabelaDeDados)
+    if(TabelaDeDados != 0):
+        reg = RegressaoLinear(TabelaDeDados)
+
+        equacaoReta = reg.equacao_reta()
+        coefiDeterminacao = reg.calcular_coeficiente_determinacao()
+        # previsao = reg.prever(6)
+        coefiDeterminacao = round(coefiDeterminacao, 2)
+        print("equacaoReta", equacaoReta)
+        print("coefiDeterminacao", coefiDeterminacao)
+
+    else: 
+        print("Tem algum erro ai")
+
+    return render_template("index.html", 
+                         equacaoReta=equacaoReta, 
+                         coefiDeterminacao=coefiDeterminacao,
+                         escolhaCalculo=escolhaCalculo, 
+                         dadosDesordenados=[], 
+                         FequenciaIndividualAbsoluta={},
+                         FrequenciaAcumulada={}, 
+                         Posicoes={}, 
+                         TabelaDeDados={},
+                         FequenciaIndividualAbsolutaRecebida={}, 
+                         dadosClasses={},
+                         mostrar_modal=modal_aberto, 
+                         tipo=tipo, 
+                         escolhaCalculoJson=escolhaCalculoJson, 
+                         mostrarResultados=True,
+                        ) 
+
+
 
 #distribuicao uniforme
 class DistribuicaoUniforme:
@@ -1129,12 +1189,12 @@ class DistribuicaoNormalPadrao:
     def calcular_prob_acumulada(self, z: float) -> float:
         #P(Z <= a) = P(Z < a)
         prob = norm.cdf(z)
-        return prob * 100
+        return prob 
     
     def calcular_prob_sobrevivencia(self, z: float) -> float:
         #P(Z >= a) = P(Z > a)
         prob = norm.sf(z)
-        return prob * 100
+        return prob 
     
     def calcular_probabilidade_intervalo(self, z1: float, z2: float) -> float:
         #P(a <= Z <= b) = P(a < Z < b)
@@ -1239,6 +1299,60 @@ class DistribuicaoPoisson:
             x1, x2 = x2, x1
         prob = sum(self.calcular_probabilidade(x) for x in range(x1, x2 + 1))
         return round(prob * 100, 2)
+
+#-- Regressão Linear - Equação 1º Grau --
+class RegressaoLinear:
+    def __init__(self, dados: dict[float, float]):
+        if not dados:
+            raise ValueError("O dicionário de dados não pode estar vazio.")
+        
+        self.x = list(dados.keys())
+        self.y = list(dados.values())
+        self.n = len(self.x)
+
+        self.soma_x = sum(self.x)
+        self.soma_y = sum(self.y)
+        self.soma_x2 = sum([xi**2 for xi in self.x])
+        self.soma_y2 = sum([yi**2 for yi in self.y])
+        self.soma_xy = sum([self.x[i] * self.y[i] for i in range(self.n)])
+
+    def calcular_coeficiente_angular(self):
+        numerador = (self.n * self.soma_xy) - (self.soma_x * self.soma_y)
+        denominador = (self.n * self.soma_x2) - (self.soma_x ** 2)
+        if denominador == 0:
+            raise ValueError("Divisão por zero no cálculo do coeficiente angular.")
+        return round(numerador / denominador, 4)
+
+    def calcular_coeficiente_linear(self):
+        b = self.calcular_coeficiente_angular()
+        a = (self.soma_y - b * self.soma_x) / self.n
+        return round(a, 4)
+
+    def calcular_coeficiente_correlacao(self):
+        numerador = (self.n * self.soma_xy) - (self.soma_x * self.soma_y)
+        denominador = math.sqrt(
+            (self.n * self.soma_x2 - self.soma_x**2) *
+            (self.n * self.soma_y2 - self.soma_y**2)
+        )
+        if denominador == 0:
+            raise ValueError("Divisão por zero no cálculo do coeficiente de correlação.")
+        return round(numerador / denominador, 4)
+
+    def calcular_coeficiente_determinacao(self):
+        r = self.calcular_coeficiente_correlacao()
+        return round(r**2, 4) * 100
+
+    def prever(self, x_novo: float):
+        a = self.calcular_coeficiente_linear()
+        b = self.calcular_coeficiente_angular()
+        y_previsto = a + b * x_novo
+        return round(y_previsto, 4)
+
+    def equacao_reta(self):
+        a = self.calcular_coeficiente_linear()
+        b = self.calcular_coeficiente_angular()
+        return f"y = {round(a,2)} + {round(b,2)}x"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
