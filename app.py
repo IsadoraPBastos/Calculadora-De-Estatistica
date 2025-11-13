@@ -11,7 +11,7 @@ app = Flask(__name__)
 dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []; TabelaDeDados = {}
 
 limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-valorA = valorB = valorANorm = valorBNorm = vQuantidade = vTotal = valorX = valorY = 0
+valorA = valorB = valorANorm = valorBNorm = probabSucesso = vTotal = valorX = valorY = valorCUnif = valorDUnif = 0
 tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
 
 reqDistNormal = secaoDNormalFinal = calcularNormal = False
@@ -40,7 +40,7 @@ def dados_desordenados():
             reqDistNormal = True
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="desordenado", 
     dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
-    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, limiteSuperior=0, limiteInferior=0, reqDistNormal=reqDistNormal)
+    FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, TabelaDeDados={},limiteSuperior=0, limiteInferior=0, reqDistNormal=reqDistNormal)
 
 #Recebe os dados quando a pessoa envia eles pela parte de tabela
 @app.route("/dados_em_tabela", methods=["POST", "GET"])
@@ -68,7 +68,7 @@ def dados_em_tabela():
     return render_template("index.html", mostrar_modal="discreto", mostrar_desor_ou_tab="tabela", 
     FequenciaIndividualAbsolutaRecebida=FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta={},
     FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False, erroFIMenorZero=erroFIMenorZero, 
-    limiteSuperior=0, limiteInferior=0, reqDistNormal=reqDistNormal)
+    limiteSuperior=0, limiteInferior=0, reqDistNormal=reqDistNormal, TabelaDeDados = {}, NormalTabelaDeDados={})
 
 @app.route("/agrupamento_classes", methods=["POST", "GET"])
 def agrupamento_classes():
@@ -108,7 +108,7 @@ def agrupamento_classes():
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False, limiteSuperior=0, reqDistNormal=reqDistNormal, limiteInferior=0)
+    escolhaCalculo=[], mostrarResultados=False,TabelaDeDados={}, limiteSuperior=0, reqDistNormal=reqDistNormal, limiteInferior=0)
 
 @app.route("/alteração_fi", methods=["POST", "GET"])
 def alteração_fi():
@@ -131,27 +131,32 @@ def alteração_fi():
     return render_template("index.html", mostrar_modal="classes", 
     dadosClasses=dadosClasses, modaBruta=True, FequenciaIndividualAbsolutaRecebida={}, 
     FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
-    escolhaCalculo=[], mostrarResultados=False, erroMenorZero=erroMenorZero, limiteSuperior=0, reqDistNormal=reqDistNormal, limiteInferior=0)
+    escolhaCalculo=[], mostrarResultados=False,TabelaDeDados={}, erroMenorZero=erroMenorZero, limiteSuperior=0, limiteInferior=0, reqDistNormal=reqDistNormal)
 
+# Não recebe o Limite Inferior nem fodendo
 @app.route("/dist_uniforme", methods=["POST", "GET"])
 def dist_uniforme():
     global limiteSuperior, limiteInferior, valorCUnif, valorDUnif, intervalo
     if request.method == "POST":
+
         if request.form.get("limiteSuperior") and request.form.get("limiteInferior") and request.form.get("valorCUnif") and request.form.get("intervalo"):
             limiteSuperior = float(request.form.get('limiteSuperior'))
-            limiteInferior = float(request.form.get('limiteInferior'))       
+            limiteInferior = float(request.form.get('limiteInferior'))   
             valorCUnif = float(request.form.get("valorCUnif"))
             intervalo = request.form.get("intervalo")
+            print("limiteSuperior", limiteSuperior)
+            print("limiteInferior", limiteInferior)
+            print("intervalo", intervalo)
+            print("valorCUnif", valorCUnif)
             if request.form.get("valorDUnif") and intervalo == "menorQueMenorQue":
                 valorDUnif = float(request.form.get("valorDUnif"))
             else: 
                 valorDUnif = 0
 
-
     return render_template("index.html", limiteSuperior=limiteSuperior, limiteInferior=limiteInferior, valorCUnif=valorCUnif, valorDUnif=valorDUnif,
     intervalo=intervalo, mostrar_modal="uniforme", dados_vac=True,
     dadosClasses={}, modaBruta=False, FequenciaIndividualAbsolutaRecebida={}, 
-    FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
+    FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={},  TabelaDeDados={},
     escolhaCalculo=[], mostrarResultados=False)
 
 @app.route("/dist_exponencial", methods=["POST", "GET"])
@@ -187,7 +192,7 @@ def dist_exponencial():
 
     return render_template("index.html", vLambda=vLambda, desvioPadrao=desvioPadrao, valorA=valorA, 
     valorB=valorB, intervalo=intervalo, mostrar_modal="exponencial", dados_vac=True, dadosClasses={}, modaBruta=False, 
-    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, 
+    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, TabelaDeDados={},
     Posicoes={}, escolhaCalculo=[], mostrarResultados=False)
 
 @app.route("/dist_normal_pad", methods=["POST", "GET"])
@@ -224,16 +229,16 @@ def dist_normal_pad():
     intervalo=intervalo, mediaNorm=mediaNorm, desvioPadraoNorm=desvioPadraoNorm, tamanhoAmostraNorm=tamanhoAmostraNorm, 
     mostrar_modal="normal", dados_vac=True, calcularNormal=calcularNormal, moda=moda, mediana=mediana,
     dadosClasses={}, modaBruta=False, FequenciaIndividualAbsolutaRecebida={}, 
-    FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, 
+    FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, Posicoes={}, TabelaDeDados={},
     escolhaCalculo=[], mostrarResultados=False, reqDistNormal=reqDistNormal)
 
 @app.route("/dist_binomial", methods=["POST", "GET"])
 def dist_binomial():
-    global vTotal, vQuantidade, valorA, valorB, intervalo
+    global vTotal, probabSucesso, valorA, valorB, intervalo
     if request.method == "POST":
-        if request.form.get("vTotal") and request.form.get("vQuantidade") and request.form.get("valorA") and request.form.get("intervalo"):
+        if request.form.get("vTotal") and request.form.get("probabSucesso") and request.form.get("valorA") and request.form.get("intervalo"):
             vTotal = int(request.form.get("vTotal"))
-            vQuantidade = int(request.form.get("vQuantidade"))
+            probabSucesso = float(request.form.get("probabSucesso"))
             valorA = int(request.form.get("valorA"))
             intervalo = request.form.get("intervalo")
             
@@ -241,9 +246,9 @@ def dist_binomial():
                 valorB = int(request.form.get("valorB"))
             else: 
                 valorB = 0
-    return render_template("index.html", vQuantidade=vQuantidade, vTotal=vTotal, valorA=valorA, 
+    return render_template("index.html", probabSucesso=probabSucesso, vTotal=vTotal, valorA=valorA, 
     valorB=valorB, intervalo=intervalo, mostrar_modal="binomial", dados_vac=True, dadosClasses={}, modaBruta=False, 
-    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, 
+    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, TabelaDeDados={},
     Posicoes={}, escolhaCalculo=[], mostrarResultados=False)
 
 @app.route("/dist_poisson", methods=["POST", "GET"])
@@ -261,10 +266,9 @@ def dist_poisson():
                 valorB = 0
     return render_template("index.html", vMedia=vMedia, valorA=valorA, 
     valorB=valorB, intervalo=intervalo, mostrar_modal="poisson", dados_vac=True, dadosClasses={}, modaBruta=False, 
-    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, 
+    FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, TabelaDeDados={},
     Posicoes={}, escolhaCalculo=[], mostrarResultados=False)
 
-#Recebe os dados quando a pessoa envia eles pela parte de tabela
 @app.route("/regr_linear_eq_1", methods=["POST", "GET"])
 def regr_linear_eq_1():
     #Organiza os dados na tabela de FI
@@ -287,10 +291,10 @@ def regr_linear_eq_1():
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
 def limpar_dados():
-    global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana, valorX, valorY, TabelaDeDados
+    global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana, valorX, valorY, TabelaDeDados, probabSucesso, vTotal, vMedia
     dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []; TabelaDeDados = {}
     limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-    valorA = valorB = valorANorm = valorBNorm = vQuantidade = vTotal = valorX = valorY = 0
+    valorA = valorB = valorANorm = valorBNorm = probabSucesso = vTotal = valorX = valorY  = 0
     tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
     reqDistNormal = secaoDNormalFinal = calcularNormal = False
     moda = mediana = None
@@ -328,6 +332,10 @@ def calculo_dos_dados():
     
     try:
         #Mensagem de erro caso a pessoa não insira um valor para os cálculos 
+        print("limiteSuperior", limiteSuperior)
+        print("limiteInferior", limiteInferior)
+        print("intervalo", intervalo)
+        print("valorCUnif", valorCUnif)
         if limiteSuperior != 0 and limiteInferior != 0 and intervalo != "" and valorCUnif != 0:
             return processar_dist_uniforme(limiteSuperior, limiteInferior, valorCUnif, valorDUnif, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
         
@@ -338,13 +346,13 @@ def calculo_dos_dados():
         if(valorANorm != 0 and mediaNorm != 0 and desvioPadraoNorm != 0 and tamanhoAmostraNorm != None):
                 return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
-        if(vTotal != 0 and vQuantidade != 0 and intervalo != "" and valorA != ""):
-            return processar_dist_binomial(vTotal, vQuantidade, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
+        if(vTotal != 0 and probabSucesso != 0 and intervalo != "" and valorA != ""):
+            return processar_dist_binomial(vTotal, probabSucesso, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
         if(vMedia != 0 and intervalo != "" and valorA != ""):
                 return processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
-        if(TabelaDeDados != 0):
+        if(TabelaDeDados):
                 return processar_regr_linear_eq_1(TabelaDeDados, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
         if not FequenciaIndividualAbsolutaRecebida and not dadosDesordenados and not dadosClasses:
@@ -352,6 +360,7 @@ def calculo_dos_dados():
         
 
         # Processamento para dados agrupados em classes
+        print("dadosClasses",dadosClasses)
         if dadosClasses:
             return processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
 
@@ -505,6 +514,7 @@ def calculo_dos_dados():
                                     Posicoes=Posicoes, 
                                     FequenciaIndividualAbsolutaRecebida={}, 
                                     dadosClasses=[], 
+                                    TabelaDeDados={},
                                     modal_aberto="normal",  # Mantém o modal aberto
                                     tipolhaCalculoJson=escolhaCalculoJson, 
                                     mostrarResultados=False,
@@ -656,6 +666,7 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
                                 Posicoes=Posicoes, 
                                 FequenciaIndividualAbsolutaRecebida={}, 
                                 dadosClasses=[], 
+                                TabelaDeDados={},
                                 modal_aberto="normal",  # Mantém o modal aberto
                                 tipolhaCalculoJson=escolhaCalculoJson, 
                                 mostrarResultados=False,
@@ -676,6 +687,7 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
                          coeficienteVariacao=coeficienteVariacao,
                          escolhaCalculo=escolhaCalculo, 
                          dadosDesordenados=[], 
+                         TabelaDeDados={},
                          FequenciaIndividualAbsoluta=tabela_classes,
                          tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
                          FrequenciaAcumulada=FrequenciaAcumulada, 
@@ -729,6 +741,7 @@ def processar_dist_uniforme(limiteSuperior, limiteInferior, valorCUnif, valorDUn
                          #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
                          FrequenciaAcumulada={}, 
                          Posicoes={}, 
+                         TabelaDeDados={},
                          FequenciaIndividualAbsolutaRecebida={}, 
                          dadosClasses={},
                          mostrar_modal=modal_aberto, 
@@ -803,6 +816,7 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
                          escolhaCalculo=escolhaCalculo, 
                          dadosDesordenados=[], 
                          FequenciaIndividualAbsoluta={},
+                         TabelaDeDados={},
                          #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
                          FrequenciaAcumulada={}, 
                          Posicoes={}, 
@@ -892,6 +906,7 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          Posicoes={}, 
                          FequenciaIndividualAbsolutaRecebida={}, 
                          dadosClasses={},
+                         TabelaDeDados={},
                          mostrar_modal=modal_aberto, 
                          tipo=tipo, 
                          escolhaCalculoJson=escolhaCalculoJson, 
@@ -900,16 +915,16 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          reqDistNormal = True, 
                          calcularNormal = False) 
 
-def processar_dist_binomial(vTotal, vQuantidade, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
+def processar_dist_binomial(vTotal, probabSucesso, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo):
     print("------------- Binomial ---------------")
     print("vTotal", vTotal)
-    print("vQuantidade", vQuantidade)
+    print("probabSucesso", probabSucesso)
     print("valorA", valorA)
     print("valorB", valorB)
     print("intervalo", intervalo)
-    if(vTotal != 0 and vQuantidade != 0):
+    if(vTotal != 0 and probabSucesso != 0):
         n = vTotal
-        p = vQuantidade / vTotal
+        p = probabSucesso
         dist = DistribuicaoBinomial(n, p)
 
         media = dist.calcular_media()
@@ -964,6 +979,7 @@ def processar_dist_binomial(vTotal, vQuantidade, valorA, valorB, intervalo, esco
                          Posicoes={}, 
                          FequenciaIndividualAbsolutaRecebida={}, 
                          dadosClasses={},
+                         TabelaDeDados={},
                          mostrar_modal=modal_aberto, 
                          tipo=tipo, 
                          escolhaCalculoJson=escolhaCalculoJson, 
@@ -1034,6 +1050,7 @@ def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, es
                          Posicoes={}, 
                          FequenciaIndividualAbsolutaRecebida={}, 
                          dadosClasses={},
+                         TabelaDeDados={},
                          mostrar_modal=modal_aberto, 
                          tipo=tipo, 
                          escolhaCalculoJson=escolhaCalculoJson, 
@@ -1049,10 +1066,11 @@ def processar_regr_linear_eq_1(TabelaDeDados, escolhaCalculo, escolhaCalculoJson
 
         equacaoReta = reg.equacao_reta()
         coefiDeterminacao = reg.calcular_coeficiente_determinacao()
-        # previsao = reg.prever(6)
         coefiDeterminacao = round(coefiDeterminacao, 2)
+        dominio = reg.calcular_dominio()
         print("equacaoReta", equacaoReta)
         print("coefiDeterminacao", coefiDeterminacao)
+        print("dominio", dominio)
 
     else: 
         print("Tem algum erro ai")
@@ -1061,6 +1079,7 @@ def processar_regr_linear_eq_1(TabelaDeDados, escolhaCalculo, escolhaCalculoJson
                          equacaoReta=equacaoReta, 
                          coefiDeterminacao=coefiDeterminacao,
                          escolhaCalculo=escolhaCalculo, 
+                         dominio=dominio,
                          dadosDesordenados=[], 
                          FequenciaIndividualAbsoluta={},
                          FrequenciaAcumulada={}, 
@@ -1352,6 +1371,11 @@ class RegressaoLinear:
         a = self.calcular_coeficiente_linear()
         b = self.calcular_coeficiente_angular()
         return f"y = {round(a,2)} + {round(b,2)}x"
+    
+    def calcular_dominio(self):
+        x_min = min(self.x)
+        x_max = max(self.x)
+        return (x_min, x_max)
 
 
 if __name__ == '__main__':

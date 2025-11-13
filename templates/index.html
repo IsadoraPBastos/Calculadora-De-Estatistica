@@ -303,8 +303,8 @@
           <div class="divisao-modal" id="secaoDUnifor" style="gap: 2rem;">
               <form action="{{url_for('dist_uniforme')}}" method="POST" style="display: contents;">
                 <div class="insercao-infos">
-                  <input type="text" name="limiteSuperior" placeholder="Limite Inferior">
-                  <input type="text" name="limiteInferior" placeholder="Limite Superior">
+                  <input type="text" name="limiteInferior" placeholder="Limite Inferior">
+                  <input type="text" name="limiteSuperior" placeholder="Limite Superior">
                   </div>
                   <div class="insercao-infos">
                   <input type="text" name="valorCUnif" placeholder="Valor 1">
@@ -436,7 +436,7 @@
             <form action="{{url_for('dist_binomial')}}" method="POST" style="display: contents;">
                     <div class="insercao-infos">
                       <input type="text" name="vTotal" placeholder="Total">
-                      <input type="text" name="vQuantidade" placeholder="Quantidade">
+                      <input type="text" name="probabSucesso" placeholder="Probabilidade de Sucesso">
                     </div>
                     <div class="insercao-infos">
                       <input type="text" name="valorA" placeholder="Valor do A">
@@ -884,6 +884,15 @@
          <input
           type="checkbox"
           name="escolha-calculo"
+          id="dominio"
+          value="dominio"
+          class="escolha-checkbox"
+        />
+        <label for="dominio" class="escolha-calculo">Domínio</label>
+
+        <input
+          type="checkbox"
+          name="escolha-calculo"
           id="coefiDeterminacao"
           value="coefiDeterminacao"
           class="escolha-checkbox"
@@ -1011,6 +1020,12 @@
         <h3>Coeficiente Determinação <h3>
         <p>{{ coefiDeterminacao }}% </p>
         </div>
+      
+      {% elif escolha == "dominio" %}
+        <div class="calculos-resultados">
+        <h3>Domínio<h3>
+        <p>{{ dominio }} </p>
+        </div>
       {% endif %}
     {% elif tipo == "semMedida" %}
         {% if escolha == "media" %}
@@ -1072,6 +1087,12 @@
         <div class="calculos-resultados">
         <h3>Coeficiente Determinação <h3>
         <p>{{ coefiDeterminacao }}% </p>
+        </div>
+      
+      {% elif escolha == "dominio" %}
+        <div class="calculos-resultados">
+        <h3>Domínio<h3>
+        <p>{{ dominio }} </p>
         </div>
       {% endif %}
 
@@ -1135,6 +1156,12 @@
         <div class="calculos-resultados">
         <h3>Coeficiente Determinação <h3>
         <p>{{ coefiDeterminacao }}% </p>
+        </div>
+      
+      {% elif escolha == "dominio" %}
+        <div class="calculos-resultados">
+        <h3>Domínio<h3>
+        <p>{{ dominio }} </p>
         </div>
       {% endif %}
     {% endif %} 
