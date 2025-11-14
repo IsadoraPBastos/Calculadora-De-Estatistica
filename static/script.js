@@ -69,14 +69,14 @@ function fecharModalVAD() {
     .classList.remove("descer");
 }
 
-function abrirModalEq1(){
+function abrirModalEq1() {
   document.getElementById("container_modal_equ_1").classList.add("show");
   document.querySelector(".botoes-calcular-limpar").classList.add("descer");
   document.querySelector(".container-opcoes-tipo-dado").classList.add("descer");
 }
 
-function fecharModalEq1(){
-   document.getElementById("container_modal_equ_1").classList.remove("show");
+function fecharModalEq1() {
+  document.getElementById("container_modal_equ_1").classList.remove("show");
   document.querySelector(".botoes-calcular-limpar").classList.remove("descer");
   document
     .querySelector(".container-opcoes-tipo-dado")
@@ -183,7 +183,6 @@ function mostrarDNormal_Amostral() {
   }
 }
 
-
 function mostrarDNormal_Final() {
   secaoDNormal_Amostral.style.display = "none";
   secaoDNormal_Final.style.display = "flex";
@@ -274,6 +273,22 @@ document.addEventListener("DOMContentLoaded", () => {
     "menorIgualMenorQuePoi",
     "menorQueMenorIgualPoi",
     "menorIgualMenorIgualPoi",
+    "menorQueMenorQueUni",
+    "menorIgualMenorQueUni",
+    "menorQueMenorIgualUni",
+    "menorIgualMenorIgualUni",
+    "menorQueMenorQueExpo",
+    "menorIgualMenorQueExpo",
+    "menorQueMenorIgualExpo",
+    "menorIgualMenorIgualExpo",
+    "menorQueMenorQueNorm",
+    "menorIgualMenorQueNorm",
+    "menorQueMenorIgualNorm",
+    "menorIgualMenorIgualNorm",
+    "menorQueMenorQueNormF",
+    "menorIgualMenorQueNormF",
+    "menorQueMenorIgualNormF",
+    "menorIgualMenorIgualNormF",
   ];
 
   // Função genérica pra ativar/desativar o input B
@@ -282,7 +297,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputB = document.getElementById(inputBId);
     if (!container || !inputB) return;
 
-    const radios = container.querySelectorAll('input[type="radio"][name="intervalo"]');
+    const radios = container.querySelectorAll(
+      'input[type="radio"][name="intervalo"]'
+    );
 
     radios.forEach((radio) => {
       radio.addEventListener("change", () => {
@@ -300,6 +317,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Configura cada distribuição
   configurarIntervalo("secaoDBino", "inputDuasVariaveisBin");
   configurarIntervalo("secaoDPois", "inputDuasVariaveisPois");
+  configurarIntervalo("secaoDUnifor", "inputDuasVariaveisUni");
+  configurarIntervalo("secaoDExpo", "inputDuasVariaveisExpo");
+  configurarIntervalo("secaoDNormal_Amostral", "inputDuasVariaveisNorm");
+  configurarIntervalo("secaoDNormal_Final", "inputDuasVariaveisNormF");
 });
-
-

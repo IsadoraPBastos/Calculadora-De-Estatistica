@@ -316,10 +316,24 @@ label[for="modaCzuber"].disabled {
   margin: auto;
 }
 
-.divisao-modal {
+.divisao-modal-desor-class-eq1 {
   display: flex;
   justify-content: center;
   white-space: nowrap;
+}
+
+.divisao-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  white-space: nowrap;
+}
+
+.divisao-modal form {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 
 .secao-normal,
@@ -329,6 +343,14 @@ label[for="modaCzuber"].disabled {
   align-items: center;
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.mostrar-conta {
+  border: black 2px dashed;
+  padding: 0px 40px;
+  border-radius: 15px;
+  font-size: larger;
+  margin-top: 50px;
 }
 
 /* 🔹 Botões no topo */
@@ -548,5 +570,9 @@ body {
   background: transparent !important;
 }
 
-.hidden { display: none; }
-.show { display: block; }
+.hidden {
+  display: none;
+}
+.show {
+  display: block;
+}

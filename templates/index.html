@@ -129,7 +129,7 @@
           <button onclick="mostrarDadosEmTabela()" id="btn-escolha-tabela" class="btn-mostrar-tipo-discreto">Dados em Tabela</button>
 
           <!-- Parte de inserção de dados - Desordenados -->
-          <div class="divisao-modal" id="secaoDadosDesordenados">
+          <div class="divisao-modal-desor-class-eq1" id="secaoDadosDesordenados">
             <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
         <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
           <div style="margin: 10px;">
@@ -155,7 +155,7 @@
           </div>
 
           <!-- Parte de inserção de dados - Tabela -->
-          <div class="divisao-modal" id="secaoDadosEmTabela">
+          <div class="divisao-modal-desor-class-eq1" id="secaoDadosEmTabela">
         <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
         <form action="{{url_for('dados_em_tabela')}}" method="POST">
           <div style="margin: 10px;">
@@ -221,7 +221,7 @@
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
         <h1>Agrupamento em Classes {% if reqDistNormal %} - Pela Distribuição Normal {% endif %}</h1>
-        <div class="divisao-modal">
+        <div class="divisao-modal-desor-class-eq1">
           <form action="{{url_for('agrupamento_classes')}}" method="POST" style="display: contents;">
           <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
               <div style="margin: 10px;">
@@ -300,50 +300,216 @@
           <button onclick="mostrarDNormal()" id="btn-escolha-normal" class="btn-mostrar-tipo-discreto">Distribuição Normal</button>
 
           <!-- Parte de inserção de dados - Distribuição Uniforme -->
-          <div class="divisao-modal" id="secaoDUnifor" style="gap: 2rem;">
-              <form action="{{url_for('dist_uniforme')}}" method="POST" style="display: contents;">
+          <div class="divisao-modal" id="secaoDUnifor" >
+              <form action="{{url_for('dist_uniforme')}}" method="POST" >
                 <div class="insercao-infos">
-                  <input type="text" name="limiteInferior" placeholder="Limite Inferior">
-                  <input type="text" name="limiteSuperior" placeholder="Limite Superior">
+                  <input type="text" name="limiteInferior" placeholder="Limite Inferior" value="{% if limiteInferior %} {{ limiteInferior }}  {% endif %}">
+                  <input type="text" name="limiteSuperior" placeholder="Limite Superior" value="{% if limiteSuperior %} {{ limiteSuperior }}  {% endif %}">
                   </div>
                   <div class="insercao-infos">
-                  <input type="text" name="valorCUnif" placeholder="Valor 1">
-                  <input type="text" name="valorDUnif" placeholder="Valor 2">
+                  <input type="text" name="valorCUnif" placeholder="Valor 1" value="{% if valorCUnif %} {{ valorCUnif }}  {% endif %}">
+                  <input type="text" name="valorDUnif" id="inputDuasVariaveisUni" class="hidden" placeholder="Valor 2" value="{% if valorDUnif %} {{ valorDUnif }}  {% endif %}">
                   </div>
-                  <select name="intervalo" id="">
-                    <option value="maiorQue">></option>
-                    <option value="menorQue"><</option>
-                    <option value="menorQueMenorQue"><<</option>
-                    <option value="intervaloIgual">=</option>
-                  </select>
+                  
+                  <div class="container-opcoes-tipo-intervalo">
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorQueUni"
+                        value="maiorQueUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorQueUni" class="opcao-tipo-intervalo">></label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorIgualUni"
+                        value="maiorIgualUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorIgualUni" class="opcao-tipo-intervalo">≥</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueUni"
+                        value="menorQueUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueUni" class="opcao-tipo-intervalo"><</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualUni"
+                        value="menorIgualUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualUni"  class="opcao-tipo-intervalo">≤</label>
+                        <br>
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorQueUni"
+                        value="menorQueMenorQueUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorQueUni"class="opcao-tipo-intervalo">< <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorQueUni"
+                        value="menorIgualMenorQueUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorQueUni" class="opcao-tipo-intervalo">≤ <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorIgualUni"
+                        value="menorQueMenorIgualUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorIgualUni" class="opcao-tipo-intervalo">< ≤</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorIgualUni"
+                        value="menorIgualMenorIgualUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorIgualUni" class="opcao-tipo-intervalo">≤ ≤</label>
+                      <br>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="intervaloIgualUni"
+                        value="intervaloIgualUni"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="intervaloIgualUni" class="opcao-tipo-intervalo">=</label>
+                    </div>
+
                   <button>Calcular</button>
               </form>
+              {% if 'Uni' in intervalo %}
+              <div class="mostrar-conta">
+                   {% if intervalo == "maiorQueUni" or intervalo == "maiorIgualUni" or intervalo == "menorQueUni" or intervalo == "menorIgualUni" or intervalo == "intervaloIgualUni" %}
+                  <p>X {% if intervalo == "maiorQueUni" %} > {% elif intervalo == "maiorIgualUni" %} ≥ {% elif intervalo == "menorQueUni" %} < {% elif intervalo == "menorIgualUni" %} ≤ {% elif intervalo == "intervaloIgualUni" %} = {% endif %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %}</p>
+                  {% elif intervalo == "menorQueMenorQueUni" or intervalo == "menorIgualMenorQueUni" or intervalo == "menorQueMenorIgualUni" or intervalo == "menorIgualMenorIgualUni" %}
+                  <p> {% if intervalo == "menorQueMenorQueUni" %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %} < X <  {% if valorDUnif %} {{ valorDUnif }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueUni" %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %} ≤ X <  {% if valorDUnif %} {{ valorDUnif }}  {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualUni" %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %} < X ≤  {% if valorDUnif %} {{ valorDUnif }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualUni" %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %} ≤ X ≤  {% if valorDUnif %} {{ valorDUnif }}  {% endif %}
+                    {% endif %} </p>
+                  {% endif %}
+                  {% endif %}
+            </div>
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Exponencial -->
-          <div class="divisao-modal" id="secaoDExpo" style="gap: 2rem;">
-         <form action="{{url_for('dist_exponencial')}}" method="POST" style="display: contents;">
+          <div class="divisao-modal" id="secaoDExpo" >
+         <form action="{{url_for('dist_exponencial')}}" method="POST" >
           <div class="insercao-infos">
                   <input type="text" name="vLambda" placeholder="Valor do Lambda" disabled>
-                  <input type="text" name="desvioPadrao" placeholder="Desvio Padrão">
+                  <input type="text" name="desvioPadrao" placeholder="Desvio Padrão" value="{% if desvioPadrao %} {{ desvioPadrao }}  {% endif %}">
                   </div>
                   <div class="insercao-infos">
-                  <input type="text" name="valorA" placeholder="Valor do A">
-                  <input type="text" name="valorB" placeholder="Valor do B">
+                  <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }}  {% endif %}">
+                  <input type="text" name="valorB" id="inputDuasVariaveisExpo" class="hidden" placeholder="Valor do B" value="{% if valorB %} {{ valorB }}  {% endif %}">
                   </div>
-                  <select name="intervalo" id="">
-                    <option value="maiorQue">></option>
-                    <option value="menorQue"><</option>
-                    <option value="menorQueMenorQue"><<</option>
-                    <option value="intervaloIgual">=</option>
-                  </select>
+                  <div class="container-opcoes-tipo-intervalo">
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorQueExpo"
+                        value="maiorQueExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorQueExpo" class="opcao-tipo-intervalo">></label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorIgualExpo"
+                        value="maiorIgualExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorIgualExpo" class="opcao-tipo-intervalo">≥</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueExpo"
+                        value="menorQueExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueExpo" class="opcao-tipo-intervalo"><</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualExpo"
+                        value="menorIgualExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualExpo"  class="opcao-tipo-intervalo">≤</label>
+                        <br>
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorQueExpo"
+                        value="menorQueMenorQueExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorQueExpo"class="opcao-tipo-intervalo">< <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorQueExpo"
+                        value="menorIgualMenorQueExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorQueExpo" class="opcao-tipo-intervalo">≤ <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorIgualExpo"
+                        value="menorQueMenorIgualExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorIgualExpo" class="opcao-tipo-intervalo">< ≤</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorIgualExpo"
+                        value="menorIgualMenorIgualExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorIgualExpo" class="opcao-tipo-intervalo">≤ ≤</label>
+                      <br>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="intervaloIgualExpo"
+                        value="intervaloIgualExpo"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="intervaloIgualExpo" class="opcao-tipo-intervalo">=</label>
+                    </div>
                   <button>Calcular</button>
               </form>
+              {% if 'Expo' in intervalo %}
+              <div class="mostrar-conta">
+                  {% if intervalo == "maiorQueExpo" or intervalo == "maiorIgualExpo" or intervalo == "menorQueExpo" or intervalo == "menorIgualExpo" or intervalo == "intervaloIgualExpo" %}
+                  <p>X {% if intervalo == "maiorQueExpo" %} > {% elif intervalo == "maiorIgualExpo" %} ≥ {% elif intervalo == "menorQueExpo" %} < {% elif intervalo == "menorIgualExpo" %} ≤ {% elif intervalo == "intervaloIgualExpo" %} = {% endif %} {% if valorA %} {{ valorA }}  {% endif %}</p>
+                  {% elif intervalo == "menorQueMenorQueExpo" or intervalo == "menorIgualMenorQueExpo" or intervalo == "menorQueMenorIgualExpo" or intervalo == "menorIgualMenorIgualExpo" %}
+                  <p> {% if intervalo == "menorQueMenorQueExpo" %} {% if valorA %} {{ valorA }}  {% endif %} < X <  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueExpo" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X <  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualExpo" %} {% if valorA %} {{ valorA }}  {% endif %} < X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualExpo" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% endif %} </p>
+                  {% endif %}
+                  {% endif %}
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Normal -->
           <div class="divisao-modal" id="secaoDNormal">
-            
             <div class="secao-normal">
             <div class="normal-botoes">
             <form action="{{url_for('dados_desordenados')}}" method="POST" id="formDadosDesordenados">
@@ -357,32 +523,112 @@
             <button onclick="mostrarDNormal_Final()" id="btn-escolha-normal" class="btn-mostrar-tipo-discreto">Final</button>
             {% endif %}
             </div>
-            <form action="{{url_for('dist_normal_pad')}}" method="POST" style="display: contents;">
-              <div id="secaoDNormal_Amostral" style="gap: 2rem;">
+            <form action="{{url_for('dist_normal_pad')}}" method="POST" >
+              <div id="secaoDNormal_Amostral" style="gap: 1rem;" >
                   <div class="insercao-infos">
-                    <input type="text" name="valorANorm" placeholder="Valor do A">
-                      <select name="intervalo" id="">
-                        <option value="maiorQue">></option>
-                        <option value="menorQue"><</option>
-                        <option value="menorQueMenorQue">< <</option>
-                        <option value="menorQueMenorQue"><= <</option>
-                        <option value="menorQueMenorQue">< <=</option>
-                        <option value="menorQueMenorQue"><= <=</option>
-                        <option value="intervaloIgual">=</option>
-                      </select>
-                    <input type="text" name="valorBNorm" placeholder="Valor do B">   
-                  </div>
+                    <input type="text" name="valorANorm" placeholder="Valor do A" value="{% if valorANorm %} {{ valorANorm }}  {% endif %}">
+                    <input type="text" name="valorBNorm" id="inputDuasVariaveisNorm" class="hidden" placeholder="Valor do B" value="{% if valorBNorm %} {{ valorBNorm }}  {% endif %}">
+                  </div>       
                   <div class="insercao-infos">
-                    <input type="text" name="mediaNorm" placeholder="Média Populacional">
-                    <input type="text" name="desvioPadraoNorm" placeholder="Desvio Padrão Populacional">
-                    <input type="text" name="tamanhoAmostraNorm" placeholder="Tamanho da Amostra">
+                    <input type="text" name="mediaNorm" placeholder="Média Populacional" value="{% if mediaNorm %} {{ mediaNorm }}  {% endif %}">
+                    <input type="text" name="desvioPadraoNorm" placeholder="Desvio Padrão Populacional" value="{% if desvioPadraoNorm %} {{ desvioPadraoNorm }}  {% endif %}">
+                    <input type="text" name="tamanhoAmostraNorm" placeholder="Tamanho da Amostra" value="{% if tamanhoAmostraNorm %} {{ tamanhoAmostraNorm }}  {% endif %}">
                   </div>
+                  <div class="container-opcoes-tipo-intervalo">
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorQueNorm"
+                        value="maiorQueNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorQueNorm" class="opcao-tipo-intervalo">></label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorIgualNorm"
+                        value="maiorIgualNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorIgualNorm" class="opcao-tipo-intervalo">≥</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueNorm"
+                        value="menorQueNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueNorm" class="opcao-tipo-intervalo"><</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualNorm"
+                        value="menorIgualNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualNorm"  class="opcao-tipo-intervalo">≤</label>
+                        <br>
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorQueNorm"
+                        value="menorQueMenorQueNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorQueNorm"class="opcao-tipo-intervalo">< <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorQueNorm"
+                        value="menorIgualMenorQueNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorQueNorm" class="opcao-tipo-intervalo">≤ <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorIgualNorm"
+                        value="menorQueMenorIgualNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorIgualNorm" class="opcao-tipo-intervalo">< ≤</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorIgualNorm"
+                        value="menorIgualMenorIgualNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorIgualNorm" class="opcao-tipo-intervalo">≤ ≤</label>
+                      <br>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="intervaloIgualNorm"
+                        value="intervaloIgualNorm"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="intervaloIgualNorm" class="opcao-tipo-intervalo">=</label>
+                    </div>
                   <button>Calcular</button>
                 </div>
               </form>
-              <div id="secaoDNormal_Final" style="gap: 2rem;">
+              {% if 'Norm' in intervalo %}
+             <div class="mostrar-conta">
+                  {% if intervalo == "maiorQueNorm" or intervalo == "maiorIgualNorm" or intervalo == "menorQueNorm" or intervalo == "menorIgualNorm" or intervalo == "intervaloIgualNorm" %}
+                  <p>X {% if intervalo == "maiorQueNorm" %} > {% elif intervalo == "maiorIgualNorm" %} ≥ {% elif intervalo == "menorQueNorm" %} < {% elif intervalo == "menorIgualNorm" %} ≤ {% elif intervalo == "intervaloIgualNorm" %} = {% endif %} {% if valorANorm %} {{ valorANorm }}  {% endif %}</p>
+                  {% elif intervalo == "menorQueMenorQueNorm" or intervalo == "menorIgualMenorQueNorm" or intervalo == "menorQueMenorIgualNorm" or intervalo == "menorIgualMenorIgualNorm" %}
+                  <p> {% if intervalo == "menorQueMenorQueNorm" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X <  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueNorm" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X <  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualNorm" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualNorm" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% endif %} </p>
+                  {% endif %}
+                  {% endif %}
+              </div>
+              <div id="secaoDNormal_Final" style="gap: 1rem;">
                   {% if reqDistNormal %}
-                  <div style="background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                  <div style="background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; ">
                       <h3>📊 Dados Calculados</h3>
                       <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px;">
                           <div><strong>Média:</strong> {{ mediaNorm }}</div>
@@ -392,26 +638,93 @@
                           <div><strong>Desvio Padrão:</strong> {{ desvioPadraoNorm }}</div>
                       </div>
                   </div>
-                  <form action="{{url_for('dist_normal_pad')}}" method="POST" style="display: contents;">
+                  <form action="{{url_for('dist_normal_pad')}}" method="POST" style="align-items: start;">
                         <div class="insercao-infos">
                           <input type="text" name="valorANorm" placeholder="Valor do A">
                           <select name="escolha-opcoes-resultados" id="">
                             <option value="escolha_Moda">Moda</option>
                             <option value="escolha_Mediana">Mediana</option>
                           </select>
-                          <input type="text" name="valorBNorm" placeholder="Valor do B">
+                          <input type="text" name="valorBNorm" id="inputDuasVariaveisNormF" class="hidden" placeholder="Valor do B">
                         </div>
                         
-                        <select name="intervalo" id="">
-                          <option value="maiorQue">></option>
-                          <option value="menorQue"><</option>
-                          <option value="menorQueMenorQue">< <</option>
-                          <option value="menorQueMenorQue"><= <</option>
-                          <option value="menorQueMenorQue">< <=</option>
-                          <option value="menorQueMenorQue"><= <=</option>
-                          <option value="intervaloIgual">=</option>
-                        </select>
-                        <button>Calcular</button>
+                        <div class="container-opcoes-tipo-intervalo">
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorQueNormF"
+                        value="maiorQueNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorQueNormF" class="opcao-tipo-intervalo">></label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="maiorIgualNormF"
+                        value="maiorIgualNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="maiorIgualNormF" class="opcao-tipo-intervalo">≥</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueNormF"
+                        value="menorQueNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueNormF" class="opcao-tipo-intervalo"><</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualNormF"
+                        value="menorIgualNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualNormF"  class="opcao-tipo-intervalo">≤</label>
+                        <br>
+                     <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorQueNormF"
+                        value="menorQueMenorQueNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorQueNormF"class="opcao-tipo-intervalo">< <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorQueNormF"
+                        value="menorIgualMenorQueNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorQueNormF" class="opcao-tipo-intervalo">≤ <</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorQueMenorIgualNormF"
+                        value="menorQueMenorIgualNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorQueMenorIgualNormF" class="opcao-tipo-intervalo">< ≤</label>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="menorIgualMenorIgualNormF"
+                        value="menorIgualMenorIgualNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="menorIgualMenorIgualNormF" class="opcao-tipo-intervalo">≤ ≤</label>
+                      <br>
+                      <input
+                        type="radio"
+                        name="intervalo"
+                        id="intervaloIgualNormF"
+                        value="intervaloIgualNormF"
+                        class="escolha-tipo-dado"
+                      />
+                      <label for="intervaloIgualNormF" class="opcao-tipo-intervalo">=</label>
+                  </div>
+                        <button class="botao-calcular-normal">Calcular</button>
                     </form>
                   {% endif %}
                 </div>
@@ -421,7 +734,7 @@
       </div>
       
     <!-- Parte de inserção de dados - VAD -->
-    <div class="container-modal" id="container_modal_vad">
+    <div class="container-modal" id="container_modal_vad"> 
       <div class="modal">
         <div class="botao-fechar-modal" onclick="fecharModalVAD()">
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
@@ -432,15 +745,15 @@
           <button onclick="mostrarDPois()" id="btn-escolha-poisson" class="btn-mostrar-tipo-discreto">Distribuição Poisson</button>
 
           <!-- Parte de inserção de dados - Distribuição Binomial -->
-          <div class="divisao-modal" id="secaoDBino" style="gap: 2rem;">
-            <form action="{{url_for('dist_binomial')}}" method="POST" style="display: contents;">
+          <div class="divisao-modal" id="secaoDBino">
+            <form action="{{url_for('dist_binomial')}}" method="POST">
                     <div class="insercao-infos">
-                      <input type="text" name="vTotal" placeholder="Total">
-                      <input type="text" name="probabSucesso" placeholder="Probabilidade de Sucesso">
+                      <input type="text" name="vTotal" placeholder="Total" value="{% if vTotal %} {{ vTotal }}  {% endif %}">
+                      <input type="text" name="probabSucesso" placeholder="Probabilidade de Sucesso" value="{% if probabSucesso %} {{ probabSucesso }}  {% endif %}">
                     </div>
                     <div class="insercao-infos">
-                      <input type="text" name="valorA" placeholder="Valor do A">
-                      <input type="text" id="inputDuasVariaveisBin" class="hidden" name="valorB" placeholder="Valor do B">
+                      <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }}  {% endif %}">
+                      <input type="text" id="inputDuasVariaveisBin" class="hidden" name="valorB" placeholder="Valor do B" value="{% if valorB %} {{ valorB }}  {% endif %}">
                     </div>
                     <div class="container-opcoes-tipo-intervalo">
                      <input
@@ -520,18 +833,31 @@
                     </div>
                       <button>Calcular</button>
                   </form>
+                  {% if 'Bin' in intervalo %}
+                  <div class="mostrar-conta">
+                  {% if intervalo == "maiorQueBin" or intervalo == "maiorIgualBin" or intervalo == "menorQueBin" or intervalo == "menorIgualBin" or intervalo == "intervaloIgualBin" %}
+                  <p>X {% if intervalo == "maiorQueBin" %} > {% elif intervalo == "maiorIgualBin" %} ≥ {% elif intervalo == "menorQueBin" %} < {% elif intervalo == "menorIgualBin" %} ≤ {% elif intervalo == "intervaloIgualBin" %} = {% endif %} {% if valorA %} {{ valorA }}  {% endif %}</p>
+                  {% elif intervalo == "menorQueMenorQueBin" or intervalo == "menorIgualMenorQueBin" or intervalo == "menorQueMenorIgualBin" or intervalo == "menorIgualMenorIgualBin" %}
+                  <p> {% if intervalo == "menorQueMenorQueBin" %} {% if valorA %} {{ valorA }}  {% endif %} < X <  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueBin" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X <  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualBin" %} {% if valorA %} {{ valorA }}  {% endif %} < X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualBin" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% endif %} </p>
+                  {% endif %}
+                  {% endif %}
+                  </div>
           </div>
 
           <!-- Parte de inserção de dados - Distribuição Poisson -->
-          <div class="divisao-modal" id="secaoDPois" style="gap: 2rem;">
-            <form action="{{url_for('dist_poisson')}}" method="POST" style="display: contents;">
+          <div class="divisao-modal" id="secaoDPois">
+            <form action="{{url_for('dist_poisson')}}" method="POST">
                     <div class="insercao-infos">
                       <input type="text" name="vMedia" placeholder="Desvio Padrão" disabled>
-                      <input type="text" name="vMedia" placeholder="Valor da Média / Lambda">
+                      <input type="text" name="vMedia" placeholder="Valor da Média / Lambda" value="{% if vMedia %} {{ vMedia }}  {% endif %}">
                     </div>
                     <div class="insercao-infos">
-                      <input type="text" name="valorA" placeholder="Valor do A">
-                      <input type="text" id="inputDuasVariaveisPois" class="hidden" name="valorB" placeholder="Valor do B">
+                      <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }}  {% endif %}">
+                      <input type="text" id="inputDuasVariaveisPois" class="hidden" name="valorB" placeholder="Valor do B" value="{% if valorB %} {{ valorB }}  {% endif %}">
                     </div>
                       <div class="container-opcoes-tipo-intervalo">
                      <input
@@ -611,6 +937,19 @@
                     </div>
                       <button>Calcular</button>
                   </form>
+                   {% if 'Poi' in intervalo %}
+                  <div class="mostrar-conta">
+                  {% if intervalo == "maiorQuePoi" or intervalo == "maiorIgualPoi" or intervalo == "menorQuePoi" or intervalo == "menorIgualPoi" or intervalo == "intervaloIgualPoi" %}
+                  <p>X {% if intervalo == "maiorQuePoi" %} > {% elif intervalo == "maiorIgualPoi" %} ≥ {% elif intervalo == "menorQuePoi" %} < {% elif intervalo == "menorIgualPoi" %} ≤ {% elif intervalo == "intervaloIgualPoi" %} = {% endif %} {% if valorA %} {{ valorA }}  {% endif %}</p>
+                  {% elif intervalo == "menorQueMenorQuePoi" or intervalo == "menorIgualMenorQuePoi" or intervalo == "menorQueMenorIgualPoi" or intervalo == "menorIgualMenorIgualPoi" %}
+                  <p> {% if intervalo == "menorQueMenorQuePoi" %} {% if valorA %} {{ valorA }}  {% endif %} < X <  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorQuePoi" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X <  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualPoi" %} {% if valorA %} {{ valorA }}  {% endif %} < X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualPoi" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                    {% endif %} </p>
+                  {% endif %}
+                  {% endif %}
+                  </div>
           </div>
         </div>
       </div>
@@ -625,7 +964,7 @@
           <h1>Equação 1º Grau </h1>
 
           <!-- Parte de inserção de dados - Tabela -->
-          <div class="divisao-modal">
+          <div class="divisao-modal-desor-class-eq1">
         <div style="border-right: 2px dashed; padding: 5% 0%; width: 50%;">
         <form action="{{url_for('regr_linear_eq_1')}}" method="POST">
           <div style="margin: 10px;">
@@ -687,7 +1026,7 @@
     
       <!-- Tipo do dado -->
       <div class="container-opcoes-tipo-dado">
-        <h1 class="titulo-medida-amostras" style="color: white;">Qual a <u>medida</u> das amostras {{ mostrar_modal }}</h1> 
+        <h1 class="titulo-medida-amostras" style="color: white;">Qual a <u>medida</u> das amostras</h1> 
         <input
           type="radio"
           name="tipo"
