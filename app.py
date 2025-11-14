@@ -205,13 +205,13 @@ def dist_normal_pad():
             print("------------------------- dist_normal_pad -------------------------")
             print("Valor a:", valorANorm)
             print("Intervalo:", intervalo)
-            # print('tamanhoAmostraNorm', tamanhoAmostraNorm)
+            print('tamanhoAmostraNorm', tamanhoAmostraNorm)
             if request.form.get("mediaNorm") and request.form.get("desvioPadraoNorm"):
                 mediaNorm = float(request.form.get("mediaNorm"))
                 desvioPadraoNorm = float(request.form.get("desvioPadraoNorm"))
                 if(request.form.get("tamanhoAmostraNorm")):
                     tamanhoAmostraNorm = int(request.form.get("tamanhoAmostraNorm"))
-                else:
+                elif(tamanhoAmostraNorm == 0):
                     tamanhoAmostraNorm = None
             if intervalo == "menorQueMenorQue" or intervalo == "menorIgualQueMenorQue" or intervalo == "menorQueMenorIgualQue" or intervalo == "menorIgualQueMenorIgualQue":
                 valorBNorm = float(request.form.get('valorBNorm')) 
@@ -332,10 +332,10 @@ def calculo_dos_dados():
     
     try:
         #Mensagem de erro caso a pessoa não insira um valor para os cálculos 
-        print("limiteSuperior", limiteSuperior)
-        print("limiteInferior", limiteInferior)
-        print("intervalo", intervalo)
-        print("valorCUnif", valorCUnif)
+        # print("limiteSuperior", limiteSuperior)
+        # print("limiteInferior", limiteInferior)
+        # print("intervalo", intervalo)
+        # print("valorCUnif", valorCUnif)
         if limiteSuperior != 0 and limiteInferior != 0 and intervalo != "" and valorCUnif != 0:
             return processar_dist_uniforme(limiteSuperior, limiteInferior, valorCUnif, valorDUnif, intervalo, escolhaCalculo, escolhaCalculoJson, modal_aberto, tipo)
         
@@ -497,6 +497,7 @@ def calculo_dos_dados():
                 mediaNorm = media  # Atribui à variável global
                 desvioPadraoNorm = desvioPadrao  # Atribui à variável global
                 mediana = mediana_calculada  # Atribui à variável global
+                tamanhoAmostraNorm = int(tamanhoDaAmostra)
                 
                 return render_template("index.html", 
                                     mediaNorm=media, 
@@ -505,6 +506,7 @@ def calculo_dos_dados():
                                     mediana=mediana, 
                                     variancia=variancia, 
                                     desvioPadraoNorm=desvioPadrao,
+                                    tamanhoAmostraNorm=tamanhoAmostraNorm,
                                     coeficienteVariacao=coeficienteVariacao,
                                     escolhaCalculo=escolhaCalculo, 
                                     dadosDesordenados=dadosDesordenados, 
@@ -648,6 +650,7 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
         else: 
             mediaNorm = media  # Atribui à variável 
             desvioPadraoNorm = desvioPadrao  # Atribui à variável global
+            tamanhoAmostraNorm = int(tamanhoDaAmostra)
                     
             return render_template("index.html", 
                                 mediaNorm=media, 
@@ -853,18 +856,12 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
     print('tamanhoAmostraNorm DEPOIS', tamanhoAmostraNorm)
 
     if(mediaNorm != 0 and desvioPadraoNorm != 0):
-        valorANorm = TransformacaoZ.calcular_z_tabela_amostra(
-        X=valorANorm, 
-        Mu=mediaNorm, 
-        Sigma=desvioPadraoNorm, 
-        N=tamanhoAmostraNorm
+        valorANorm = TransformacaoZ.calcular_z_amostral(
+        valorANorm, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm
     )
     if intervalo in ["menorQueMenorQue", "menorIgualQueMenorQue", "menorQueMenorIgualQue", "menorIgualQueMenorIgualQue"]:
-        valorBNorm = TransformacaoZ.calcular_z_tabela_amostra(
-        X=valorBNorm, 
-        Mu=mediaNorm, 
-        Sigma=desvioPadraoNorm, 
-        N=tamanhoAmostraNorm
+        valorBNorm = TransformacaoZ.calcular_z_amostral(
+        valorBNorm, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm
     )
 
     if(intervalo == "maiorQue"):
@@ -1206,39 +1203,32 @@ class DistribuicaoNormalPadrao:
         return float('inf')
     
     def calcular_prob_acumulada(self, z: float) -> float:
-        #P(Z <= a) = P(Z < a)
+        #P(Z <= a)
         prob = norm.cdf(z)
-        return prob 
+        return round(prob, 4)
     
     def calcular_prob_sobrevivencia(self, z: float) -> float:
-        #P(Z >= a) = P(Z > a)
+        #P(Z >= a)
         prob = norm.sf(z)
-        return prob 
+        return round(prob, 4)
     
     def calcular_probabilidade_intervalo(self, z1: float, z2: float) -> float:
-        #P(a <= Z <= b) = P(a < Z < b)
         if z1 > z2:
             z1, z2 = z2, z1
         prob_z2 = self.calcular_prob_acumulada(z2)
         prob_z1 = self.calcular_prob_acumulada(z1)
-
-        return prob_z2 - prob_z1
-
+        return round(prob_z2 - prob_z1, 4)
+    
 #conversor x pra z
 class TransformacaoZ:
-    def calcular_z_tabela_amostra(X: float, Mu: float, Sigma: float, N: int = None) -> float:
-        if Sigma <= 0:
-            raise ValueError('O Desvio Padrão (Sigma) deve ser positivo')
-        
-        numerador = round(X - Mu, 2)
+    @staticmethod
+    def calcular_z_amostral(X: float, media: float, desvio_amostral: float, n: int) -> float:
+        if desvio_amostral <= 0:
+            raise ValueError("Desvio-padrão deve ser positivo.")
 
-        if N is not None and N > 0:
-            raiz_N = math.sqrt(N)
-            Z_tabela = round((numerador * raiz_N) / Sigma, 2)
-        else:
-            Z_tabela = round(numerador / Sigma, 2)
-
-        return Z_tabela
+        erro_padrao = desvio_amostral / math.sqrt(n)   # fórmula amostral: s / √n
+        Z = (X - media) / erro_padrao
+        return round(Z, 2)
 
 #-- Distribuição Binomial --    
 class DistribuicaoBinomial:
