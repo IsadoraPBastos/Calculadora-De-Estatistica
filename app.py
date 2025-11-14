@@ -718,18 +718,18 @@ def processar_dist_uniforme(limiteSuperior, limiteInferior, valorCUnif, valorDUn
     desvioPadrao = round(distU.calcular_desvio_padrao(),2)
     coeficienteVariacao = round(distU.calcular_cv(),2)
 
-    if(intervalo == "maiorQue"):
+    if(intervalo == "maiorQueUni" or intervalo == "maiorIgualUni"):
         resultProb = distU.calcular_probabilidade_intervalo(valorCUnif, B)
         print("prob_MaiorQue", resultProb)
-    elif(intervalo == "menorQue"):
+    elif(intervalo == "menorQueUni" or intervalo == "menorIgualUni"):
         resultProb = distU.calcular_probabilidade_intervalo(A, valorCUnif)
         print("prob_MenorQue", resultProb)
-    elif(intervalo == "menorQueMenorQue"):
-        resultProb = distU.calcular_probabilidade_intervalo(valorCUnif, valorDUnif)
-        print("menorQueMenorQue", resultProb)
-    elif(intervalo == "intervaloIgual"):
+    elif(intervalo == "intervaloIgualUni"):
         resultProb = 0.00
         print(resultProb)
+    elif(len(intervalo) > 18):
+        resultProb = distU.calcular_probabilidade_intervalo(valorCUnif, valorDUnif)
+        print("menorQueMenorQue", resultProb)
     else:
         print("Tem algo errado")
     resultProb = round(resultProb,2)
@@ -741,18 +741,12 @@ def processar_dist_uniforme(limiteSuperior, limiteInferior, valorCUnif, valorDUn
                         valorDUnif=valorDUnif,
                          media=media, 
                          probabilidade=resultProb,
-                        #  moda=moda, 
-                        #  modaCzuber=modaCzuber,
-                        #  tipo_moda=tipo_moda, 
-                         modaBruta=True,
-                        #  mediana=mediana, 
                          variancia=variancia, 
                          desvioPadrao=desvioPadrao,
                          coeficienteVariacao=coeficienteVariacao,
                          escolhaCalculo=escolhaCalculo, 
                          dadosDesordenados=[], 
                          FequenciaIndividualAbsoluta={},
-                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
                          FrequenciaAcumulada={}, 
                          Posicoes={}, 
                          TabelaDeDados={},
@@ -774,17 +768,17 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
         coeficienteVariacao = exp_dist.calcular_cv()
 
         if(valorA != 0 and intervalo != ""):
-            if(valorB != 0 and intervalo == "menorQueMenorQue"):
+            if(valorB != 0 and len(intervalo) > 18):
                 resultProb = exp_dist.calcular_probabilidade_intervalo(valorA, valorB) 
                 print(f"prob_intervalo {resultProb}")
             else: 
-                if(intervalo == "maiorQue"):
+                if(intervalo == "maiorQueExpo" or intervalo == "maiorIgualExpo"):
                     resultProb = exp_dist.calcular_prob_sobrevivencia(valorA)
                     print("prob_MaiorQue ", resultProb)
-                elif(intervalo == "menorQue"):
+                elif(intervalo == "menorQueExpo" or intervalo == "menorIgualExpo"):
                     resultProb = exp_dist.calcular_probabilidade_acumulada(valorA)
                     print("prob_MenorQue ", resultProb)
-                elif(intervalo == "intervaloIgual"):
+                elif(intervalo == "intervaloIgualExpo"):
                     resultProb = 0.00
                     print(resultProb)
 
@@ -796,34 +790,37 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
         variancia = exp_dist.calcular_variancia()
         desvioPadrao = exp_dist.calcular_desvio_padrao()
         coeficienteVariacao = exp_dist.calcular_cv()
+        
+        media = round(media, 2)
+        variancia = round(variancia, 2)
+        desvioPadrao = round(desvioPadrao, 2)
+        coeficienteVariacao = round(coeficienteVariacao, 2)
 
         print("Valor A: ", valorA)
         print("intervalo: ", intervalo)
         if(valorA != 0 and intervalo != ""):
-            if(valorB != 0 and intervalo == "menorQueMenorQue"):
+            if(valorB != 0 and len(intervalo) > 18):
                 resultProb = exp_dist.calcular_probabilidade_intervalo(valorA, valorB) 
                 print(f"prob_intervalo {resultProb}")
             else: 
-                if(intervalo == "maiorQue"):
+                if(intervalo == "maiorQueExpo" or intervalo == "maiorIgualExpo"):
                     resultProb = exp_dist.calcular_prob_sobrevivencia(valorA)
                     print("prob_MaiorQue ", resultProb)
-                elif(intervalo == "menorQue"):
+                elif(intervalo == "menorQueExpo" or intervalo == "menorIgualExpo"):
                     resultProb = exp_dist.calcular_probabilidade_acumulada(valorA)
                     print("prob_MenorQue ", resultProb)
-                elif(intervalo == "intervaloIgual"):
+                elif(intervalo == "intervaloIgualExpo"):
                     resultProb = 0.00
                     print(resultProb)
+            resultProb = round(resultProb,2)
     else: 
         print("Tem algum erro ai")
 
     return render_template("index.html", 
                          media=media, 
                          probabilidade=resultProb,
-                        #  moda=moda, 
-                        #  modaCzuber=modaCzuber,
-                        #  tipo_moda=tipo_moda, 
-                         modaBruta=True,
-                        #  mediana=mediana, 
+                         valorA=valorA,
+                         valorB=valorB,
                          variancia=variancia, 
                          desvioPadrao=desvioPadrao,
                          coeficienteVariacao=coeficienteVariacao,
@@ -836,7 +833,7 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
                          Posicoes={}, 
                          FequenciaIndividualAbsolutaRecebida={}, 
                          dadosClasses={},
-                         mostrar_modal=mostrar_modal, 
+                         mostrar_modal="exponencial", 
                          tipo=tipo, 
                          escolhaCalculoJson=escolhaCalculoJson, 
                          mostrarResultados=True,
@@ -852,6 +849,7 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
     variancia = distN.calcular_variancia()
     desvioPadrao = distN.calcular_desvio_padrao()
     coeficienteVariacao = distN.calcular_cv()
+    
     media = round(media,2)
     variancia = round(variancia,2)
     desvioPadrao = round(desvioPadrao,2)
@@ -874,24 +872,21 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
         valorANorm = TransformacaoZ.calcular_z_amostral(
         valorANorm, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm
     )
-    if intervalo in ["menorQueMenorQue", "menorIgualQueMenorQue", "menorQueMenorIgualQue", "menorIgualQueMenorIgualQue"]:
+    if len(intervalo) > 20:
         valorBNorm = TransformacaoZ.calcular_z_amostral(
         valorBNorm, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm
     )
 
-    if(intervalo == "maiorQue"):
-        # Adiciona a multiplicação por 100 para exibir como porcentagem.
+    if(intervalo == "maiorQueNormF" or intervalo == "maiorIgualNormF" or intervalo == "maiorQueNorm1" or intervalo == "maiorIgualNorm1"):
         resultProb = round(distN.calcular_prob_sobrevivencia(valorANorm) * 100, 2) 
         print("prob_MaiorQue", resultProb)
-    elif(intervalo == "menorQue"):
-        # Adiciona a multiplicação por 100 para exibir como porcentagem.
+    elif(intervalo == "menorQueNormF" or intervalo == "menorIgualNormF" or intervalo == "menorQueNorm1" or intervalo == "menorIgualNorm1"):
         resultProb = round(distN.calcular_prob_acumulada(valorANorm) * 100, 2)
         print("prob_MenorQue", resultProb)
-    elif(intervalo == "intervaloIgual"):
+    elif(intervalo == "intervaloIgualNormF" or intervalo == "intervaloIgualNorm1"):
         resultProb = 0.00
         print(resultProb)
-    elif(intervalo == "menorQueMenorQue"):
-        # Adiciona a multiplicação por 100 para exibir como porcentagem.
+    elif(len(intervalo) > 20):
         resultProb = round(distN.calcular_probabilidade_intervalo(valorANorm, valorBNorm) * 100, 2) 
         print(valorANorm)
         print(valorBNorm)
@@ -902,18 +897,18 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
     return render_template("index.html", 
                          media=media, 
                          probabilidade=resultProb,
-                        #  moda=moda, 
-                        #  modaCzuber=modaCzuber,
-                        #  tipo_moda=tipo_moda, 
                          modaBruta=True,
-                        #  mediana=mediana, 
+                         mediana=mediana, 
+                         moda=moda,
+                         desvioPadraoNorm=desvioPadraoNorm,
+                         mediaNorm=mediaNorm,
+                         tamanhoAmostraNorm=tamanhoAmostraNorm,
                          variancia=variancia, 
                          desvioPadrao=desvioPadrao,
                          coeficienteVariacao=coeficienteVariacao,
                          escolhaCalculo=escolhaCalculo, 
                          dadosDesordenados=[], 
                          FequenciaIndividualAbsoluta={},
-                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
                          FrequenciaAcumulada={}, 
                          Posicoes={}, 
                          FequenciaIndividualAbsolutaRecebida={}, 
@@ -1017,6 +1012,11 @@ def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, es
         variancia = dist.calcular_variancia()
         desvio_padrao = dist.calcular_desvio_padrao()
         coeficienteVariacao = dist.calcular_coeficiente_variacao()
+        
+        media = round(media,2)
+        variancia = round(variancia,2)
+        desvio_padrao = round(desvio_padrao,2)
+        coeficienteVariacao = round(coeficienteVariacao,2)
 
         if(valorA != "" and intervalo != ""):
             if(valorB != 0 and intervalo in ["menorQueMenorQuePoi", "menorIgualMenorQuePoi", "menorQueMenorIgualPoi", "menorIgualMenorIgualPoi"]):
@@ -1049,28 +1049,24 @@ def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, es
     return render_template("index.html", 
                          media=media, 
                          probabilidade=resultProb,
-                        #  moda=moda, 
-                        #  modaCzuber=modaCzuber,
-                        #  tipo_moda=tipo_moda, 
-                        #  modaBruta=True,
-                        #  mediana=mediana, 
                          variancia=variancia, 
                          desvioPadrao=desvio_padrao,
                          coeficienteVariacao=coeficienteVariacao,
                          escolhaCalculo=escolhaCalculo, 
+                         vMedia=vMedia,
+                         valorA=valorA,
+                         valorB=valorB,
                          dadosDesordenados=[], 
                          FequenciaIndividualAbsoluta={},
-                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
                          FrequenciaAcumulada={}, 
                          Posicoes={}, 
                          FequenciaIndividualAbsolutaRecebida={}, 
                          dadosClasses={},
                          TabelaDeDados={},
-                         mostrar_modal=mostrar_modal, 
+                         mostrar_modal="poisson", 
                          tipo=tipo, 
                          escolhaCalculoJson=escolhaCalculoJson, 
                          mostrarResultados=True,
-                        #  dados_vac=True)
                         ) 
 
 def processar_regr_linear_eq_1(TabelaDeDados, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo):

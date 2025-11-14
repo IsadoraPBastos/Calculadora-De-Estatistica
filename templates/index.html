@@ -538,90 +538,90 @@
                      <input
                         type="radio"
                         name="intervalo"
-                        id="maiorQueNorm"
-                        value="maiorQueNorm"
+                        id="maiorQueNorm1"
+                        value="maiorQueNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="maiorQueNorm" class="opcao-tipo-intervalo">></label>
+                      <label for="maiorQueNorm1" class="opcao-tipo-intervalo">></label>
                       <input
                         type="radio"
                         name="intervalo"
-                        id="maiorIgualNorm"
-                        value="maiorIgualNorm"
+                        id="maiorIgualNorm1"
+                        value="maiorIgualNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="maiorIgualNorm" class="opcao-tipo-intervalo">≥</label>
+                      <label for="maiorIgualNorm1" class="opcao-tipo-intervalo">≥</label>
                       <input
                         type="radio"
                         name="intervalo"
-                        id="menorQueNorm"
-                        value="menorQueNorm"
+                        id="menorQueNorm1"
+                        value="menorQueNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="menorQueNorm" class="opcao-tipo-intervalo"><</label>
+                      <label for="menorQueNorm1" class="opcao-tipo-intervalo"><</label>
                       <input
                         type="radio"
                         name="intervalo"
-                        id="menorIgualNorm"
-                        value="menorIgualNorm"
+                        id="menorIgualNorm1"
+                        value="menorIgualNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="menorIgualNorm"  class="opcao-tipo-intervalo">≤</label>
+                      <label for="menorIgualNorm1"  class="opcao-tipo-intervalo">≤</label>
                         <br>
                      <input
                         type="radio"
                         name="intervalo"
-                        id="menorQueMenorQueNorm"
-                        value="menorQueMenorQueNorm"
+                        id="menorQueMenorQueNorm1"
+                        value="menorQueMenorQueNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="menorQueMenorQueNorm"class="opcao-tipo-intervalo">< <</label>
+                      <label for="menorQueMenorQueNorm1"class="opcao-tipo-intervalo">< <</label>
                       <input
                         type="radio"
                         name="intervalo"
-                        id="menorIgualMenorQueNorm"
-                        value="menorIgualMenorQueNorm"
+                        id="menorIgualMenorQueNorm1"
+                        value="menorIgualMenorQueNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="menorIgualMenorQueNorm" class="opcao-tipo-intervalo">≤ <</label>
+                      <label for="menorIgualMenorQueNorm1" class="opcao-tipo-intervalo">≤ <</label>
                       <input
                         type="radio"
                         name="intervalo"
-                        id="menorQueMenorIgualNorm"
-                        value="menorQueMenorIgualNorm"
+                        id="menorQueMenorIgualNorm1"
+                        value="menorQueMenorIgualNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="menorQueMenorIgualNorm" class="opcao-tipo-intervalo">< ≤</label>
+                      <label for="menorQueMenorIgualNorm1" class="opcao-tipo-intervalo">< ≤</label>
                       <input
                         type="radio"
                         name="intervalo"
-                        id="menorIgualMenorIgualNorm"
-                        value="menorIgualMenorIgualNorm"
+                        id="menorIgualMenorIgualNorm1"
+                        value="menorIgualMenorIgualNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="menorIgualMenorIgualNorm" class="opcao-tipo-intervalo">≤ ≤</label>
+                      <label for="menorIgualMenorIgualNorm1" class="opcao-tipo-intervalo">≤ ≤</label>
                       <br>
                       <input
                         type="radio"
                         name="intervalo"
-                        id="intervaloIgualNorm"
-                        value="intervaloIgualNorm"
+                        id="intervaloIgualNorm1"
+                        value="intervaloIgualNorm1"
                         class="escolha-tipo-dado"
                       />
-                      <label for="intervaloIgualNorm" class="opcao-tipo-intervalo">=</label>
+                      <label for="intervaloIgualNorm1" class="opcao-tipo-intervalo">=</label>
                     </div>
                   <button>Calcular</button>
                 </div>
               </form>
-              {% if 'Norm' in intervalo %}
+              {% if 'Norm1' in intervalo %}
              <div class="mostrar-conta">
-                  {% if intervalo == "maiorQueNorm" or intervalo == "maiorIgualNorm" or intervalo == "menorQueNorm" or intervalo == "menorIgualNorm" or intervalo == "intervaloIgualNorm" %}
-                  <p>X {% if intervalo == "maiorQueNorm" %} > {% elif intervalo == "maiorIgualNorm" %} ≥ {% elif intervalo == "menorQueNorm" %} < {% elif intervalo == "menorIgualNorm" %} ≤ {% elif intervalo == "intervaloIgualNorm" %} = {% endif %} {% if valorANorm %} {{ valorANorm }}  {% endif %}</p>
-                  {% elif intervalo == "menorQueMenorQueNorm" or intervalo == "menorIgualMenorQueNorm" or intervalo == "menorQueMenorIgualNorm" or intervalo == "menorIgualMenorIgualNorm" %}
-                  <p> {% if intervalo == "menorQueMenorQueNorm" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X <  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorQueNorm" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X <  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
-                    {% elif intervalo == "menorQueMenorIgualNorm" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorIgualNorm" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                  {% if intervalo == "maiorQueNorm1" or intervalo == "maiorIgualNorm1" or intervalo == "menorQueNorm1" or intervalo == "menorIgualNorm1" or intervalo == "intervaloIgualNorm1" %}
+                  <p>X {% if intervalo == "maiorQueNorm1" %} > {% elif intervalo == "maiorIgualNorm1" %} ≥ {% elif intervalo == "menorQueNorm1" %} < {% elif intervalo == "menorIgualNorm1" %} ≤ {% elif intervalo == "intervaloIgualNorm1" %} = {% endif %} {% if valorANorm %} {{ valorANorm }}  {% endif %}</p>
+                  {% elif intervalo == "menorQueMenorQueNorm1" or intervalo == "menorIgualMenorQueNorm1" or intervalo == "menorQueMenorIgualNorm1" or intervalo == "menorIgualMenorIgualNorm1" %}
+                  <p> {% if intervalo == "menorQueMenorQueNorm1" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X <  {% if valorBNorm %} {{ valorBNorm1 }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueNorm1" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X <  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualNorm1" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualNorm1" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
                     {% endif %} </p>
                   {% endif %}
                   {% endif %}
@@ -640,12 +640,8 @@
                   </div>
                   <form action="{{url_for('dist_normal_pad')}}" method="POST" style="align-items: start;">
                         <div class="insercao-infos">
-                          <input type="text" name="valorANorm" placeholder="Valor do A">
-                          <select name="escolha-opcoes-resultados" id="">
-                            <option value="escolha_Moda">Moda</option>
-                            <option value="escolha_Mediana">Mediana</option>
-                          </select>
-                          <input type="text" name="valorBNorm" id="inputDuasVariaveisNormF" class="hidden" placeholder="Valor do B">
+                          <input type="text" name="valorANorm" id="valorAMuda" placeholder="Valor do A" value="{% if valorANorm %} {{ valorANorm }}  {% endif %}">
+                          <input type="text" name="valorBNorm" id="inputDuasVariaveisNormF" class="hidden" placeholder="Valor do B" value="{% if valorBNorm %} {{ valorBNorm }}  {% endif %}">
                         </div>
                         
                         <div class="container-opcoes-tipo-intervalo">
@@ -726,8 +722,23 @@
                   </div>
                         <button class="botao-calcular-normal">Calcular</button>
                     </form>
-                  {% endif %}
+                    
+                  
                 </div>
+                {% if 'NormF' in intervalo %}
+                <div class="mostrar-conta">
+                  {% if intervalo == "maiorQueNormF" or intervalo == "maiorIgualNormF" or intervalo == "menorQueNormF" or intervalo == "menorIgualNormF" or intervalo == "intervaloIgualNormF" %}
+                  <p>X {% if intervalo == "maiorQueNormF" %} > {% elif intervalo == "maiorIgualNormF" %} ≥ {% elif intervalo == "menorQueNormF" %} < {% elif intervalo == "menorIgualNormF" %} ≤ {% elif intervalo == "intervaloIgualNormF" %} = {% endif %} {% if valorANorm %} {{ valorANorm }}  {% endif %}</p>
+                  {% elif intervalo == "menorQueMenorQueNormF" or intervalo == "menorIgualMenorQueNormF" or intervalo == "menorQueMenorIgualNormF" or intervalo == "menorIgualMenorIgualNormF" %}
+                  <p> {% if intervalo == "menorQueMenorQueNormF" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X <  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueNormF" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X <  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualNormF" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualNormF" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                    {% endif %} </p>
+                  {% endif %}
+                  {% endif %}
+              </div>
+              {% endif %}
           </div>
         </div>
         </div>
@@ -749,7 +760,7 @@
             <form action="{{url_for('dist_binomial')}}" method="POST">
                     <div class="insercao-infos">
                       <input type="text" name="vTotal" placeholder="Total" value="{% if vTotal %} {{ vTotal }}  {% endif %}">
-                      <input type="text" name="probabSucesso" placeholder="Probabilidade de Sucesso" value="{% if probabSucesso %} {{ probabSucesso }}  {% endif %}">
+                      <input type="text" name="probabSucesso" placeholder="Prob de Sucesso" value="{% if probabSucesso %} {{ probabSucesso }}  {% endif %}">
                     </div>
                     <div class="insercao-infos">
                       <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }}  {% endif %}">
