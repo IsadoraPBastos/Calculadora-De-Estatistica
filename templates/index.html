@@ -280,7 +280,7 @@
           {% endif %}
           {% if reqDistNormal %}
           <form action="{{url_for('calculo_dos_dados')}}" method="POST" style="display: contents;">
-          <button class="btnCalcularDiscDistNormal">Calcular Dados</button>
+          <button class="btnCalcularDiscDistNormal" name="btnCalcularDiscDistNormal">Calcular Dados</button>
           <p class="details">*Esses dados serão processados e enviados para a utilização na Distribuição Normal.</p>
           </form> 
           {% endif %}
@@ -687,7 +687,7 @@
     
       <!-- Tipo do dado -->
       <div class="container-opcoes-tipo-dado">
-        <h1 class="titulo-medida-amostras" style="color: white;">Qual a <u>medida</u> das amostras </h1>
+        <h1 class="titulo-medida-amostras" style="color: white;">Qual a <u>medida</u> das amostras {{ mostrar_modal }}</h1> 
         <input
           type="radio"
           name="tipo"
