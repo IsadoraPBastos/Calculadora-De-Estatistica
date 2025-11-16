@@ -95,22 +95,68 @@
       </div>
       <div class="container-card-vac">
         <div onclick="abrirModalVAC()" class="card-vac">
-          <div class="front-vac"><b>VAC</b></div>
-          <div class="back-vac"><h3 style="margin-top: 35px">Agrupamento Discreto</h3>
+          <div class="front-vac"><b>Variáveis Aleatórias Contínuas 🎲</b><br><b>(VAC)</b></div>
+          <div class="back-vac"><h3 style="margin-top: 35px">VAC</h3>
+            <h4 style="margin: 10px; margin-top: 30px;">Distribuição Uniforme</h4><p style="margin: 3px;">
+              <u>Exemplo</u></p>
+              <p style="margin: 0px 30px"><b></b>Limite Inferior: -2.75 <br> Limite Superior: 10.17 <br> Valor 1: 7.77 </p>
+            <h4 style="margin: 10px; margin-top: 30px;"><b>Distribuição Exponencial</b></h4>
+            <p style="margin: 3px;"><u>Exemplo</u></p>
+            <p style="margin: 0px 30px"><b></b>Desvio Padrão: 5.47 <br> Valor A: 2 <br> Valor B: 5 </p>
+            <h4 style="margin: 10px; margin-top: 30px;">...</h4><p style="margin: 3px;"></p>
           </div>
         </div>
       </div>
       <div class="container-card-vad">
         <div onclick="abrirModalVAD()" class="card-vad">
-          <div class="front-vad"><b>VAD </b></div>
-          <div class="back-vad"><h3 style="margin-top: 35px">Agrupamento Discreto</h3>
+          <div class="front-vad"><b>Variáveis Aleatórias Discretas ♾️</b> <br> <b>(VAD)</b> </div>
+          <div class="back-vad"><h3 style="margin-top: 35px">VAD</h3>
+             <h4 style="margin: 10px; margin-top: 30px;">Distribuição Binomial</h4><p style="margin: 3px;">
+              <u>Exemplo</u></p>
+              <p style="margin: 0px 30px"><b></b>Total: 7 <br> Prob Sucesso: 0.5714 <br> Valor A: 5 </p>
+            <h4 style="margin: 10px; margin-top: 30px;"><b>Distribuição Poisson</b></h4>
+            <p style="margin: 3px;"><u>Exemplo</u></p>
+            <p style="margin: 0px 30px"><b></b>Valor Média: 1.25 <br> Valor A: 2 <br> Valor B: 5 </p>
           </div>
         </div>
       </div>
       <div class="container-card-eq1">
         <div onclick="abrirModalEq1()" class="card-eq1">
-          <div class="front-eq1"><b>Equação 1 Grau </b></div>
-          <div class="back-eq1"><h3 style="margin-top: 35px">Agrupamento Discreto</h3>
+          <div class="front-eq1"><b>Equação de 1º Grau 📈</b></div>
+          <div class="back-eq1"><h3 style="margin-top: 35px">Equação de 1º Grau</h3>
+              <u>Exemplo</u></p>
+              <p style="margin: 0px 30px">
+              <table>
+              <thead>
+                <tr>
+                  <th>X</th>
+                  <th>Y</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>23</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>27</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>40</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>44</td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>58</td>
+                </tr>
+              </tbody>
+            </table>
+          </p>
           </div>
         </div>
       </div>
@@ -298,7 +344,7 @@
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
         
-          <h1>VAC</h1>
+          <h1>Variáveis Aleatórias Contínuas - VAC</h1>
           <button onclick="mostrarDUnifor()" id="btn-escolha-uniforme" class="btn-mostrar-tipo-discreto">Distribuição Uniforme</button>
           <button onclick="mostrarDExpo()" id="btn-escolha-exponecial" class="btn-mostrar-tipo-discreto">Distribuição Exponencial</button>
           <button onclick="mostrarDNormal()" id="btn-escolha-normal" class="btn-mostrar-tipo-discreto">Distribuição Normal</button>
@@ -765,7 +811,7 @@
           <i class="fa-solid fa-circle-xmark fa-2xl"></i>
         </div>
         
-          <h1>VAD</h1>
+          <h1>Variáveis Aleatórias Discretas - VAD</h1>
           <button onclick="mostrarDBino()" id="btn-escolha-binomial" class="btn-mostrar-tipo-discreto">Distribuição Binomial</button>
           <button onclick="mostrarDPois()" id="btn-escolha-poisson" class="btn-mostrar-tipo-discreto">Distribuição Poisson</button>
 
