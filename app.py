@@ -545,7 +545,7 @@ def calculo_dos_dados():
         return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, variancia=variancia, desvioPadrao=desvioPadrao, 
         coeficienteVariacao=coeficienteVariacao,escolhaCalculo=escolhaCalculo, dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
         tamanhoDaAmostra=tamanhoDaAmostra, FrequenciaAcumulada=FrequenciaAcumulada, Posicoes=Posicoes, FequenciaIndividualAbsolutaRecebida={}, dadosClasses=[], 
-        mostrar_modal=mostrar_modal, tipo=tipo, TabelaDeDados={}, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio, erroDadosDesordenadosUmNum=erroDadosDesordenadosUmNum, dados_agrup_disc=True)
+        mostrar_modal=mostrar_modal, tipo=tipo, TabelaDeDados={}, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio, dados_agrup_disc=True)
     except ValueError:
         return render_template("index.html", erro="Você precisa inserir pelo menos um dado!", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, 
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, TabelaDeDados={}, dadosClasses=[], escolhaCalculo=[])
