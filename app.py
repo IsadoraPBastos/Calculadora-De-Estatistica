@@ -135,6 +135,7 @@ def alteração_fi():
 
 @app.route("/dist_uniforme", methods=["POST", "GET"])
 def dist_uniforme():
+    resetar_variaveis()
     global limiteSuperior, limiteInferior, valorCUnif, valorDUnif, intervalo
     if request.method == "POST":
 
@@ -160,6 +161,7 @@ def dist_uniforme():
 
 @app.route("/dist_exponencial", methods=["POST", "GET"])
 def dist_exponencial():
+    resetar_variaveis()
     global vLambda, desvioPadrao, valorA, valorB, intervalo
     if request.method == "POST":
         if request.form.get("vLambda") and request.form.get("valorA") and request.form.get("intervalo"):
@@ -228,6 +230,7 @@ def dist_normal_pad():
 
 @app.route("/dist_binomial", methods=["POST", "GET"])
 def dist_binomial():
+    resetar_variaveis()
     global vTotal, probabSucesso, valorA, valorB, intervalo
     if request.method == "POST":
         if request.form.get("vTotal") and request.form.get("probabSucesso") and request.form.get("valorA") and request.form.get("intervalo"):
@@ -236,7 +239,7 @@ def dist_binomial():
             valorA = int(request.form.get("valorA"))
             intervalo = request.form.get("intervalo")
             
-            if request.form.get("valorB"):
+            if request.form.get("valorB") and len(intervalo) > 18:
                 valorB = int(request.form.get("valorB"))
             else: 
                 valorB = 0
@@ -247,6 +250,7 @@ def dist_binomial():
 
 @app.route("/dist_poisson", methods=["POST", "GET"])
 def dist_poisson():
+    resetar_variaveis()
     global vMedia, valorA, valorB, intervalo
     if request.method == "POST":
         if request.form.get("vMedia") and request.form.get("valorA") and request.form.get("intervalo"):
@@ -254,7 +258,7 @@ def dist_poisson():
             valorA = int(request.form.get("valorA"))
             intervalo = request.form.get("intervalo")
             
-            if request.form.get("valorB"):
+            if request.form.get("valorB") and len(intervalo) > 18:
                 valorB = int(request.form.get("valorB"))
             else: 
                 valorB = 0
@@ -265,6 +269,7 @@ def dist_poisson():
 
 @app.route("/regr_linear_eq_1", methods=["POST", "GET"])
 def regr_linear_eq_1():
+    resetar_variaveis()
     #Organiza os dados na tabela de FI
     if request.method == "POST":
         if request.form.get("valorX" and "valorY"):
@@ -294,6 +299,15 @@ def limpar_dados():
     moda = mediana = None
     return render_template("index.html", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, Posicoes={}, 
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], TabelaDeDados={}, escolhaCalculo=[],mostrarResultados=False, mostrar_modal="padrao")
+
+def resetar_variaveis():
+    global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana, valorX, valorY, TabelaDeDados, probabSucesso, vTotal, vMedia
+    dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []; TabelaDeDados = {}
+    limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
+    valorA = valorB = valorANorm = valorBNorm = probabSucesso = vTotal = valorX = valorY  = 0
+    tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
+    reqDistNormal = secaoDNormalFinal = calcularNormal = False
+    moda = mediana = None
 
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
@@ -325,19 +339,19 @@ def calculo_dos_dados():
     mostrar_modal = request.form.get("mostrar_modal", "")
     
     try:
-        # Mensagem de erro caso a pessoa não insira um valor para os cálculos 
+        
         print("limiteSuperior", limiteSuperior)
         print("limiteInferior", limiteInferior)
         print("intervalo", intervalo)
         print("valorCUnif", valorCUnif)
-        if limiteSuperior != 0 and limiteInferior != 0 and intervalo != "" and valorCUnif != 0:
+        if limiteSuperior != 0 and limiteInferior != 0 and intervalo != "" and valorCUnif != "":
             return processar_dist_uniforme(limiteSuperior, limiteInferior, valorCUnif, valorDUnif, intervalo, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo)
         
         if vLambda != 0 or desvioPadrao != 0:
-            if intervalo != "" and valorA != 0:
+            if intervalo != "" and valorA != "":
                 return processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo)
 
-        if(valorANorm != 0 and mediaNorm != 0 and desvioPadraoNorm != 0 and tamanhoAmostraNorm != None):
+        if(valorANorm != "" and mediaNorm != 0 and desvioPadraoNorm != 0 and tamanhoAmostraNorm != None):
                 return processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo)
 
         if(vTotal != 0 and probabSucesso != 0 and intervalo != "" and valorA != ""):
@@ -349,12 +363,13 @@ def calculo_dos_dados():
         if(TabelaDeDados):
                 return processar_regr_linear_eq_1(TabelaDeDados, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo)
 
+        # Mensagem de erro caso a pessoa não insira um valor para os cálculos 
         if not FequenciaIndividualAbsolutaRecebida and not dadosDesordenados and not dadosClasses:
             raise ValueError
-        
+        if len(dadosDesordenados) == 1:
+            raise ValueError
 
         # Processamento para dados agrupados em classes
-        print("dadosClasses",dadosClasses)
         if dadosClasses:
             if(request.form.get("btnCalcularDiscDistNormal")):
                 mostrar_modal = "normal"
@@ -444,7 +459,7 @@ def calculo_dos_dados():
 
         mediana_calculada, dados_para_template = calculo_mediana(dadosDesordenados, FequenciaIndividualAbsoluta)
 
-        if(len(dadosDesordenados) != 0):
+        if(len(dadosDesordenados) != 0 and len(dadosDesordenados) != 1):
             def calcular_variancia(valores):
                 if len(valores) == 0:
                     return 0
@@ -461,7 +476,7 @@ def calculo_dos_dados():
                 return (desvio_padrao * 100) / media  if media != 0 else float("inf")
             coeficienteVariacao = round(calcular_coeficiente_variacao(dadosDesordenados), 2)
 
-        elif(len(FequenciaIndividualAbsoluta) != 0):
+        elif(len(FequenciaIndividualAbsoluta) != 0 and len(dadosDesordenados) != 1):
             # Criar lista expandida para cálculos de variância
             dados_expandidos = []
             for valor, freq in FequenciaIndividualAbsoluta.items():
@@ -484,6 +499,10 @@ def calculo_dos_dados():
                 print(media)
                 return (desvio_padrao * 100) / media
             coeficienteVariacao = round(calcular_coeficiente_variacao(dados_expandidos), 2)
+        else:
+            variancia = 0
+            desvioPadrao = 0
+            coeficienteVariacao = 0
         
         print("reqDistNormal", reqDistNormal)
         if reqDistNormal:
@@ -526,7 +545,7 @@ def calculo_dos_dados():
         return render_template("index.html", media=media, moda=moda, tipo_moda=tipo_moda, mediana=mediana_calculada, variancia=variancia, desvioPadrao=desvioPadrao, 
         coeficienteVariacao=coeficienteVariacao,escolhaCalculo=escolhaCalculo, dadosDesordenados=dadosDesordenados, FequenciaIndividualAbsoluta=FequenciaIndividualAbsoluta,
         tamanhoDaAmostra=tamanhoDaAmostra, FrequenciaAcumulada=FrequenciaAcumulada, Posicoes=Posicoes, FequenciaIndividualAbsolutaRecebida={}, dadosClasses=[], 
-        mostrar_modal=mostrar_modal, tipo=tipo, TabelaDeDados={}, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio, dados_agrup_disc=True)
+        mostrar_modal=mostrar_modal, tipo=tipo, TabelaDeDados={}, escolhaCalculoJson=escolhaCalculoJson, mostrarResultados=True, erroOutroVazio=erroOutroVazio, erroDadosDesordenadosUmNum=erroDadosDesordenadosUmNum, dados_agrup_disc=True)
     except ValueError:
         return render_template("index.html", erro="Você precisa inserir pelo menos um dado!", FequenciaIndividualAbsoluta={},FrequenciaAcumulada={}, 
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, TabelaDeDados={}, dadosClasses=[], escolhaCalculo=[])
@@ -696,7 +715,7 @@ def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mo
                          Posicoes=Posicoes, 
                          FequenciaIndividualAbsolutaRecebida={}, 
                          dadosClasses=dadosClasses,
-                         mostrar_modal=mostrar_modal, 
+                         mostrar_modal="classes", 
                          tipo=tipo, 
                          escolhaCalculoJson=escolhaCalculoJson, 
                          mostrarResultados=True,
@@ -739,6 +758,7 @@ def processar_dist_uniforme(limiteSuperior, limiteInferior, valorCUnif, valorDUn
                         limiteInferior=limiteInferior,
                         valorCUnif=valorCUnif,
                         valorDUnif=valorDUnif,
+                        intervalo=intervalo,
                          media=media, 
                          probabilidade=resultProb,
                          variancia=variancia, 
@@ -767,7 +787,7 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
         desvioPadrao = exp_dist.calcular_desvio_padrao()
         coeficienteVariacao = exp_dist.calcular_cv()
 
-        if(valorA != 0 and intervalo != ""):
+        if(valorA != "" and intervalo != ""):
             if(valorB != 0 and len(intervalo) > 18):
                 resultProb = exp_dist.calcular_probabilidade_intervalo(valorA, valorB) 
                 print(f"prob_intervalo {resultProb}")
@@ -798,7 +818,7 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
 
         print("Valor A: ", valorA)
         print("intervalo: ", intervalo)
-        if(valorA != 0 and intervalo != ""):
+        if(valorA != "" and intervalo != ""):
             if(valorB != 0 and len(intervalo) > 18):
                 resultProb = exp_dist.calcular_probabilidade_intervalo(valorA, valorB) 
                 print(f"prob_intervalo {resultProb}")
@@ -823,12 +843,12 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
                          valorB=valorB,
                          variancia=variancia, 
                          desvioPadrao=desvioPadrao,
+                         intervalo=intervalo,
                          coeficienteVariacao=coeficienteVariacao,
                          escolhaCalculo=escolhaCalculo, 
                          dadosDesordenados=[], 
                          FequenciaIndividualAbsoluta={},
                          TabelaDeDados={},
-                         #tamanhoDaAmostra=f"{tamanhoDaAmostra:g}",
                          FrequenciaAcumulada={}, 
                          Posicoes={}, 
                          FequenciaIndividualAbsolutaRecebida={}, 
@@ -900,6 +920,7 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          modaBruta=True,
                          mediana=mediana, 
                          moda=moda,
+                         intervalo=intervalo,
                          desvioPadraoNorm=desvioPadraoNorm,
                          mediaNorm=mediaNorm,
                          tamanhoAmostraNorm=tamanhoAmostraNorm,
@@ -1019,7 +1040,7 @@ def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, es
         coeficienteVariacao = round(coeficienteVariacao,2)
 
         if(valorA != "" and intervalo != ""):
-            if(valorB != 0 and intervalo in ["menorQueMenorQuePoi", "menorIgualMenorQuePoi", "menorQueMenorIgualPoi", "menorIgualMenorIgualPoi"]):
+            if(valorB != "" and intervalo in ["menorQueMenorQuePoi", "menorIgualMenorQuePoi", "menorQueMenorIgualPoi", "menorIgualMenorIgualPoi"]):
                 match intervalo:
                     case "menorQueMenorQuePoi":
                         resultProb = dist.calcular_probabilidade_intervalo(valorA + 1, valorB - 1)
@@ -1053,6 +1074,7 @@ def processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, es
                          desvioPadrao=desvio_padrao,
                          coeficienteVariacao=coeficienteVariacao,
                          escolhaCalculo=escolhaCalculo, 
+                         intervalo=intervalo,
                          vMedia=vMedia,
                          valorA=valorA,
                          valorB=valorB,

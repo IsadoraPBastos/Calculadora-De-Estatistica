@@ -151,7 +151,11 @@
           <button name="limpar" value="limpar" class="btn_limpar">Limpar</button>
         </form>
         </div>
-        
+        {% if erroDadosDesordenadosUmNum %}
+          <div class="msg-erro" id="msg-erro-zero-division">
+            <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Digite mais de um dado!
+          </div>
+          {% endif %}
           </div>
 
           <!-- Parte de inserção de dados - Tabela -->
@@ -307,8 +311,8 @@
                   <input type="text" name="limiteSuperior" placeholder="Limite Superior" value="{% if limiteSuperior %} {{ limiteSuperior }}  {% endif %}">
                   </div>
                   <div class="insercao-infos">
-                  <input type="text" name="valorCUnif" placeholder="Valor 1" value="{% if valorCUnif %} {{ valorCUnif }}  {% endif %}">
-                  <input type="text" name="valorDUnif" id="inputDuasVariaveisUni" class="hidden" placeholder="Valor 2" value="{% if valorDUnif %} {{ valorDUnif }}  {% endif %}">
+                  <input type="text" name="valorCUnif" placeholder="Valor 1" value="{% if valorCUnif %} {{ valorCUnif }} {% elif valorCUnif == 0 %} 0 {% endif %}">
+                  <input type="text" name="valorDUnif" id="inputDuasVariaveisUni" class="hidden" placeholder="Valor 2" value="{% if valorDUnif %} {{ valorDUnif }} {% elif valorDUnif == 0 %} 0 {% endif %}">
                   </div>
                   
                   <div class="container-opcoes-tipo-intervalo">
@@ -393,12 +397,12 @@
               {% if 'Uni' in intervalo %}
               <div class="mostrar-conta">
                    {% if intervalo == "maiorQueUni" or intervalo == "maiorIgualUni" or intervalo == "menorQueUni" or intervalo == "menorIgualUni" or intervalo == "intervaloIgualUni" %}
-                  <p>X {% if intervalo == "maiorQueUni" %} > {% elif intervalo == "maiorIgualUni" %} ≥ {% elif intervalo == "menorQueUni" %} < {% elif intervalo == "menorIgualUni" %} ≤ {% elif intervalo == "intervaloIgualUni" %} = {% endif %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %}</p>
+                  <p>X {% if intervalo == "maiorQueUni" %} > {% elif intervalo == "maiorIgualUni" %} ≥ {% elif intervalo == "menorQueUni" %} < {% elif intervalo == "menorIgualUni" %} ≤ {% elif intervalo == "intervaloIgualUni" %} = {% endif %} {% if valorCUnif %} {{ valorCUnif }} {% elif valorCUnif == 0 %} 0 {% endif %}</p>
                   {% elif intervalo == "menorQueMenorQueUni" or intervalo == "menorIgualMenorQueUni" or intervalo == "menorQueMenorIgualUni" or intervalo == "menorIgualMenorIgualUni" %}
-                  <p> {% if intervalo == "menorQueMenorQueUni" %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %} < X <  {% if valorDUnif %} {{ valorDUnif }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorQueUni" %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %} ≤ X <  {% if valorDUnif %} {{ valorDUnif }}  {% endif %}
-                    {% elif intervalo == "menorQueMenorIgualUni" %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %} < X ≤  {% if valorDUnif %} {{ valorDUnif }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorIgualUni" %} {% if valorCUnif %} {{ valorCUnif }}  {% endif %} ≤ X ≤  {% if valorDUnif %} {{ valorDUnif }}  {% endif %}
+                  <p> {% if intervalo == "menorQueMenorQueUni" %} {% if valorCUnif %} {{ valorCUnif }} {% elif valorCUnif == 0 %} 0 {% endif %} < X <  {% if valorDUnif %} {{ valorDUnif }} {% elif valorDUnif == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueUni" %} {% if valorCUnif %} {{ valorCUnif }} {% elif valorCUnif == 0 %} 0 {% endif %} ≤ X <  {% if valorDUnif %} {{ valorDUnif }} {% elif valorDUnif == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualUni" %} {% if valorCUnif %} {{ valorCUnif }} {% elif valorCUnif == 0 %} 0 {% endif %} < X ≤  {% if valorDUnif %} {{ valorDUnif }} {% elif valorDUnif == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualUni" %} {% if valorCUnif %} {{ valorCUnif }} {% elif valorCUnif == 0 %} 0 {% endif %} ≤ X ≤  {% if valorDUnif %} {{ valorDUnif }} {% elif valorDUnif == 0 %} 0 {% endif %}
                     {% endif %} </p>
                   {% endif %}
                   {% endif %}
@@ -413,8 +417,8 @@
                   <input type="text" name="desvioPadrao" placeholder="Desvio Padrão" value="{% if desvioPadrao %} {{ desvioPadrao }}  {% endif %}">
                   </div>
                   <div class="insercao-infos">
-                  <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }}  {% endif %}">
-                  <input type="text" name="valorB" id="inputDuasVariaveisExpo" class="hidden" placeholder="Valor do B" value="{% if valorB %} {{ valorB }}  {% endif %}">
+                  <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %}">
+                  <input type="text" name="valorB" id="inputDuasVariaveisExpo" class="hidden" placeholder="Valor do B" value="{% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}">
                   </div>
                   <div class="container-opcoes-tipo-intervalo">
                      <input
@@ -497,12 +501,12 @@
               {% if 'Expo' in intervalo %}
               <div class="mostrar-conta">
                   {% if intervalo == "maiorQueExpo" or intervalo == "maiorIgualExpo" or intervalo == "menorQueExpo" or intervalo == "menorIgualExpo" or intervalo == "intervaloIgualExpo" %}
-                  <p>X {% if intervalo == "maiorQueExpo" %} > {% elif intervalo == "maiorIgualExpo" %} ≥ {% elif intervalo == "menorQueExpo" %} < {% elif intervalo == "menorIgualExpo" %} ≤ {% elif intervalo == "intervaloIgualExpo" %} = {% endif %} {% if valorA %} {{ valorA }}  {% endif %}</p>
+                  <p>X {% if intervalo == "maiorQueExpo" %} > {% elif intervalo == "maiorIgualExpo" %} ≥ {% elif intervalo == "menorQueExpo" %} < {% elif intervalo == "menorIgualExpo" %} ≤ {% elif intervalo == "intervaloIgualExpo" %} = {% endif %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %}</p>
                   {% elif intervalo == "menorQueMenorQueExpo" or intervalo == "menorIgualMenorQueExpo" or intervalo == "menorQueMenorIgualExpo" or intervalo == "menorIgualMenorIgualExpo" %}
-                  <p> {% if intervalo == "menorQueMenorQueExpo" %} {% if valorA %} {{ valorA }}  {% endif %} < X <  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorQueExpo" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X <  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorQueMenorIgualExpo" %} {% if valorA %} {{ valorA }}  {% endif %} < X ≤  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorIgualExpo" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                  <p> {% if intervalo == "menorQueMenorQueExpo" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} < X <  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueExpo" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} ≤ X <  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualExpo" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} < X ≤  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualExpo" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
                     {% endif %} </p>
                   {% endif %}
                   {% endif %}
@@ -526,8 +530,8 @@
             <form action="{{url_for('dist_normal_pad')}}" method="POST" >
               <div id="secaoDNormal_Amostral" style="gap: 1rem;" >
                   <div class="insercao-infos">
-                    <input type="text" name="valorANorm" placeholder="Valor do A" value="{% if valorANorm %} {{ valorANorm }}  {% endif %}">
-                    <input type="text" name="valorBNorm" id="inputDuasVariaveisNorm" class="hidden" placeholder="Valor do B" value="{% if valorBNorm %} {{ valorBNorm }}  {% endif %}">
+                    <input type="text" name="valorANorm" placeholder="Valor do A" value="{% if valorANorm %} {{ valorANorm }} {% elif valorANorm == 0 %} 0 {% endif %}">
+                    <input type="text" name="valorBNorm" id="inputDuasVariaveisNorm" class="hidden" placeholder="Valor do B" value="{% if valorBNorm %} {{ valorBNorm }} {% elif valorBNorm == 0 %} 0 {% endif %}">
                   </div>       
                   <div class="insercao-infos">
                     <input type="text" name="mediaNorm" placeholder="Média Populacional" value="{% if mediaNorm %} {{ mediaNorm }}  {% endif %}">
@@ -616,12 +620,12 @@
               {% if 'Norm1' in intervalo %}
              <div class="mostrar-conta">
                   {% if intervalo == "maiorQueNorm1" or intervalo == "maiorIgualNorm1" or intervalo == "menorQueNorm1" or intervalo == "menorIgualNorm1" or intervalo == "intervaloIgualNorm1" %}
-                  <p>X {% if intervalo == "maiorQueNorm1" %} > {% elif intervalo == "maiorIgualNorm1" %} ≥ {% elif intervalo == "menorQueNorm1" %} < {% elif intervalo == "menorIgualNorm1" %} ≤ {% elif intervalo == "intervaloIgualNorm1" %} = {% endif %} {% if valorANorm %} {{ valorANorm }}  {% endif %}</p>
+                  <p>X {% if intervalo == "maiorQueNorm1" %} > {% elif intervalo == "maiorIgualNorm1" %} ≥ {% elif intervalo == "menorQueNorm1" %} < {% elif intervalo == "menorIgualNorm1" %} ≤ {% elif intervalo == "intervaloIgualNorm1" %} = {% endif %} {% if valorANorm %} {{ valorANorm }} {% elif valorANorm == 0 %} 0 {% endif %}</p>
                   {% elif intervalo == "menorQueMenorQueNorm1" or intervalo == "menorIgualMenorQueNorm1" or intervalo == "menorQueMenorIgualNorm1" or intervalo == "menorIgualMenorIgualNorm1" %}
-                  <p> {% if intervalo == "menorQueMenorQueNorm1" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X <  {% if valorBNorm %} {{ valorBNorm1 }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorQueNorm1" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X <  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
-                    {% elif intervalo == "menorQueMenorIgualNorm1" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} < X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorIgualNorm1" %} {% if valorANorm %} {{ valorANorm }}  {% endif %} ≤ X ≤  {% if valorBNorm %} {{ valorBNorm }}  {% endif %}
+                  <p> {% if intervalo == "menorQueMenorQueNorm1" %} {% if valorANorm %} {{ valorANorm }} {% elif valorANorm == 0 %} 0 {% endif %} < X <  {% if valorBNorm %} {{ valorBNorm1 }} {% elif valorBNorm == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueNorm1" %} {% if valorANorm %} {{ valorANorm }} {% elif valorANorm == 0 %} 0 {% endif %} ≤ X <  {% if valorBNorm %} {{ valorBNorm }} {% elif valorBNorm == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualNorm1" %} {% if valorANorm %} {{ valorANorm }} {% elif valorANorm == 0 %} 0 {% endif %} < X ≤  {% if valorBNorm %} {{ valorBNorm }} {% elif valorBNorm == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualNorm1" %} {% if valorANorm %} {{ valorANorm }} {% elif valorANorm == 0 %} 0 {% endif %} ≤ X ≤  {% if valorBNorm %} {{ valorBNorm }} {% elif valorBNorm == 0 %} 0 {% endif %}
                     {% endif %} </p>
                   {% endif %}
                   {% endif %}
@@ -743,6 +747,7 @@
         </div>
         </div>
       </div>
+    </div>
       
     <!-- Parte de inserção de dados - VAD -->
     <div class="container-modal" id="container_modal_vad"> 
@@ -763,8 +768,8 @@
                       <input type="text" name="probabSucesso" placeholder="Prob de Sucesso" value="{% if probabSucesso %} {{ probabSucesso }}  {% endif %}">
                     </div>
                     <div class="insercao-infos">
-                      <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }}  {% endif %}">
-                      <input type="text" id="inputDuasVariaveisBin" class="hidden" name="valorB" placeholder="Valor do B" value="{% if valorB %} {{ valorB }}  {% endif %}">
+                      <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %}">
+                      <input type="text" id="inputDuasVariaveisBin" class="hidden" name="valorB" placeholder="Valor do B" value="{% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}">
                     </div>
                     <div class="container-opcoes-tipo-intervalo">
                      <input
@@ -847,12 +852,12 @@
                   {% if 'Bin' in intervalo %}
                   <div class="mostrar-conta">
                   {% if intervalo == "maiorQueBin" or intervalo == "maiorIgualBin" or intervalo == "menorQueBin" or intervalo == "menorIgualBin" or intervalo == "intervaloIgualBin" %}
-                  <p>X {% if intervalo == "maiorQueBin" %} > {% elif intervalo == "maiorIgualBin" %} ≥ {% elif intervalo == "menorQueBin" %} < {% elif intervalo == "menorIgualBin" %} ≤ {% elif intervalo == "intervaloIgualBin" %} = {% endif %} {% if valorA %} {{ valorA }}  {% endif %}</p>
+                  <p>X {% if intervalo == "maiorQueBin" %} > {% elif intervalo == "maiorIgualBin" %} ≥ {% elif intervalo == "menorQueBin" %} < {% elif intervalo == "menorIgualBin" %} ≤ {% elif intervalo == "intervaloIgualBin" %} = {% endif %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %}</p>
                   {% elif intervalo == "menorQueMenorQueBin" or intervalo == "menorIgualMenorQueBin" or intervalo == "menorQueMenorIgualBin" or intervalo == "menorIgualMenorIgualBin" %}
-                  <p> {% if intervalo == "menorQueMenorQueBin" %} {% if valorA %} {{ valorA }}  {% endif %} < X <  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorQueBin" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X <  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorQueMenorIgualBin" %} {% if valorA %} {{ valorA }}  {% endif %} < X ≤  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorIgualBin" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                  <p> {% if intervalo == "menorQueMenorQueBin" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} < X <  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorQueBin" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} ≤ X <  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualBin" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} < X ≤  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualBin" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
                     {% endif %} </p>
                   {% endif %}
                   {% endif %}
@@ -867,8 +872,8 @@
                       <input type="text" name="vMedia" placeholder="Valor da Média / Lambda" value="{% if vMedia %} {{ vMedia }}  {% endif %}">
                     </div>
                     <div class="insercao-infos">
-                      <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }}  {% endif %}">
-                      <input type="text" id="inputDuasVariaveisPois" class="hidden" name="valorB" placeholder="Valor do B" value="{% if valorB %} {{ valorB }}  {% endif %}">
+                      <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }} {% elif valorA == 0 %}0{% endif %}">
+                      <input type="text" id="inputDuasVariaveisPois" class="hidden" name="valorB" placeholder="Valor do B" value="{% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}">
                     </div>
                       <div class="container-opcoes-tipo-intervalo">
                      <input
@@ -951,12 +956,12 @@
                    {% if 'Poi' in intervalo %}
                   <div class="mostrar-conta">
                   {% if intervalo == "maiorQuePoi" or intervalo == "maiorIgualPoi" or intervalo == "menorQuePoi" or intervalo == "menorIgualPoi" or intervalo == "intervaloIgualPoi" %}
-                  <p>X {% if intervalo == "maiorQuePoi" %} > {% elif intervalo == "maiorIgualPoi" %} ≥ {% elif intervalo == "menorQuePoi" %} < {% elif intervalo == "menorIgualPoi" %} ≤ {% elif intervalo == "intervaloIgualPoi" %} = {% endif %} {% if valorA %} {{ valorA }}  {% endif %}</p>
+                  <p>X {% if intervalo == "maiorQuePoi" %} > {% elif intervalo == "maiorIgualPoi" %} ≥ {% elif intervalo == "menorQuePoi" %} < {% elif intervalo == "menorIgualPoi" %} ≤ {% elif intervalo == "intervaloIgualPoi" %} = {% endif %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %}</p>
                   {% elif intervalo == "menorQueMenorQuePoi" or intervalo == "menorIgualMenorQuePoi" or intervalo == "menorQueMenorIgualPoi" or intervalo == "menorIgualMenorIgualPoi" %}
-                  <p> {% if intervalo == "menorQueMenorQuePoi" %} {% if valorA %} {{ valorA }}  {% endif %} < X <  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorQuePoi" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X <  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorQueMenorIgualPoi" %} {% if valorA %} {{ valorA }}  {% endif %} < X ≤  {% if valorB %} {{ valorB }}  {% endif %}
-                    {% elif intervalo == "menorIgualMenorIgualPoi" %} {% if valorA %} {{ valorA }}  {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }}  {% endif %}
+                  <p> {% if intervalo == "menorQueMenorQuePoi" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} < X <  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorQuePoi" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} ≤ X <  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorQueMenorIgualPoi" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} < X ≤  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
+                    {% elif intervalo == "menorIgualMenorIgualPoi" %} {% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %} ≤ X ≤  {% if valorB %} {{ valorB }} {% elif valorB == 0 %} 0 {% endif %}
                     {% endif %} </p>
                   {% endif %}
                   {% endif %}
