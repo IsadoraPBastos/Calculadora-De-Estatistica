@@ -394,6 +394,11 @@
 
                   <button>Calcular</button>
               </form>
+              {% if erroInserirTodosDados %}
+                    <div class="msg-erro" id="msg-erro-zero-division">
+                      <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Preencha todos os campos!
+                    </div>
+                    {% endif %}
               {% if 'Uni' in intervalo %}
               <div class="mostrar-conta">
                    {% if intervalo == "maiorQueUni" or intervalo == "maiorIgualUni" or intervalo == "menorQueUni" or intervalo == "menorIgualUni" or intervalo == "intervaloIgualUni" %}
@@ -413,7 +418,6 @@
           <div class="divisao-modal" id="secaoDExpo" >
          <form action="{{url_for('dist_exponencial')}}" method="POST" >
           <div class="insercao-infos">
-                  <input type="text" name="vLambda" placeholder="Valor do Lambda" disabled>
                   <input type="text" name="desvioPadrao" placeholder="Desvio Padrão" value="{% if desvioPadrao %} {{ desvioPadrao }}  {% endif %}">
                   </div>
                   <div class="insercao-infos">
@@ -498,6 +502,11 @@
                     </div>
                   <button>Calcular</button>
               </form>
+              {% if erroInserirTodosDados %}
+                    <div class="msg-erro" id="msg-erro-zero-division">
+                      <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Preencha todos os campos!
+                    </div>
+                    {% endif %}
               {% if 'Expo' in intervalo %}
               <div class="mostrar-conta">
                   {% if intervalo == "maiorQueExpo" or intervalo == "maiorIgualExpo" or intervalo == "menorQueExpo" or intervalo == "menorIgualExpo" or intervalo == "intervaloIgualExpo" %}
@@ -849,6 +858,11 @@
                     </div>
                       <button>Calcular</button>
                   </form>
+                  {% if erroInserirTodosDados %}
+                    <div class="msg-erro" id="msg-erro-zero-division">
+                      <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Preencha todos os campos!
+                    </div>
+                    {% endif %}
                   {% if 'Bin' in intervalo %}
                   <div class="mostrar-conta">
                   {% if intervalo == "maiorQueBin" or intervalo == "maiorIgualBin" or intervalo == "menorQueBin" or intervalo == "menorIgualBin" or intervalo == "intervaloIgualBin" %}
@@ -953,6 +967,11 @@
                     </div>
                       <button>Calcular</button>
                   </form>
+                  {% if erroInserirTodosDados %}
+                    <div class="msg-erro" id="msg-erro-zero-division">
+                      <i class="fa-solid fa-triangle-exclamation fa-beat-fade"></i> Preencha todos os campos!
+                    </div>
+                    {% endif %}
                    {% if 'Poi' in intervalo %}
                   <div class="mostrar-conta">
                   {% if intervalo == "maiorQuePoi" or intervalo == "maiorIgualPoi" or intervalo == "menorQuePoi" or intervalo == "menorIgualPoi" or intervalo == "intervaloIgualPoi" %}
