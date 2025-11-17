@@ -273,6 +273,7 @@ def dist_binomial():
                     probabSucesso = 1 - (probabInsucesso / 100)
                 elif(probabInsucesso > 0 and probabInsucesso <= 1):
                     probabSucesso = 1 - probabInsucesso
+                probabSucesso = round(probabSucesso,4)
             if(request.form.get("probabSucesso")):
                 probabSucesso = float(request.form.get("probabSucesso"))
                 if(probabSucesso > 1 and probabSucesso <= 100):
@@ -280,6 +281,7 @@ def dist_binomial():
                     probabInsucesso = 1 - probabSucesso
                 elif(probabSucesso > 0 and probabSucesso <= 1):
                     probabInsucesso = 1 - probabSucesso
+                probabInsucesso = round(probabInsucesso,4)
             valorA = int(request.form.get("valorA"))
             intervalo = request.form.get("intervalo")
             
@@ -912,60 +914,55 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
 def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo):
     global moda, mediana, modaCzuber
     
-    distN = DistribuicaoNormalPadrao()
-    
+    # Instancia a distribuição amostral
+    distN = DistribuicaoNormalAmostral(media=mediaNorm, desvio=desvioPadraoNorm, n=tamanhoAmostraNorm)
+
     valorANorm2 = valorANorm
     valorBNorm2 = valorBNorm
 
-    #1.paramentros
-    media = distN.calcular_media()
-    variancia = distN.calcular_variancia()
-    desvioPadrao = distN.calcular_desvio_padrao()
-    coeficienteVariacao = distN.calcular_cv()
-    
-    media = round(media,2)
-    variancia = round(variancia,2)
-    desvioPadrao = round(desvioPadrao,2)
-    coeficienteVariacao = round(coeficienteVariacao,2)
+    # 1. parâmetros da distribuição
+    media = distN.media
+    variancia = distN.variancia
+    desvioPadrao = distN.desvio
+    coeficienteVariacao = round(((100*desvioPadrao)/media),2)  # CV para distribuição normal padrão
+
+    media = round(media, 2)
+    variancia = round(variancia, 2)
+    desvioPadrao = round(desvioPadrao, 2)
+    coeficienteVariacao = round(coeficienteVariacao, 2)
 
     print('tamanhoAmostraNorm', tamanhoAmostraNorm)
     print('valorANorm', valorANorm)
+    print('valorBNorm', valorBNorm)
     print('mediaNorm', mediaNorm)
-    print('desvioPadraoNorm', desvioPadraoNorm)
+    print('desvioPadraoNorm', desvioPadraoNorm) 
     print('moda', moda)
     print('mediana', mediana)
     print('intervalo', intervalo)
 
-    if(tamanhoAmostraNorm == 0 or tamanhoAmostraNorm == None):
+    if tamanhoAmostraNorm == 0 or tamanhoAmostraNorm is None:
         tamanhoAmostraNorm = None
 
     print('tamanhoAmostraNorm DEPOIS', tamanhoAmostraNorm)
 
-    if(modaCzuber == 0 or modaCzuber == ""):
+    if modaCzuber == 0 or modaCzuber == "":
         modaCzuber = 0
-    if(mediaNorm != 0 and desvioPadraoNorm != 0):
-        valorANorm = TransformacaoZ.calcular_z_amostral(
-        valorANorm, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm
-    )
-    if len(intervalo) > 20:
-        valorBNorm = TransformacaoZ.calcular_z_amostral(
-        valorBNorm, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm
-    )
 
-    if(intervalo == "maiorQueNormF" or intervalo == "maiorIgualNormF" or intervalo == "maiorQueNorm1" or intervalo == "maiorIgualNorm1"):
-        resultProb = round(distN.calcular_prob_sobrevivencia(valorANorm) * 100, 2) 
+    # Probabilidades
+    if intervalo in ["maiorQueNormF", "maiorIgualNormF", "maiorQueNorm1", "maiorIgualNorm1"]:
+        resultProb = round(distN.prob_sobrevivencia(valorANorm)*100, 2) 
         print("prob_MaiorQue", resultProb)
-    elif(intervalo == "menorQueNormF" or intervalo == "menorIgualNormF" or intervalo == "menorQueNorm1" or intervalo == "menorIgualNorm1"):
-        resultProb = round(distN.calcular_prob_acumulada(valorANorm) * 100, 2)
+    elif intervalo in ["menorQueNormF", "menorIgualNormF", "menorQueNorm1", "menorIgualNorm1"]:
+        resultProb = round(distN.prob_acumulada(valorANorm)*100, 2)
         print("prob_MenorQue", resultProb)
-    elif(intervalo == "intervaloIgualNormF" or intervalo == "intervaloIgualNorm1"):
+    elif intervalo in ["intervaloIgualNormF", "intervaloIgualNorm1"]:
         resultProb = 0.00
         print(resultProb)
-    elif(len(intervalo) > 20):
-        resultProb = round(distN.calcular_probabilidade_intervalo(valorANorm, valorBNorm) * 100, 2) 
+    elif len(intervalo) > 20:
+        resultProb = round(distN.prob_intervalo(valorANorm, valorBNorm)*100, 2) 
         print(valorANorm)
         print(valorBNorm)
-        print("menorQueMenorQue", resultProb)
+        print("prob_intervalo", resultProb)
     else:
         print("Tem algo errado")
         resultProb = "Não foi possível calcular - "
@@ -980,7 +977,7 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          moda=moda,
                          intervalo=intervalo,
                          valorANorm=valorANorm2,
-                         valorBNorm=valorBNorm2,
+                         valorBNorm=valorBNorm,
                          desvioPadraoNorm=desvioPadraoNorm,
                          mediaNorm=mediaNorm,
                          tamanhoAmostraNorm=tamanhoAmostraNorm,
@@ -1288,50 +1285,94 @@ class DistribuicaoExponencial:
         
 #-- Distribuição Normal Padronizada --
 class DistribuicaoNormalPadrao:
-    def __init__(self):
-        self.media = 0
-        self.desvio_padrao = 1.0
-        self.variancia = 1.0
-
-    def calcular_media(self) -> float:
-        return self.media
-    
-    def calcular_variancia(self) -> float:
-        return self.variancia
-    
-    def calcular_desvio_padrao(self) -> float:
-        return self.desvio_padrao
-    
-    def calcular_cv(self) -> float:
-        return float('inf')
-    
     def calcular_prob_acumulada(self, z: float) -> float:
-        #P(Z <= a)
-        prob = norm.cdf(z)
-        return prob
+        return norm.cdf(z)
     
     def calcular_prob_sobrevivencia(self, z: float) -> float:
-        #P(Z >= a)
-        prob = norm.sf(z)
-        return prob
+        return norm.sf(z)
     
     def calcular_probabilidade_intervalo(self, z1: float, z2: float) -> float:
         if z1 > z2:
             z1, z2 = z2, z1
-        prob_z2 = self.calcular_prob_acumulada(z2)
-        prob_z1 = self.calcular_prob_acumulada(z1)
-        return prob_z2 - prob_z1
-    
-#conversor x pra z
-class TransformacaoZ:
-    @staticmethod
-    def calcular_z_amostral(X: float, media: float, desvio_amostral: float, n: int) -> float:
-        if desvio_amostral <= 0:
-            raise ValueError("Desvio-padrão deve ser positivo.")
+        return norm.cdf(z2) - norm.cdf(z1)
 
-        erro_padrao = desvio_amostral / math.sqrt(n)   # fórmula amostral: s / √n
-        Z = (X - media) / erro_padrao
-        return Z
+# ======================
+#  DISTRIBUICAO NORMAL AMOSTRAL
+# ======================
+
+class DistribuicaoNormalPadrao:
+    """Classe auxiliar para cálculos da normal padrão (Z)"""
+    def calcular_prob_acumulada(self, z: float) -> float:
+        return norm.cdf(z)
+
+    def calcular_prob_sobrevivencia(self, z: float) -> float:
+        return 1 - norm.cdf(z)
+
+    def calcular_probabilidade_intervalo(self, z1: float, z2: float) -> float:
+        return norm.cdf(z2) - norm.cdf(z1)
+
+class DistribuicaoNormalAmostral:
+    def __init__(self, dados=None, media=None, desvio=None, n=None):
+        """
+        Inicializa a distribuição amostral.
+        - Pode receber os dados brutos em 'dados'
+        - Ou pode receber media, desvio e n diretamente
+        """
+        if dados is not None:
+            self.n = len(dados)
+            self.media = sum(dados) / self.n
+            self.variancia = sum((x - self.media) ** 2 for x in dados) / self.n
+            self.desvio = math.sqrt(self.variancia)
+        elif media is not None and desvio is not None and n is not None:
+            self.media = media
+            self.desvio = desvio
+            self.n = n
+            self.variancia = desvio ** 2
+        else:
+            raise ValueError("Você deve fornecer dados ou (media, desvio, n).")
+
+    def calcular_z(self, X: float) -> float:
+        if self.desvio <= 0:
+            raise ValueError("Desvio-padrão deve ser positivo.")
+        if self.n <= 0:
+            raise ValueError("O tamanho da amostra (n) deve ser maior que 0.")
+        return ((X - self.media) * math.sqrt(self.n)) / self.desvio
+
+    def prob_acumulada(self, X: float) -> float:
+        z = self.calcular_z(X)
+        return DistribuicaoNormalPadrao().calcular_prob_acumulada(z)
+
+    def prob_sobrevivencia(self, X: float) -> float:
+        z = self.calcular_z(X)
+        return DistribuicaoNormalPadrao().calcular_prob_sobrevivencia(z)
+
+    def prob_intervalo(self, X1: float, X2: float) -> float:
+        z1 = self.calcular_z(X1)
+        z2 = self.calcular_z(X2)
+        return DistribuicaoNormalPadrao().calcular_probabilidade_intervalo(z1, z2)
+
+
+# =======================
+# Teste da distribuição
+# =======================
+media = 22.56
+desvio = 3.65
+n = 53
+
+dist = DistribuicaoNormalAmostral(media=media, desvio=desvio, n=n)
+
+mediana = 22.5
+modaBruta = 22.5
+modaCzuber = 22.2
+
+p1 = dist.prob_sobrevivencia(mediana)
+p2 = dist.prob_acumulada(modaBruta)
+p3 = dist.prob_sobrevivencia(modaCzuber)
+
+print(f"P(X > mediana = {mediana}) = {p1*100:.2f}%")       # ~54.78%
+print(f"P(X < modaBruta = {modaBruta}) = {p2*100:.2f}%")   # ~45.22%
+print(f"P(X > modaCzuber = {modaCzuber}) = {p3*100:.2f}%") # ~76.42%
+
 
 #-- Distribuição Binomial --    
 class DistribuicaoBinomial:
