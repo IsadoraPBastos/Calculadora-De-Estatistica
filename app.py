@@ -11,7 +11,7 @@ app = Flask(__name__)
 dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []; TabelaDeDados = {}
 
 limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-valorA = valorB = valorANorm = valorBNorm = probabSucesso = vTotal = valorX = valorY = valorCUnif = valorDUnif = 0
+valorA = valorB = valorANorm = valorBNorm = probabSucesso = probabInsucesso = vTotal = valorX = valorY = valorCUnif = valorDUnif = 0
 tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
 
 reqDistNormal = secaoDNormalFinal = calcularNormal = False
@@ -263,13 +263,23 @@ def dist_normal_pad():
 @app.route("/dist_binomial", methods=["POST", "GET"])
 def dist_binomial():
     resetar_variaveis()
-    global vTotal, probabSucesso, valorA, valorB, intervalo
+    global vTotal, probabSucesso, probabInsucesso, valorA, valorB, intervalo
     if request.method == "POST":
-        if request.form.get("vTotal") and request.form.get("probabSucesso") and request.form.get("valorA") and request.form.get("intervalo"):
+        if request.form.get("vTotal") and request.form.get("valorA") and request.form.get("intervalo"):
             vTotal = int(request.form.get("vTotal"))
-            probabSucesso = float(request.form.get("probabSucesso"))
-            if(probabSucesso > 1 and probabSucesso <= 100):
-                probabSucesso = probabSucesso / 100
+            if(request.form.get("probabInsucesso")):
+                probabInsucesso = float(request.form.get("probabInsucesso"))
+                if(probabInsucesso > 1 and probabInsucesso <= 100):
+                    probabSucesso = 1 - (probabInsucesso / 100)
+                elif(probabInsucesso > 0 and probabInsucesso <= 1):
+                    probabSucesso = 1 - probabInsucesso
+            if(request.form.get("probabSucesso")):
+                probabSucesso = float(request.form.get("probabSucesso"))
+                if(probabSucesso > 1 and probabSucesso <= 100):
+                    probabSucesso = probabSucesso / 100
+                    probabInsucesso = 1 - probabSucesso
+                elif(probabSucesso > 0 and probabSucesso <= 1):
+                    probabInsucesso = 1 - probabSucesso
             valorA = int(request.form.get("valorA"))
             intervalo = request.form.get("intervalo")
             
@@ -277,7 +287,7 @@ def dist_binomial():
                 valorB = int(request.form.get("valorB"))
             else: 
                 valorB = 0
-            return render_template("index.html", probabSucesso=probabSucesso, vTotal=vTotal, valorA=valorA, 
+            return render_template("index.html", probabSucesso=probabSucesso, probabInsucesso=probabInsucesso, vTotal=vTotal, valorA=valorA, 
             valorB=valorB, intervalo=intervalo, mostrar_modal="binomial", dados_vac=True, dadosClasses={}, modaBruta=False, 
             FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, TabelaDeDados={},
             Posicoes={}, escolhaCalculo=[], mostrarResultados=False, erroInserirTodosDados = False)
@@ -286,11 +296,13 @@ def dist_binomial():
                 vTotal = int(request.form.get("vTotal"))
             if(request.form.get("probabSucesso")):
                 probabSucesso = float(request.form.get("probabSucesso"))
+            if(request.form.get("probabInsucesso")):
+                probabInsucesso = float(request.form.get("probabInsucesso"))
             if(request.form.get("valorA")):
                 valorA = int(request.form.get("valorA"))
             if(request.form.get("valorB")):
                 valorB = int(request.form.get("valorB"))
-            return render_template("index.html", probabSucesso=probabSucesso, vTotal=vTotal, valorA=valorA, 
+            return render_template("index.html", probabSucesso=probabSucesso, probabInsucesso=probabInsucesso, vTotal=vTotal, valorA=valorA, 
             valorB=valorB, intervalo="nada", mostrar_modal="binomial", dados_vac=True, dadosClasses={}, modaBruta=False, 
             FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={}, FrequenciaAcumulada={}, TabelaDeDados={},
             Posicoes={}, escolhaCalculo=[], mostrarResultados=False, erroInserirTodosDados=True)
@@ -327,7 +339,6 @@ def dist_poisson():
 
 @app.route("/regr_linear_eq_1", methods=["POST", "GET"])
 def regr_linear_eq_1():
-    resetar_variaveis()
     #Organiza os dados na tabela de FI
     if request.method == "POST":
         if request.form.get("valorX" and "valorY"):
@@ -339,11 +350,10 @@ def regr_linear_eq_1():
 
         if request.form.get("limpar"):
             limparDados = request.form.get("limpar")
-            TabelaDeDados.pop(float(limparDados))
+            TabelaDeDados.pop(float(limparDados), None)
     return render_template("index.html", mostrar_modal="equacao1",
     TabelaDeDados=TabelaDeDados, FequenciaIndividualAbsolutaRecebida={}, FequenciaIndividualAbsoluta={},
     FrequenciaAcumulada={}, Posicoes={}, dadosClasses=[], escolhaCalculo=[],mostrarResultados=False)
-
 
 #Limpa os dados inseridos
 @app.route("/limpar_dados", methods=["POST"])
@@ -351,7 +361,7 @@ def limpar_dados():
     global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana, valorX, valorY, TabelaDeDados, probabSucesso, vTotal, vMedia
     dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []; TabelaDeDados = {}
     limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-    valorA = valorB = valorANorm = valorBNorm = probabSucesso = vTotal = valorX = valorY  = 0
+    valorA = valorB = valorANorm = valorBNorm = probabSucesso = probabInsucesso = vTotal = valorX = valorY  = 0
     tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
     reqDistNormal = secaoDNormalFinal = calcularNormal = False
     moda = mediana = None
@@ -359,10 +369,10 @@ def limpar_dados():
     FequenciaIndividualAbsolutaRecebida = {}, dadosClasses=[], TabelaDeDados={}, escolhaCalculo=[],mostrarResultados=False, mostrar_modal="padrao")
 
 def resetar_variaveis():
-    global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana, valorX, valorY, TabelaDeDados, probabSucesso, vTotal, vMedia
+    global dadosDesordenados, FequenciaIndividualAbsolutaRecebida, FequenciaIndividualAbsoluta, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorANorm, valorBNorm, tamanhoAmostraNorm, mediaNorm, desvioPadraoNorm, intervalo, reqDistNormal, secaoDNormalFinal, calcularNormal, moda, mediana, valorX, valorY, TabelaDeDados, probabSucesso, probabInsucesso, vTotal, vMedia
     dadosDesordenados = []; FequenciaIndividualAbsolutaRecebida = {}; FequenciaIndividualAbsoluta = {}; dadosClasses = []; TabelaDeDados = {}
     limiteSuperior = limiteInferior = vLambda = vMedia = desvioPadrao = 0
-    valorA = valorB = valorANorm = valorBNorm = probabSucesso = vTotal = valorX = valorY  = 0
+    valorA = valorB = valorANorm = valorBNorm = probabSucesso = probabInsucesso = vTotal = valorX = valorY  = 0
     tamanhoAmostraNorm = mediaNorm = desvioPadraoNorm = intervalo = 0
     reqDistNormal = secaoDNormalFinal = calcularNormal = False
     moda = mediana = None
@@ -370,7 +380,7 @@ def resetar_variaveis():
 #Realiza as contas
 @app.route("/calculo_dos_dados", methods=["POST"])
 def calculo_dos_dados():
-    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm,tamanhoAmostraNorm, mostrar_modal, tipo, moda, mediana, vMedia
+    global FequenciaIndividualAbsoluta, FequenciaIndividualAbsolutaRecebida, dadosClasses, limiteSuperior, limiteInferior, vLambda, desvioPadrao, valorA, valorB, valorCUnif, valorDUnif, valorANorm, valorBNorm, intervalo, desvioPadraoNorm, mediaNorm,tamanhoAmostraNorm, mostrar_modal, tipo, moda, mediana, modaCzuber, vMedia, probabInsucesso
     
     erroOutroVazio = False
     tipo = request.form.get("tipo")
@@ -413,7 +423,7 @@ def calculo_dos_dados():
                 return processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo)
 
         if(vTotal != 0 and probabSucesso != 0 and intervalo != "" and valorA != ""):
-            return processar_dist_binomial(vTotal, probabSucesso, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo)
+            return processar_dist_binomial(vTotal, probabSucesso, probabInsucesso, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo)
 
         if(vMedia != 0 and intervalo != "" and valorA != ""):
                 return processar_dist_poisson(vMedia, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo)
@@ -592,11 +602,10 @@ def calculo_dos_dados():
                                     FequenciaIndividualAbsolutaRecebida={}, 
                                     dadosClasses=[], 
                                     TabelaDeDados={},
-                                    mostrar_modal="normal",  # Mantém o modal aberto
+                                    mostrar_modal="normal", 
                                     tipolhaCalculoJson=escolhaCalculoJson, 
                                     mostrarResultados=False,
                                     secaoDNormalFinal = True,
-                                    # Adiciona flags para mostrar botão de prosseguir
                                     reqDistNormal=True)
 
             
@@ -609,7 +618,7 @@ def calculo_dos_dados():
         Posicoes={}, FequenciaIndividualAbsolutaRecebida = {}, TabelaDeDados={}, dadosClasses=[], escolhaCalculo=[])
 
 def processar_dados_classes(dadosClasses, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo):
-    global reqDistNormal, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana
+    global reqDistNormal, desvioPadraoNorm, mediaNorm, tamanhoAmostraNorm, calcularNormal, valorANorm, valorBNorm, intervalo, moda, mediana, modaCzuber
     """Processa dados agrupados em classes e calcula todas as estatísticas"""
 
     # Criar tabela para exibição
@@ -901,9 +910,12 @@ def processar_dist_exponencial(vLambda, desvioPadrao, valorA, valorB, intervalo,
                          dados_vac=True) 
 
 def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo):
-    global moda, mediana
+    global moda, mediana, modaCzuber
     
     distN = DistribuicaoNormalPadrao()
+    
+    valorANorm2 = valorANorm
+    valorBNorm2 = valorBNorm
 
     #1.paramentros
     media = distN.calcular_media()
@@ -929,6 +941,8 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
 
     print('tamanhoAmostraNorm DEPOIS', tamanhoAmostraNorm)
 
+    if(modaCzuber == 0 or modaCzuber == ""):
+        modaCzuber = 0
     if(mediaNorm != 0 and desvioPadraoNorm != 0):
         valorANorm = TransformacaoZ.calcular_z_amostral(
         valorANorm, mediaNorm, desvioPadraoNorm, tamanhoAmostraNorm
@@ -961,9 +975,12 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          media=media, 
                          probabilidade=resultProb,
                          modaBruta=True,
+                         modaCzuber=modaCzuber, 
                          mediana=mediana, 
                          moda=moda,
                          intervalo=intervalo,
+                         valorANorm=valorANorm2,
+                         valorBNorm=valorBNorm2,
                          desvioPadraoNorm=desvioPadraoNorm,
                          mediaNorm=mediaNorm,
                          tamanhoAmostraNorm=tamanhoAmostraNorm,
@@ -986,10 +1003,11 @@ def processar_dist_normal(valorANorm, valorBNorm, intervalo, mediaNorm, desvioPa
                          reqDistNormal = True, 
                          calcularNormal = False) 
 
-def processar_dist_binomial(vTotal, probabSucesso, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo):
+def processar_dist_binomial(vTotal, probabSucesso, probabInsucesso, valorA, valorB, intervalo, escolhaCalculo, escolhaCalculoJson, mostrar_modal, tipo):
     print("------------- Binomial ---------------")
     print("vTotal", vTotal)
     print("probabSucesso", probabSucesso)
+    print("probabInsucesso", probabInsucesso)
     print("valorA", valorA)
     print("valorB", valorB)
     print("intervalo", intervalo)
@@ -1047,6 +1065,7 @@ def processar_dist_binomial(vTotal, probabSucesso, valorA, valorB, intervalo, es
                          escolhaCalculo=escolhaCalculo, 
                          vTotal=vTotal,
                          probabSucesso=probabSucesso,
+                         probabInsucesso=probabInsucesso,
                          valorA=valorA,
                          valorB=valorB,
                          intervalo=intervalo,

@@ -190,7 +190,7 @@
       </div>
         <div style="width: 50%;">
         <div><h2>Dados inseridos</h2></div>
-        <div style="width: 70%; margin: auto; border: 1px solid; padding: 20px;">
+        <div style="width: 70%; margin: auto; border: 1px solid; padding: 20px; white-space: normal;">
           {%for dado in dadosDesordenados%} {{dado}} &nbsp - &nbsp {% endfor %}
         </div>
         <form action="{{url_for('dados_desordenados')}}" method="POST">
@@ -821,6 +821,8 @@
                     <div class="insercao-infos">
                       <input type="text" name="vTotal" placeholder="Total" value="{% if vTotal %} {{ vTotal }}  {% endif %}">
                       <input type="text" name="probabSucesso" placeholder="Prob de Sucesso" value="{% if probabSucesso %} {{ probabSucesso }}  {% endif %}">
+                      <p>Ou</p>
+                      <input type="text" name="probabInsucesso" placeholder="Prob de Insucesso" value="{% if probabInsucesso %} {{ probabInsucesso }}  {% endif %}">
                     </div>
                     <div class="insercao-infos">
                       <input type="text" name="valorA" placeholder="Valor do A" value="{% if valorA %} {{ valorA }} {% elif valorA == 0 %} 0 {% endif %}">
@@ -928,7 +930,6 @@
           <div class="divisao-modal" id="secaoDPois">
             <form action="{{url_for('dist_poisson')}}" method="POST">
                     <div class="insercao-infos">
-                      <input type="text" name="vMedia" placeholder="Desvio Padrão" disabled>
                       <input type="text" name="vMedia" placeholder="Valor da Média / Lambda" value="{% if vMedia %} {{ vMedia }}  {% endif %}">
                     </div>
                     <div class="insercao-infos">
