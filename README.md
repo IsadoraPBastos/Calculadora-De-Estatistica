@@ -1,5 +1,10 @@
 # Calculadora-De-Estatistica
 
+## Como rodar o site
+- pip install flask
+- pip install scipy
+- python app.py
+
 Calculadora para as aulas de estatistica
 
 - Início da implementação dos novos cálculos passados em aula
